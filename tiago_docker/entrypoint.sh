@@ -15,10 +15,10 @@ echo " "
 
   echo "Container is now running."
   echo " "
-   echo "function tmule_start(){  tmule -c ~/ros_ws/src/myTIAGo/mytiago_tmule/tmule/tiago_sim.yaml -W 3 launch ; }" >> ~/.bashrc
-   echo "function tmule_stop(){  tmule -c ~/ros_ws/src/myTIAGo/mytiago_tmule/tmule/tiago_sim.yaml terminate ; }" >> ~/.bashrc
-   echo "function tmule_restart(){  tmule -c ~/ros_ws/src/myTIAGo/mytiago_tmule/tmule/tiago_sim.yaml -W 3 relaunch ; }" >> ~/.bashrc
-   echo "function tmux_show(){  tmux a -t tiago_sim ; }" >> ~/.bashrc
+   echo "function tm-start(){  tmule -c ~/ros_ws/src/myTIAGo/mytiago_tmule/tmule/tiago_sim.yaml -W 3 launch ; }" >> ~/.bashrc
+   echo "function tm-stop(){  tmule -c ~/ros_ws/src/myTIAGo/mytiago_tmule/tmule/tiago_sim.yaml terminate ; }" >> ~/.bashrc
+   echo "function tm-restart(){  tmule -c ~/ros_ws/src/myTIAGo/mytiago_tmule/tmule/tiago_sim.yaml -W 3 relaunch ; }" >> ~/.bashrc
+   echo "function tm-show(){  tmux a -t tiago_sim ; }" >> ~/.bashrc
 
    cd ~/ros_ws
    catkin build
