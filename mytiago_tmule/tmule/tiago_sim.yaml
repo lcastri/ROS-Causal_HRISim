@@ -1,0 +1,61 @@
+session: tiago_sim
+init_cmd: |
+  echo " "
+  echo " "
+  echo " "
+  echo "Running Initialisation" | awk '{ gsub("Running Initialisation", "\033[1;21m\033[1;30m&\033[0m"); print }' ;
+
+  #exec /bin/bash
+  cd @TMULE_CONFIG_DIR@ || true
+  set -o pipefail
+  function export_default () {
+    var_name="$1"
+    var_default="$2"
+    eval $var_name="${!var_name:-$var_default}"
+    export $var_name
+    echo "  $0 -> $var_name=${!var_name}"
+  }
+
+  # source ROS
+  source "/opt/ros/$(rosversion -d)/setup.bash"
+
+  # source the tiago catkin workspace
+  source "$HOME/.bashrc"
+  export_default CATKIN_WS "$HOME/ros_ws"
+
+  # robot specific arguments
+  export_default TIAGO_EE "false"
+  export_default TIAGO_TYPE "iron"
+
+  # world arguments
+  export_default WORLD "supermarket"
+  export_default GZ_GUI "false"
+
+  # navigation specific arguments
+  export_default GLOBAL_PLANNER "global_planner"
+  export_default LOCAL_PLANNER "teb"
+  export_default LOCALIZATION "amcl"
+  export_default CONFIG_BASE_PATH "$(rospack find tiago_navigation)"
+  export_default MAP "$HOME/.pal/tiago_maps/configurations/$WORLD"
+  export_default LASER_MODEL "sick-571"
+  export_default RGBD_SENSORS "false"
+  export_default BASE_TYPE "pmb2"
+
+windows:
+  - name: roscore
+    tags: ['core', 'robot', 'nav']
+    panes:
+      - roscore
+      - htop
+  - name: gazebo
+    tags: ['core', 'robot', 'nav']
+    panes:
+      - 'roslaunch mytiago_gazebo simulation.launch robot:=$TIAGO_TYPE public_sim:=true world:=$WORLD'
+  - name: navigation
+    tags: ['nav']
+    panes:
+      - 'roslaunch tiago_2dnav_gazebo navigation.launch public_sim:=true global_planner:=$GLOBAL_PLANNER local_planner:=$LOCAL_PLANNER localization:=$LOCALIZATION config_base_path:=$CONFIG_BASE_PATH map:=$MAP rgbd_sensors:=$RGBD_SENSORS laser_model:=$LASER_MODEL base_type:=$BASE_TYPE'
+  - name: rviz
+    tags: ['viz']
+    panes:
+      - 'rviz -d "$(rospack find mytiago_navigation)/config/rviz/tiago_rviz_sim.rviz"'
