@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="food_case">
+    <pose>0 0 0 0 0 0</pose> <!-- Modify the pose as needed -->
+    <static>true</static>   <!-- Set to true if the model doesn't move -->
+    <link name="link">
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://food_case/meshes/model.dae</uri> <!-- Replace with your .dae file path -->
+            <scale>1 1 1</scale> <!-- Adjust scale if necessary -->
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

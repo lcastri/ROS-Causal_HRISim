@@ -26,6 +26,7 @@ init_cmd: |
   # robot specific arguments
   export_default TIAGO_EE "false"
   export_default TIAGO_TYPE "iron"
+  export_default TIAGO_POSE "-2.679354 -5.203607 0.014295 0 0 1.570069"
 
   # world arguments
   export_default WORLD "supermarket"
@@ -50,7 +51,7 @@ windows:
   - name: gazebo
     tags: ['core', 'robot', 'nav']
     panes:
-      - 'roslaunch mytiago_gazebo simulation.launch robot:=$TIAGO_TYPE public_sim:=true world:=$WORLD'
+      - 'roslaunch mytiago_gazebo simulation.launch robot:=$TIAGO_TYPE public_sim:=true world:=$WORLD gzpose:=$TIAGO_POSE'
   - name: navigation
     tags: ['nav']
     panes:

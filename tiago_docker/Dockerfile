@@ -58,5 +58,16 @@ COPY mytiago_tmule /root/ros_ws/src/myTIAGo/mytiago_tmule
 COPY mytiago_navigation /root/ros_ws/src/myTIAGo/mytiago_navigation
 COPY mytiago_gazebo /root/ros_ws/src/myTIAGo/mytiago_gazebo
 
+# Create .gazebo folders
+RUN mkdir -p ~/.gazebo/models
+COPY mytiago_gazebo/models /root/.gazebo/models
+RUN echo "export GAZEBO_MODEL_PATH=~/.gazebo/models:$GAZEBO_MODEL_PATH" >> ~/.bashrc
+
+# Install gazebo dependencies for animated actors
+RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list
+RUN wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    ros-noetic-gazebo-ros-control ros-noetic-gazebo-ros-pkgs
+
 # Set the entrypoint to run the script
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
