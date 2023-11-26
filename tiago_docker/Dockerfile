@@ -52,22 +52,27 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # Install tmux and TMuLE
 RUN DEBIAN_FRONTEND=noninteractive pip install tmule
 
+# Install gazebo dependencies for animated actors
+RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list
+RUN wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    ros-noetic-gazebo-ros-control ros-noetic-gazebo-ros-pkgs
+    
 # Copy files into the image
 RUN mkdir -p ~/ros_ws/src/myTIAGo/
 COPY mytiago_tmule /root/ros_ws/src/myTIAGo/mytiago_tmule
 COPY mytiago_navigation /root/ros_ws/src/myTIAGo/mytiago_navigation
 COPY mytiago_gazebo /root/ros_ws/src/myTIAGo/mytiago_gazebo
 
+# Copy maps into the image
+RUN mkdir -p ~/.pal/tiago_maps/configurations/
+COPY mytiago_gazebo/tiago_maps/maze /root/.pal/tiago_maps/configurations/maze
+# RUN ln /root/ros_ws/.pal/tiago_maps/configurations/maze /root/ros_ws/.pal/tiago_maps/config
+
 # Create .gazebo folders
 RUN mkdir -p ~/.gazebo/models
 COPY mytiago_gazebo/models /root/.gazebo/models
 RUN echo "export GAZEBO_MODEL_PATH=~/.gazebo/models:$GAZEBO_MODEL_PATH" >> ~/.bashrc
-
-# Install gazebo dependencies for animated actors
-RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" > /etc/apt/sources.list.d/gazebo-stable.list
-RUN wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    ros-noetic-gazebo-ros-control ros-noetic-gazebo-ros-pkgs
 
 # Set the entrypoint to run the script
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

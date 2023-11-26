@@ -1,5 +1,5 @@
 <launch>
-  <arg name="world"                     default="supermarket"/>
+  <arg name="world"                     default="maze"/>
   <arg name="robot"                     default="iron"/>
   <arg name="arm"                       default="$(eval {'iron': False}.get(arg('robot'), True))"/>
   <arg name="end_effector"              default="$(eval {'iron': 'false', 'steel': 'pal-gripper', 'titanium': 'pal-hey5'}.get(arg('robot'), 'pal-gripper'))"/>
@@ -7,7 +7,12 @@
   <arg name="laser_model"               default="sick-571"/>
   <arg name="camera_model"              default="orbbec-astra"/>
   <arg name="multi"                     default=""/>
-  <arg name="gzpose"                    default="-x 9.5 -y 1.5 -z 0.2 -R 0.0 -P 0.0 -Y 1.57"/>
+  <arg name="TIAGO_x"                   default="0.0"/>
+  <arg name="TIAGO_y"                   default="0.0"/>
+  <arg name="TIAGO_z"                   default="0.0"/>
+  <arg name="TIAGO_R"                   default="0.0"/>
+  <arg name="TIAGO_P"                   default="0.0"/>
+  <arg name="TIAGO_Y"                   default="0.0"/>
   <arg name="gui"                       default="true"/>
   <arg name="debug"                     default="false"/>
   <arg name="public_sim"                default="false"/>
@@ -30,7 +35,7 @@
     <arg name="laser_model"             value="$(arg laser_model)"/>
     <arg name="camera_model"            value="$(arg camera_model)"/>
     <arg name="multi"                   value="$(arg multi)"/>
-    <arg name="gzpose"                  value="$(arg gzpose)"/>
+    <arg name="gzpose"                  value="-x $(arg TIAGO_x) -y $(arg TIAGO_y) -z $(arg TIAGO_z) -R $(arg TIAGO_R) -P $(arg TIAGO_P) -Y $(arg TIAGO_Y)"/>
     <arg name="base_type"               value="$(arg base_type)"/>
   </include>
 

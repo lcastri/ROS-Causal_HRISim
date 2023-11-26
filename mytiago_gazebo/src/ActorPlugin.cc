@@ -20,14 +20,34 @@
 #include <ignition/math.hh>
 #include "gazebo/physics/physics.hh"
 #include "hrsi_gazebo/ActorPlugin.hh"
+#include "ros/ros.h"
 
 using namespace gazebo ;
 using namespace std ;
 GZ_REGISTER_MODEL_PLUGIN(ActorPlugin)
 
 #define WALKING_ANIMATION "walking"
+#define STANDING_ANIMATION "standing"
 #define PI 3.1416
 #define CoM_Z 1.1
+
+double wrapTo2Pi(double angle) {
+    const double twoPi = 2.0 * PI;
+    return fmod(angle, twoPi) + (angle < 0 ? twoPi : 0);
+}
+
+double roundToNdigit(double value, int n_digit) {
+    double multiplier = std::pow(10, n_digit);
+    return std::round(value * multiplier) / multiplier;
+}
+
+ignition::math::Vector3d roundVectorToNdigit(const ignition::math::Vector3d& vec, int precision) {
+    double roundedX = roundToNdigit(vec.X(), precision);
+    double roundedY = roundToNdigit(vec.Y(), precision);
+    double roundedZ = roundToNdigit(vec.Z(), precision);
+
+    return ignition::math::Vector3d(roundedX, roundedY, roundedZ);
+}
 
 /////////////////////////////////////////////////
 ActorPlugin::ActorPlugin()
@@ -91,29 +111,39 @@ void ActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   }  
 
   // Read in the min_max X-coord
-  if (_sdf->HasElement("min_max_X"))
+  if (_sdf->HasElement("min_X"))
   {
-    ignition::math::Vector3d minmax_x = _sdf->Get<ignition::math::Vector3d>("min_max_X");
-    this->min_x = minmax_x[0];
-    this->max_x = minmax_x[1];
+    this->min_x = _sdf->Get<double>("min_X");
   }
   else
   {
-    this->min_x = -15.0;
-    this->max_x = 15.0;
+    this->min_x = -10.0;
+  }
+  if (_sdf->HasElement("max_X"))
+  {
+    this->max_x = _sdf->Get<double>("max_X");
+  }
+  else
+  {
+    this->max_x = 10.0;
   }
 
   // Read in the min_max y-coord
-  if (_sdf->HasElement("min_max_Y"))
+  if (_sdf->HasElement("min_Y"))
   {
-    ignition::math::Vector3d minmax_y = _sdf->Get<ignition::math::Vector3d>("min_max_Y");
-    this->min_y = minmax_y[0];
-    this->max_y = minmax_y[1];
+    this->min_y = _sdf->Get<double>("min_Y");
   }
   else
   {
-    this->min_y = -25.0;
-    this->max_y = 25.0;
+    this->min_y = -10.0;
+  }  
+  if (_sdf->HasElement("max_Y"))
+  {
+    this->max_y = _sdf->Get<double>("max_Y");
+  }
+  else
+  {
+    this->max_y = 10.0;
   }
 
   this->Reset();
@@ -180,6 +210,7 @@ void ActorPlugin::HandleObstacles(ignition::math::Vector3d &_pos)
       double modelDist = offset.Length();
       if (modelDist < 4.0)
       {
+        ROS_WARN("Name %s - modifies pos", model->GetName().c_str());
         double invModelDist = this->obstacleWeight / modelDist;
         offset.Normalize();
         offset *= invModelDist;
@@ -197,18 +228,18 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 
   ignition::math::Pose3d pose = this->actor->WorldPose();
   ignition::math::Vector3d pos = this->target - pose.Pos();
+  // ignition::math::Vector3d pos = this->target - roundVectorToNdigit(pose.Pos(), 1);
   ignition::math::Vector3d rpy = pose.Rot().Euler();
 
   double distance = pos.Length();
 
-  // Choose a new target position if the actor has reached its current
-  // target.
+  // Choose a new target position if the actor has reached its current target.
   if (distance < 0.3)
   {
     this->ChooseNewTarget();
     pos = this->target - pose.Pos();
+    // pos = this->target - roundVectorToNdigit(pose.Pos(), 1);
   }
-
   // Normalize the direction vector, and apply the target weight
   pos = pos.Normalize() * this->targetWeight;
 
@@ -237,6 +268,11 @@ void ActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 
   // Distance traveled is used to coordinate motion with the walking animation
   double distanceTraveled = (pose.Pos() - this->actor->WorldPose().Pos()).Length();
+  // this->trajectoryInfo->type = (distanceTraveled == 0) ? 
+  //     (this->trajectoryInfo->type == WALKING_ANIMATION ? STANDING_ANIMATION : this->trajectoryInfo->type) 
+  //     : 
+  //     (this->trajectoryInfo->type == STANDING_ANIMATION ? WALKING_ANIMATION : this->trajectoryInfo->type);
+
 
   this->actor->SetWorldPose(pose, false, false);
   this->actor->SetScriptTime(this->actor->ScriptTime() + (distanceTraveled * this->animationFactor));
