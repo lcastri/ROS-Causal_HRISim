@@ -19,7 +19,7 @@
 
 #include <ignition/math.hh>
 #include "gazebo/physics/physics.hh"
-#include "hrsi_gazebo/ActorPlugin.hh"
+#include "ActorPlugin.hh"
 #include "ros/ros.h"
 
 using namespace gazebo ;

@@ -63,16 +63,30 @@ RUN mkdir -p ~/ros_ws/src/myTIAGo/
 COPY mytiago_tmule /root/ros_ws/src/myTIAGo/mytiago_tmule
 COPY mytiago_navigation /root/ros_ws/src/myTIAGo/mytiago_navigation
 COPY mytiago_gazebo /root/ros_ws/src/myTIAGo/mytiago_gazebo
+COPY mytiago_plans /root/ros_ws/src/myTIAGo/mytiago_plans
+COPY mytiago_actions /root/ros_ws/src/myTIAGo/mytiago_actions
+COPY mytiago_conditions /root/ros_ws/src/myTIAGo/mytiago_conditions
 
 # Copy maps into the image
 RUN mkdir -p ~/.pal/tiago_maps/configurations/
 COPY mytiago_gazebo/tiago_maps/maze /root/.pal/tiago_maps/configurations/maze
-# RUN ln /root/ros_ws/.pal/tiago_maps/configurations/maze /root/ros_ws/.pal/tiago_maps/config
 
 # Create .gazebo folders
 RUN mkdir -p ~/.gazebo/models
 COPY mytiago_gazebo/models /root/.gazebo/models
 RUN echo "export GAZEBO_MODEL_PATH=~/.gazebo/models:$GAZEBO_MODEL_PATH" >> ~/.bashrc
+
+# clone and install PetriNetPlans
+RUN cd ~/ros_ws
+RUN git clone -b noetic_devel https://github.com/francescodelduchetto/PetriNetPlans.git
+RUN DEBIAN_FRONTEND=noninteractive apt install -y flex libfl-dev libfl2
+RUN mkdir -p ~/ros_ws/PetriNetPlans/PNP/build && cd ~/ros_ws/PetriNetPlans/PNP/build && cmake .. && \
+    make install
+
+RUN cd ~/ros_ws/src && \
+    ln -s ~/ros_ws/PetriNetPlans/PNPros/ROS_bridge/pnp_ros . && \
+    ln -s ~/ros_ws/PetriNetPlans/PNPros/ROS_bridge/pnp_msgs .
+RUN echo "export PNP_HOME=~/ros_ws/src/pnp_ros/" >> ~/.bashrc
 
 # Set the entrypoint to run the script
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
