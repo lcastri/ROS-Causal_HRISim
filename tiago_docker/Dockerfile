@@ -66,6 +66,7 @@ COPY mytiago_gazebo /root/ros_ws/src/myTIAGo/mytiago_gazebo
 COPY mytiago_plans /root/ros_ws/src/myTIAGo/mytiago_plans
 COPY mytiago_actions /root/ros_ws/src/myTIAGo/mytiago_actions
 COPY mytiago_conditions /root/ros_ws/src/myTIAGo/mytiago_conditions
+COPY scripts /root/ros_ws/src/myTIAGo/scripts
 
 # Copy maps into the image
 RUN mkdir -p ~/.pal/tiago_maps/configurations/
