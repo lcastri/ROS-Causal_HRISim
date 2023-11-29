@@ -35,15 +35,16 @@ echo " "
   else
     echo "It will connect to tiago ${ROBOT_NUM}"
   fi 
+  echo "function tm-start(){  tmule -c ~/ros_ws/src/myTIAGo/mytiago_tmule/tmule/tiago.yaml -W 3 launch ; }" >> ~/.bashrc
+  echo "function tm-stop(){  tmule -c ~/ros_ws/src/myTIAGo/mytiago_tmule/tmule/tiago.yaml terminate ; }" >> ~/.bashrc
+  echo "function tm-restart(){  tmule -c ~/ros_ws/src/myTIAGo/mytiago_tmule/tmule/tiago.yaml -W 3 relaunch ; }" >> ~/.bashrc
+  echo "function tm-show(){  tmux a -t tiago ; }" >> ~/.bashrc
+  
   echo "source ~/ros_ws/src/myTIAGo/scripts/connect_tiago.sh ${ROBOT_NUM} ${ETH}" >> ~/.bashrc
+  cd ~/ros_ws
   catkin build
-  source /home/lcastor/ros_ws/devel/setup.bash
-  echo "function s(){  tmule -c ~/ros_ws/src/myTIAGo/mytiago_tmule/tmule/tiago.yaml -W 3 launch ; }" >> ~/.bashrc
-  echo "function t(){  tmule -c ~/ros_ws/src/myTIAGo/mytiago_tmule/tmule/tiago.yaml terminate ; }" >> ~/.bashrc
-  echo "function r(){  tmule -c ~/ros_ws/src/myTIAGo/mytiago_tmule/tmule/tiago.yaml -W 3 relaunch ; }" >> ~/.bashrc
-
-  exec su lcastor 
-   
+  source ~/ros_ws/devel/setup.bash
+  exec "/bin/bash"  
 
 } || {
 

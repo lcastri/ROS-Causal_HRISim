@@ -47,7 +47,9 @@ RUN echo "source ~/ros_ws/devel/setup.bash" >> ~/.bashrc
 
 # Copy the entrypoint.sh script into the image and give execute permissions to the script
 COPY tiago_docker/entrypoint.sh /usr/local/bin/
+COPY tiago_docker/robot_entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/robot_entrypoint.sh
 
 # Install tmux and TMuLE
 RUN DEBIAN_FRONTEND=noninteractive pip install tmule
