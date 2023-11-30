@@ -15,13 +15,7 @@ echo "###"
 echo " "
 
 {
-
-  echo "10.8.0.102 tiago-29c" >> /etc/hosts
-  echo "10.8.0.106 tiago-89c" >> /etc/hosts
-  echo "10.8.0.105 tiago-125c" >> /etc/hosts
-  echo "192.168.1.29 tiago-29c" >> /etc/hosts
-  echo "192.168.1.89 tiago-89c" >> /etc/hosts
-  echo "192.168.1.125 tiago-125c" >> /etc/hosts
+  echo -e "10.68.0.1\ttiago-125c" >> /etc/hosts
 
   echo "Container is now running."
   echo " "
