@@ -60,25 +60,6 @@ RUN wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     ros-noetic-gazebo-ros-control ros-noetic-gazebo-ros-pkgs
     
-# Copy files into the image
-RUN mkdir -p ~/ros_ws/src/myTIAGo/
-COPY mytiago_tmule /root/ros_ws/src/myTIAGo/mytiago_tmule
-COPY mytiago_navigation /root/ros_ws/src/myTIAGo/mytiago_navigation
-COPY mytiago_gazebo /root/ros_ws/src/myTIAGo/mytiago_gazebo
-COPY mytiago_plans /root/ros_ws/src/myTIAGo/mytiago_plans
-COPY mytiago_actions /root/ros_ws/src/myTIAGo/mytiago_actions
-COPY mytiago_conditions /root/ros_ws/src/myTIAGo/mytiago_conditions
-COPY scripts /root/ros_ws/src/myTIAGo/scripts
-
-# Copy maps into the image
-RUN mkdir -p ~/.pal/tiago_maps/configurations/
-COPY mytiago_gazebo/tiago_maps/maze /root/.pal/tiago_maps/configurations/maze
-
-# Create .gazebo folders
-RUN mkdir -p ~/.gazebo/models
-COPY mytiago_gazebo/models /root/.gazebo/models
-RUN echo "export GAZEBO_MODEL_PATH=~/.gazebo/models:$GAZEBO_MODEL_PATH" >> ~/.bashrc
-
 # Clone and install PetriNetPlans
 RUN cd ~/ros_ws
 RUN git clone -b noetic_devel https://github.com/francescodelduchetto/PetriNetPlans.git
@@ -96,6 +77,29 @@ RUN cd ~/ros_ws/src/ && \
     git clone https://github.com/srl-freiburg/pedsim_ros.git && \
     cd pedsim_ros && \
     git submodule update --init --recursive
+
+# Copy files into the image
+RUN mkdir -p ~/ros_ws/src/myTIAGo/
+COPY mytiago_tmule /root/ros_ws/src/myTIAGo/mytiago_tmule
+COPY mytiago_navigation /root/ros_ws/src/myTIAGo/mytiago_navigation
+COPY mytiago_gazebo /root/ros_ws/src/myTIAGo/mytiago_gazebo
+COPY mytiago_plans /root/ros_ws/src/myTIAGo/mytiago_plans
+COPY mytiago_actions /root/ros_ws/src/myTIAGo/mytiago_actions
+COPY mytiago_conditions /root/ros_ws/src/myTIAGo/mytiago_conditions
+COPY scripts /root/ros_ws/src/myTIAGo/scripts
+COPY mytiago_pedsim /root/ros_ws/src/myTIAGo/mytiago_pedsim
+COPY mytiago_pedsim/scenarios /root/ros_ws/src/pedsim_ros/pedsim_simulator/scenarios
+COPY mytiago_pedsim/worlds /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/worlds
+COPY mytiago_pedsim/launch /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/launch
+
+# Copy maps into the image
+RUN mkdir -p ~/.pal/tiago_maps/configurations/
+COPY mytiago_gazebo/tiago_maps/maze /root/.pal/tiago_maps/configurations/maze
+
+# Create .gazebo folders
+RUN mkdir -p ~/.gazebo/models
+COPY mytiago_gazebo/models /root/.gazebo/models
+RUN echo "export GAZEBO_MODEL_PATH=~/.gazebo/models:$GAZEBO_MODEL_PATH" >> ~/.bashrc
 
 # Set the entrypoint to run the script
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

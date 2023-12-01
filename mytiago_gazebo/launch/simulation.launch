@@ -1,5 +1,6 @@
 <launch>
   <arg name="world"                     default="maze"/>
+  <arg name="scenario"                  default="single_agent_avoidance"/>
   <arg name="robot"                     default="iron"/>
   <arg name="arm"                       default="$(eval {'iron': False}.get(arg('robot'), True))"/>
   <arg name="end_effector"              default="$(eval {'iron': 'false', 'steel': 'pal-gripper', 'titanium': 'pal-hey5'}.get(arg('robot'), 'pal-gripper'))"/>
@@ -28,7 +29,7 @@
   </include>
 
   <!-- spawn robot in simulation -->
-  <include file="$(find tiago_gazebo)/launch/tiago_spawn.launch">
+  <!-- <include file="$(find tiago_gazebo)/launch/tiago_spawn.launch">
     <arg name="arm"                     value="$(arg arm)"/>
     <arg name="end_effector"            value="$(arg end_effector)"/>
     <arg name="ft_sensor"               value="$(arg ft_sensor)"/>
@@ -37,10 +38,10 @@
     <arg name="multi"                   value="$(arg multi)"/>
     <arg name="gzpose"                  value="-x $(arg TIAGO_x) -y $(arg TIAGO_y) -z $(arg TIAGO_z) -R $(arg TIAGO_R) -P $(arg TIAGO_P) -Y $(arg TIAGO_Y)"/>
     <arg name="base_type"               value="$(arg base_type)"/>
-  </include>
+  </include> -->
 
   <!-- bring up robot -->
-  <include file="$(find tiago_gazebo)/launch/simulation_tiago_bringup.launch">
+  <!-- <include file="$(find tiago_gazebo)/launch/simulation_tiago_bringup.launch">
     <arg name="arm"                     value="$(arg arm)"/>
     <arg name="end_effector"            value="$(arg end_effector)"/>
     <arg name="ft_sensor"               value="$(arg ft_sensor)"/>
@@ -50,6 +51,14 @@
     <arg name="use_moveit_camera"       value="$(arg use_moveit_camera)"/>
     <arg name="use_dynamic_footprint"   value="$(arg use_dynamic_footprint)"/>
     <arg name="base_type"               value="$(arg base_type)"/>
-  </include>
+  </include> -->
+
+  <!-- this node spawn pedsim actors to gazebo once, then the plugin updates their pose -->  
+  <!-- <node pkg="pedsim_gazebo_plugin" type="spawn_pedsim_agents.py" name="spawn_pedsim_agents" output="screen"/> -->
+
+  <!-- launch pedsim scenario -->
+  <!-- <include file="$(find mytiago_pedsim)/launch/single_agent_avoidance.launch">
+    <arg name="scenario"                value="$(arg scenario)"/>
+  </include> -->
 
 </launch>
