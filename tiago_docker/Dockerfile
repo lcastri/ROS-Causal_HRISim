@@ -79,7 +79,7 @@ RUN mkdir -p ~/.gazebo/models
 COPY mytiago_gazebo/models /root/.gazebo/models
 RUN echo "export GAZEBO_MODEL_PATH=~/.gazebo/models:$GAZEBO_MODEL_PATH" >> ~/.bashrc
 
-# clone and install PetriNetPlans
+# Clone and install PetriNetPlans
 RUN cd ~/ros_ws
 RUN git clone -b noetic_devel https://github.com/francescodelduchetto/PetriNetPlans.git
 RUN DEBIAN_FRONTEND=noninteractive apt install -y flex libfl-dev libfl2
@@ -90,6 +90,12 @@ RUN cd ~/ros_ws/src && \
     ln -s ~/ros_ws/PetriNetPlans/PNPros/ROS_bridge/pnp_ros . && \
     ln -s ~/ros_ws/PetriNetPlans/PNPros/ROS_bridge/pnp_msgs .
 RUN echo "export PNP_HOME=~/ros_ws/src/pnp_ros/" >> ~/.bashrc
+
+# Clone and install pedsim
+RUN cd ~/ros_ws/src/ && \
+    git clone https://github.com/srl-freiburg/pedsim_ros.git && \
+    cd pedsim_ros && \
+    git submodule update --init --recursive
 
 # Set the entrypoint to run the script
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
