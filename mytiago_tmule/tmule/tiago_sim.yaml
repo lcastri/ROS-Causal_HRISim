@@ -73,7 +73,7 @@ windows:
   #   panes:
   #     - 'rviz -d "$(rospack find mytiago_navigation)/config/rviz/tiago_rviz_sim.rviz" --fixed-frame map'
   - name: pedsim
-    tags: ['viz']
+    tags: ['pedsim']
     panes:
-      - 'rosrun pedsim_gazebo_plugin spawn_pedsim_agents.py'
-      - 'roslaunch pedsim_gazebo_plugin single_agent_avoidance.launch'
+      - 'roslaunch mytiago_pedsim simulator.launch scenario:=single_agent_avoidance'
+      - 'roslaunch mytiago_pedsim gazebo_plugin.launch scenario:=single_agent_avoidance'

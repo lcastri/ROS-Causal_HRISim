@@ -73,10 +73,11 @@ RUN cd ~/ros_ws/src && \
 RUN echo "export PNP_HOME=~/ros_ws/src/pnp_ros/" >> ~/.bashrc
 
 # Clone and install pedsim
-RUN cd ~/ros_ws/src/ && \
-    git clone https://github.com/srl-freiburg/pedsim_ros.git && \
-    cd pedsim_ros && \
-    git submodule update --init --recursive
+COPY pedsim_ros /root/ros_ws/src/pedsim_ros
+# RUN cd ~/ros_ws/src/ && \
+#     git clone https://github.com/srl-freiburg/pedsim_ros.git && \
+#     cd pedsim_ros && \
+#     git submodule update --init --recursive
 
 # Copy files into the image
 RUN mkdir -p ~/ros_ws/src/myTIAGo/
@@ -90,7 +91,7 @@ COPY scripts /root/ros_ws/src/myTIAGo/scripts
 COPY mytiago_pedsim /root/ros_ws/src/myTIAGo/mytiago_pedsim
 COPY mytiago_pedsim/scenarios /root/ros_ws/src/pedsim_ros/pedsim_simulator/scenarios
 COPY mytiago_pedsim/worlds /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/worlds
-COPY mytiago_pedsim/launch /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/launch
+# COPY mytiago_pedsim/launch /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/launch
 
 # Copy maps into the image
 RUN mkdir -p ~/.pal/tiago_maps/configurations/

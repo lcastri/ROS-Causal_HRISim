@@ -1601,4 +1601,6 @@
       </camera>
     </gui>
   </world>
+
+  <plugin name="ActorPosesPlugin" filename="libActorPosesPlugin.so"></plugin>
 </sdf>
