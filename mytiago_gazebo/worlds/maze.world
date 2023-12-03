@@ -1600,5 +1600,6 @@
         <projection_type>perspective</projection_type>
       </camera>
     </gui>
+  <plugin name="myActorPosesPlugin" filename="libmyActorPosesPlugin.so"></plugin>
   </world>
 </sdf>

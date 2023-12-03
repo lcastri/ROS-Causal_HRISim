@@ -36,6 +36,7 @@ init_cmd: |
   # world arguments
   export_default WORLD "maze"
   export_default GZ_GUI "false"
+  export_default SCENARIO "single_agent_avoidance"
 
   # navigation specific arguments
   export_default GLOBAL_PLANNER "global_planner"
@@ -55,25 +56,25 @@ windows:
     panes:
       - roscore
       - htop
-  # - name: planning
-  #   tags: ['core']
-  #   panes:
-  #     - 'roslaunch pnp_ros pnp_ros.launch plans_folder:=$PNP_PLANS actions_folder:=$PNP_ACTIONS conditions_folder:=$PNP_CONDITIONS'
-  #     - 'cd ~/ros_ws/src/myTIAGo/mytiago_plans; echo "Start your plan here, e.g.\n python Inspection.py"'
-  # - name: gazebo
-  #   tags: ['core', 'robot', 'nav']
-  #   panes:
-  #     - 'roslaunch mytiago_gazebo simulation.launch robot:=$TIAGO_TYPE public_sim:=true world:=$WORLD TIAGO_x:=$TIAGO_x TIAGO_y:=$TIAGO_y TIAGO_z:=$TIAGO_z TIAGO_R:=$TIAGO_R TIAGO_P:=$TIAGO_P TIAGO_Y:=$TIAGO_Y'
-  # - name: navigation
-  #   tags: ['nav']
-  #   panes:
-  #     - 'roslaunch tiago_2dnav_gazebo navigation.launch public_sim:=true global_planner:=$GLOBAL_PLANNER local_planner:=$LOCAL_PLANNER localization:=$LOCALIZATION config_base_path:=$CONFIG_BASE_PATH map:=$MAP'
-  # - name: rviz
-  #   tags: ['viz']
-  #   panes:
-  #     - 'rviz -d "$(rospack find mytiago_navigation)/config/rviz/tiago_rviz_sim.rviz" --fixed-frame map'
+  - name: planning
+    tags: ['core']
+    panes:
+      - 'roslaunch pnp_ros pnp_ros.launch plans_folder:=$PNP_PLANS actions_folder:=$PNP_ACTIONS conditions_folder:=$PNP_CONDITIONS'
+      - 'cd ~/ros_ws/src/myTIAGo/mytiago_plans; echo "Start your plan here, e.g.\n python Inspection.py"'
+  - name: gazebo
+    tags: ['core', 'robot', 'nav']
+    panes:
+      - 'roslaunch mytiago_gazebo simulation.launch robot:=$TIAGO_TYPE public_sim:=true world:=$WORLD TIAGO_x:=$TIAGO_x TIAGO_y:=$TIAGO_y TIAGO_z:=$TIAGO_z TIAGO_R:=$TIAGO_R TIAGO_P:=$TIAGO_P TIAGO_Y:=$TIAGO_Y'
+  - name: navigation
+    tags: ['nav']
+    panes:
+      - 'roslaunch tiago_2dnav_gazebo navigation.launch public_sim:=true global_planner:=$GLOBAL_PLANNER local_planner:=$LOCAL_PLANNER localization:=$LOCALIZATION config_base_path:=$CONFIG_BASE_PATH map:=$MAP'
+  - name: rviz
+    tags: ['viz']
+    panes:
+      - 'rviz -d "$(rospack find mytiago_navigation)/config/rviz/tiago_rviz_sim.rviz" --fixed-frame map'
   - name: pedsim
     tags: ['pedsim']
     panes:
-      - 'roslaunch mytiago_pedsim simulator.launch scenario:=single_agent_avoidance'
-      - 'roslaunch mytiago_pedsim gazebo_plugin.launch scenario:=single_agent_avoidance'
+      - 'roslaunch mytiago_pedsim mysimulator.launch scenario:=$SCENARIO pose_initial_x:=$TIAGO_x pose_initial_y:=$TIAGO_y pose_initial_theta:=$TIAGO_Y'
+      # - 'roslaunch mytiago_pedsim gazebo_plugin.launch scenario:=single_agent_avoidance'

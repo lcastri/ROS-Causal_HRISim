@@ -90,8 +90,9 @@ COPY mytiago_conditions /root/ros_ws/src/myTIAGo/mytiago_conditions
 COPY scripts /root/ros_ws/src/myTIAGo/scripts
 COPY mytiago_pedsim /root/ros_ws/src/myTIAGo/mytiago_pedsim
 COPY mytiago_pedsim/scenarios /root/ros_ws/src/pedsim_ros/pedsim_simulator/scenarios
+COPY mytiago_pedsim/launch/mysimulator.launch /root/ros_ws/src/pedsim_ros/pedsim_simulator/launch/
 COPY mytiago_pedsim/worlds /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/worlds
-# COPY mytiago_pedsim/launch /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/launch
+COPY mytiago_pedsim/launch/gazebo_plugin.launch /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/launch/
 
 # Copy maps into the image
 RUN mkdir -p ~/.pal/tiago_maps/configurations/

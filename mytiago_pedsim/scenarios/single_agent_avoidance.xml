@@ -13,13 +13,15 @@
   <waypoint id="D" x="0" y="-6" r="0.15"/>
   <waypoint id="centre" x="0" y="0" r="0.15"/>
 
-  <!--Agents-->
-  <agent x="1" y="1" n="1" dx="0" dy="0" type="0">
+  <!--Robot (type = 2)-->
+  <agent x="1" y="1" n="1" dx="0" dy="0" type="2">
     <addwaypoint id="A"/>
     <addwaypoint id="B"/>
     <addwaypoint id="C"/>
     <addwaypoint id="D"/>
   </agent>
+
+  <!--Agent ADULT (type = 0)-->
   <agent x="10" y="10" n="1" dx="0" dy="0" type="0">
     <addwaypoint id="centre"/>
   </agent>
