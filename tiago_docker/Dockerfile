@@ -73,11 +73,13 @@ RUN cd ~/ros_ws/src && \
 RUN echo "export PNP_HOME=~/ros_ws/src/pnp_ros/" >> ~/.bashrc
 
 # Clone and install pedsim
-COPY pedsim_ros /root/ros_ws/src/pedsim_ros
-# RUN cd ~/ros_ws/src/ && \
-#     git clone https://github.com/srl-freiburg/pedsim_ros.git && \
-#     cd pedsim_ros && \
-#     git submodule update --init --recursive
+# COPY pedsim_ros /root/ros_ws/src/pedsim_ros
+RUN cd ~/ros_ws/src/ && \
+    git clone https://github.com/srl-freiburg/pedsim_ros.git && \
+    cd pedsim_ros && \
+    git submodule update --init --recursive
+# simulator.cpp has been modified to allow single agent scenario
+COPY mytiago_pedsim/simulator.cpp /root/ros_ws/src/pedsim_ros/pedsim_simulator/src
 
 # Copy files into the image
 RUN mkdir -p ~/ros_ws/src/myTIAGo/

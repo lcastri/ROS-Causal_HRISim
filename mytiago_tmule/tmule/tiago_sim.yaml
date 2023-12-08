@@ -26,9 +26,9 @@ init_cmd: |
   # robot specific arguments
   export_default TIAGO_EE "false"
   export_default TIAGO_TYPE "iron"
-  export_default TIAGO_x "-6.0"
+  export_default TIAGO_x "0.0"
   export_default TIAGO_y "0.0"
-  export_default TIAGO_z "0.2"
+  export_default TIAGO_z "0.0"
   export_default TIAGO_R "0.0"
   export_default TIAGO_P "0.0"
   export_default TIAGO_Y "0.0"
@@ -77,4 +77,3 @@ windows:
     tags: ['pedsim']
     panes:
       - 'roslaunch mytiago_pedsim mysimulator.launch scenario:=$SCENARIO pose_initial_x:=$TIAGO_x pose_initial_y:=$TIAGO_y pose_initial_theta:=$TIAGO_Y'
-      # - 'roslaunch mytiago_pedsim gazebo_plugin.launch scenario:=single_agent_avoidance'

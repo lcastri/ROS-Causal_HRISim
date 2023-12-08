@@ -1,43 +1,52 @@
 <launch>
   <arg name="scenario"/>
+  <arg name="default_queue_size" default="10"/>
+  <arg name="max_robot_speed" default="0.5"/>
+  <arg name="robot_mode" default="0"/>
+  <arg name="enable_groups" default="true"/>
+  <arg name="simulation_factor" default="1.0"/> <!-- Speed up -->
+  <arg name="update_rate" default="25.0"/> <!-- Hz -->
+  <arg name="spawn_period" default="5.0"/>
+  <arg name="people_frame_ref" default="map"/>
+
+  <arg name="kbd_teleop" default="false"/>
+  <arg name="rqt_teleop" default="false"/>
+  <arg name="with_robot" default="false"/>
   <arg name="pose_initial_x" default="0.0"/>
   <arg name="pose_initial_y" default="0.0"/>
   <arg name="pose_initial_theta" default="0.0"/>
-  <arg name="visualize" default="true"/>
-  <arg name="with_robot" default="false"/>
 
   <!-- robot_mode == 0: CONTROLLED implies that the robot's velocity is set by some planning algorithm like DWA. Its very similar to the teleoperation mode, using tf in the mix is just a layer on top of this -->
   <!-- robot_mode == 1: TELEOPERATION , we map the output of a teleop node (like joystick) to drive the robot -->
   <!-- robot_mode == 2: SOCIAL mode means the robot's velocity is set by the social force just like the other agents -->
-  <arg name="robot_mode" default="0"/>
-  <arg name="max_robot_speed" default="0.5"/>
-  <arg name="simulation_factor" default="1.0"/> <!-- Speed up -->
-  <arg name="update_rate" default="25.0"/> <!-- Hz -->
-
-  <!-- Simulator -->
-  <include file="$(find pedsim_simulator)/launch/simulator.launch">
-    <arg name="scene_file" value="$(find mytiago_pedsim)/scenarios/$(arg scenario).xml"/>
-    <arg name="with_robot" value="$(arg with_robot)"/>
-    <arg name="robot_mode" value="$(arg robot_mode)"/>
-    <arg name="max_robot_speed" value="$(arg max_robot_speed)"/>
-    <arg name="simulation_factor" value="$(arg simulation_factor)"/>
-    <arg name="update_rate" value="$(arg update_rate)"/>
-  </include>
-
-  <!-- robot driving controller -->
-  <node name="driving_controller" type="simulate_diff_drive_robot" pkg="pedsim_simulator" output="screen">
-    <param name="pose_initial_x" value="$(arg pose_initial_x)"/>
-    <param name="pose_initial_y" value="$(arg pose_initial_y)"/>
-    <param name="pose_initial_theta" value="$(arg pose_initial_theta)"/>
+  <!-- main simulator node -->
+  <node name="pedsim_simulator" pkg="pedsim_simulator" type="pedsim_simulator" output="screen">
+    <param name="scene_file" value="$(find mytiago_pedsim)/scenarios/$(arg scenario).xml" type="string"/>
+    <param name="default_queue_size" value="$(arg default_queue_size)" type="int"/>
+    <param name="max_robot_speed" value="$(arg max_robot_speed)" type="double"/>
+    <param name="robot_mode" value="$(arg robot_mode)" type="int"/>
+    <param name="enable_groups" value="$(arg enable_groups)" type="bool"/>
+    <param name="simulation_factor" value="$(arg simulation_factor)" type="double"/>
+    <param name="update_rate" value="$(arg update_rate)" type="double"/>
+    <param name="spawn_period" value="$(arg spawn_period)" type="double"/>
+    <param name="frame_id" value="$(arg people_frame_ref)" type="string"/>
   </node>
+
+  <!-- Robot controller (optional) -->
+  <group ns="pedbot/control" if="$(arg with_robot)">
+    <include file="$(find pedsim_simulator)/launch/robot_controller.launch">
+      <arg name="kbd_teleop" value="$(arg kbd_teleop)"/>
+      <arg name="rqt_teleop" value="$(arg rqt_teleop)"/>
+      <arg name="pose_initial_x" value="$(arg pose_initial_x)"/>
+      <arg name="pose_initial_y" value="$(arg pose_initial_y)"/>
+      <arg name="pose_initial_theta" value="$(arg pose_initial_theta)"/>
+    </include>
+  </group>
 
   <!-- Remapping cmd_vel -->
   <node pkg="topic_tools" type="relay" name="my_relay" args="/mobile_base_controller/cmd_vel /pedbot/control/cmd_vel"/>
 
   <!-- Visualizer -->
   <include file="$(find pedsim_visualizer)/launch/visualizer.launch"/>
-
-  <!-- Rviz -->
-  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find pedsim_simulator)/rviz/airport_activities.rviz" if="$(arg visualize)"/>
 
 </launch>

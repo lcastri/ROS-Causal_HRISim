@@ -1,24 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scenario>
   <!--Obstacles-->
-  <obstacle x1="-10" y1="-10" x2="10" y2="-10"/>
+  <!-- <obstacle x1="-10" y1="-10" x2="10" y2="-10"/>
   <obstacle x1="10" y1="-10" x2="10" y2="10"/>
   <obstacle x1="10" y1="10" x2="-10" y2="10"/>
-  <obstacle x1="-10" y1="10" x2="-10" y2="-10"/>
+  <obstacle x1="-10" y1="10" x2="-10" y2="-10"/> -->
 
   <!--Waypoints-->
-  <waypoint id="A" x="-6" y="0" r="0.15"/>
-  <waypoint id="B" x="6" y="0" r="0.15"/>
-  <waypoint id="C" x="0" y="6" r="0.15"/>
-  <waypoint id="D" x="0" y="-6" r="0.15"/>
   <waypoint id="centre" x="0" y="0" r="0.15"/>
 
   <!--Robot (type = 2)-->
-  <agent x="1" y="1" n="1" dx="0" dy="0" type="2">
-    <addwaypoint id="A"/>
-    <addwaypoint id="B"/>
-    <addwaypoint id="C"/>
-    <addwaypoint id="D"/>
+  <agent x="$TIAGO_x" y="$TIAGO_y" n="1" dx="0" dy="0" type="2">
   </agent>
 
   <!--Agent ADULT (type = 0)-->

@@ -12,12 +12,8 @@ import pnp_cmd_ros
 from pnp_cmd_ros import *
 
 
-def PassByTheCentre(p):
-    goal_list = [[7.396, -6.888, 2.347], 
-                 [-7.497, 7.345, -0.739]]
-    for _ in range(50):
-        for g in goal_list:
-            p.exec_action('goto', "_".join(g))
+def SetInitialPos(p):
+        p.exec_action('goto', "7.5_-7.5_0.0")
                       
 
 
@@ -27,6 +23,6 @@ if __name__ == "__main__":
 
     p.begin()
 
-    PassByTheCentre(p)
+    SetInitialPos(p)
 
     p.end()

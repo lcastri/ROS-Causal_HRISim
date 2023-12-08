@@ -4,8 +4,6 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Robot1
-        - /Robot1/Sensors1
         - /Planning1/Base1/Global1
         - /Planning1/Base1/Global1/Plan1
         - /Mapping1/Map1
@@ -313,7 +311,7 @@ Visualization Manager:
           Marker Topic: twist_marker
           Name: Twist
           Namespaces:
-            {}
+            "": true
           Queue Size: 100
           Value: true
         - Class: rviz/Marker
@@ -962,6 +960,7 @@ Visualization Manager:
           TF: true
           Twist: true
           Value: true
+        TrackedPersons: true
         Tracking:
           Bounding Boxes: true
           MarkerArray: true
@@ -1040,6 +1039,50 @@ Visualization Manager:
           Value: true
       Enabled: false
       Name: Tracking
+    - Alpha: 1
+      Class: spencer_tracking_rviz_plugin/TrackedPersons
+      Color: 130; 130; 130
+      Color map offset: 0
+      Color transform: Flat
+      Delete after no. cycles: 10
+      Enabled: true
+      Excluded person IDs: ""
+      Font color: 255; 255; 255
+      Font color style: Same color
+      Font scale: 2
+      History as line:
+        Line width: 0.05000000074505806
+        Value: false
+      History size: 10
+      Included person IDs: ""
+      Min. history point distance: 0.4000000059604645
+      Missed alpha: 1
+      Name: TrackedPersons
+      Occlusion alpha: 1
+      Queue Size: 10
+      Render covariances:
+        Line width: 0.10000000149011612
+        Value: false
+      Render detection IDs: false
+      Render history: true
+      Render person visual: true
+      Render track IDs: true
+      Render track state: false
+      Render velocities: true
+      Show DELETED tracks: false
+      Show MATCHED tracks: true
+      Show MISSED tracks: true
+      Show OCCLUDED tracks: true
+      Style:
+        Line width: 0.05000000074505806
+        Scaling factor: 1
+        Value: Bounding boxes
+      Topic: /pedsim_visualizer/tracked_persons
+      Unreliable: false
+      Value: true
+      Z offset:
+        Use Z position from message: false
+        Value: 0
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -1068,7 +1111,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 17.113466262817383
+      Distance: 31.273326873779297
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
