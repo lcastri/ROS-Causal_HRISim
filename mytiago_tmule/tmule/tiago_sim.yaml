@@ -44,11 +44,24 @@ init_cmd: |
   export_default LOCALIZATION "amcl"
   export_default CONFIG_BASE_PATH "$(rospack find tiago_navigation)"
   export_default MAP "$HOME/.pal/tiago_maps/configurations/maze"
+  export_default NAMESPACE "tiago"
 
   # PNP specific arguments
   export_default PNP_PLANS "$CATKIN_WS/src/myTIAGo/mytiago_plans"
   export_default PNP_ACTIONS "$CATKIN_WS/src/myTIAGo/mytiago_actions"
   export_default PNP_CONDITIONS "$CATKIN_WS/src/myTIAGo/mytiago_conditions"
+
+  # PedSim arguments
+  # robot_mode == 0: CONTROLLED implies that the robot's velocity is set by some planning algorithm like DWA. Its very similar to the teleoperation mode, using tf in the mix is just a layer on top of this -->
+  # robot_mode == 1: TELEOPERATION , we map the output of a teleop node (like joystick) to drive the robot -->
+  # robot_mode == 2: SOCIAL mode means the robot's velocity is set by the social force just like the other agents -->
+  export_default ROBOT_MODE "1"
+  export_default MAX_ROBOT_SPEED "1.5"
+  export_default ROBOT_RADIUS "2"
+  export_default WITH_PED "true"
+  export_default KBD_TELEOP "true"
+  export_default HUMAN_x "5"
+  export_default HUMAN_y "5"
 
 windows:
   - name: roscore
@@ -76,4 +89,5 @@ windows:
   - name: pedsim
     tags: ['pedsim']
     panes:
-      - 'roslaunch mytiago_pedsim mysimulator.launch scenario:=$SCENARIO pose_initial_x:=$TIAGO_x pose_initial_y:=$TIAGO_y pose_initial_theta:=$TIAGO_Y'
+      - 'roslaunch mytiago_pedsim mysimulator2.launch scenario:=$SCENARIO robot_mode:=$ROBOT_MODE max_robot_speed:=$MAX_ROBOT_SPEED robot_radius:=$ROBOT_RADIUS kbd_teleop:=$KBD_TELEOP with_ped:=$WITH_PED ped_x:=$HUMAN_x ped_y:=$HUMAN_y ped_theta:=0'
+      # - 'roslaunch mytiago_pedsim mysimulator2.launch scenario:=$SCENARIO robot_mode:=$ROBOT_MODE max_robot_speed:=$MAX_ROBOT_SPEED robot_radius:=$ROBOT_RADIUS kbd_teleop:=$KBD_TELEOP'

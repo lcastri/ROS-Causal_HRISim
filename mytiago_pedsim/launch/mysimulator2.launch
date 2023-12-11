@@ -12,10 +12,10 @@
 
   <arg name="kbd_teleop" default="false"/>
   <arg name="rqt_teleop" default="false"/>
-  <arg name="with_robot" default="false"/>
-  <arg name="pose_initial_x" default="0.0"/>
-  <arg name="pose_initial_y" default="0.0"/>
-  <arg name="pose_initial_theta" default="0.0"/>
+  <arg name="with_ped" default="false"/>
+  <arg name="ped_x" default="0.0"/>
+  <arg name="ped_y" default="0.0"/>
+  <arg name="ped_theta" default="0.0"/>
 
   <!-- robot_mode == 0: CONTROLLED implies that the robot's velocity is set by some planning algorithm like DWA. Its very similar to the teleoperation mode, using tf in the mix is just a layer on top of this -->
   <!-- robot_mode == 1: TELEOPERATION , we map the output of a teleop node (like joystick) to drive the robot -->
@@ -34,15 +34,18 @@
     <param name="frame_id" value="$(arg people_frame_ref)" type="string"/>
   </node>
 
-  <!-- Robot controller (optional) -->
-  <group ns="pedbot/control" if="$(arg with_robot)">
-    <include file="$(find pedsim_simulator)/launch/robot_controller.launch">
-      <arg name="kbd_teleop" value="$(arg kbd_teleop)"/>
-      <arg name="rqt_teleop" value="$(arg rqt_teleop)"/>
-      <arg name="pose_initial_x" value="$(arg pose_initial_x)"/>
-      <arg name="pose_initial_y" value="$(arg pose_initial_y)"/>
-      <arg name="pose_initial_theta" value="$(arg pose_initial_theta)"/>
-    </include>
+  <!-- Pedestrian simulated by differential robot -->
+  <group ns="pedsim/control" if="$(arg with_ped)">
+    <!-- pedestrina driving controller -->
+    <node name="driving_controller" type="simulate_diff_drive_ped" pkg="pedsim_simulator" output="screen">
+      <param name="ped_x" value="$(arg ped_x)"/>
+      <param name="ped_y" value="$(arg ped_y)"/>
+      <param name="ped_theta" value="$(arg ped_theta)"/>
+    </node>
+
+    <!-- Keyboard robot steering -->
+    <node pkg="pedsim_simulator" name="pedsim_keyboard_teleop" type="keyboard_teleop.py" output="screen" if="$(arg kbd_teleop)">
+    </node>
   </group>
 
   <!-- Remapping cmd_vel -->

@@ -78,8 +78,13 @@ RUN cd ~/ros_ws/src/ && \
     git clone https://github.com/srl-freiburg/pedsim_ros.git && \
     cd pedsim_ros && \
     git submodule update --init --recursive
-# simulator.cpp has been modified to allow single agent scenario
-COPY mytiago_pedsim/simulator.cpp /root/ros_ws/src/pedsim_ros/pedsim_simulator/src
+# files has been modified to allow single agent scenario and to expose robot_radius
+COPY mytiago_pedsim/modified_scripts/simulator.cpp /root/ros_ws/src/pedsim_ros/pedsim_simulator/src
+COPY mytiago_pedsim/modified_scripts/agent.cpp /root/ros_ws/src/pedsim_ros/pedsim_simulator/src/element
+COPY mytiago_pedsim/modified_scripts/config.h /root/ros_ws/src/pedsim_ros/pedsim_simulator/include/pedsim_simulator
+COPY mytiago_pedsim/modified_scripts/keyboard_teleop.py /root/ros_ws/src/pedsim_ros/pedsim_simulator/scripts
+COPY mytiago_pedsim/modified_scripts/simulate_diff_drive_ped.cpp /root/ros_ws/src/pedsim_ros/pedsim_simulator/src
+COPY mytiago_pedsim/modified_scripts/CMakeLists.txt /root/ros_ws/src/pedsim_ros/pedsim_simulator/
 
 # Copy files into the image
 RUN mkdir -p ~/ros_ws/src/myTIAGo/
