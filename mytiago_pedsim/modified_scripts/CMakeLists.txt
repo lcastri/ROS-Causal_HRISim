@@ -121,6 +121,10 @@ add_executable(simulate_diff_drive_robot src/simulate_diff_drive_robot.cpp)
 add_dependencies(simulate_diff_drive_robot ${catkin_EXPORTED_TARGETS})
 target_link_libraries(simulate_diff_drive_robot ${BOOST_LIBRARIES} ${catkin_LIBRARIES})
 
+add_executable(simulate_diff_drive_ped src/simulate_diff_drive_ped.cpp)
+add_dependencies(simulate_diff_drive_ped ${catkin_EXPORTED_TARGETS})
+target_link_libraries(simulate_diff_drive_ped ${BOOST_LIBRARIES} ${catkin_LIBRARIES})
+
 install(
   TARGETS
     ${EXECUTABLE_NAME}

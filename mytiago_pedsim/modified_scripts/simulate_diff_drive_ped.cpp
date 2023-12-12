@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
   // Create ROS subscriber and TF broadcaster
   g_transformBroadcaster.reset(new tf::TransformBroadcaster());
   ros::Subscriber twistSubscriber =
-      nodeHandle.subscribe<geometry_msgs::Twist>("ped/cmd_vel", 3, onTwistReceived);
+      nodeHandle.subscribe<geometry_msgs::Twist>("cmd_vel", 3, onTwistReceived);
 
   // Run
   boost::thread updateThread(updateLoop);

@@ -35,16 +35,17 @@
   </node>
 
   <!-- Pedestrian simulated by differential robot -->
-  <group ns="pedsim/control" if="$(arg with_ped)">
-    <!-- pedestrina driving controller -->
-    <node name="driving_controller" type="simulate_diff_drive_ped" pkg="pedsim_simulator" output="screen">
+  <group ns="ped/control" if="$(arg with_ped)">
+    <!-- pedestrian driving controller -->
+    <node name="ped_controller" type="simulate_diff_drive_ped" pkg="pedsim_simulator" output="screen">
       <param name="ped_x" value="$(arg ped_x)"/>
       <param name="ped_y" value="$(arg ped_y)"/>
       <param name="ped_theta" value="$(arg ped_theta)"/>
+      <param name="world_frame" value="$(arg people_frame_ref)"/>
     </node>
 
     <!-- Keyboard robot steering -->
-    <node pkg="pedsim_simulator" name="pedsim_keyboard_teleop" type="keyboard_teleop.py" output="screen" if="$(arg kbd_teleop)">
+    <node pkg="pedsim_simulator" name="ped_keyboard_teleop" type="keyboard_teleop.py" output="screen" if="$(arg kbd_teleop)">
     </node>
   </group>
 
