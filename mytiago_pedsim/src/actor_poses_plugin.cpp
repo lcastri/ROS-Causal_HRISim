@@ -32,6 +32,8 @@ namespace gazebo
             rosNode.reset(new ros::NodeHandle("gazebo_client"));
             ros::SubscribeOptions so = ros::SubscribeOptions::create<pedsim_msgs::AgentStates>("/pedsim_simulator/simulated_agents", 1,boost::bind(&ActorPosesPlugin::OnRosMsg, this, _1), ros::VoidPtr(),&rosQueue);
             rosSub = rosNode->subscribe(so);
+            ros::SubscribeOptions so_gz = ros::SubscribeOptions::create<pedsim_msgs::AgentStates>("/ped/control/gz_persons", 1,boost::bind(&ActorPosesPlugin::OnRosMsg, this, _1), ros::VoidPtr(),&rosQueue);
+            rosSub_gz = rosNode->subscribe(so_gz);
             rosQueueThread =std::thread(std::bind(&ActorPosesPlugin::QueueThread, this));
             // in case you need to change/modify model on update
             // this->updateConnection_ = event::Events::ConnectWorldUpdateBegin(std::bind(&ActorPosesPlugin::OnUpdate, this));
@@ -94,6 +96,7 @@ namespace gazebo
     private:
         std::unique_ptr<ros::NodeHandle> rosNode;
         ros::Subscriber rosSub;
+        ros::Subscriber rosSub_gz;
         ros::CallbackQueue rosQueue;
         std::thread rosQueueThread;
         physics::WorldPtr world_;
@@ -101,6 +104,7 @@ namespace gazebo
         const float MODEL_OFFSET = 0.75;
 
     };
+
     GZ_REGISTER_WORLD_PLUGIN(ActorPosesPlugin)
 }
 

@@ -89,7 +89,7 @@ def getKey():
     return key
 
 
-speed = .2
+speed = 1 # 0.2 # added by Luca
 turn = 1
 
 
