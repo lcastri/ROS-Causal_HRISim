@@ -910,59 +910,22 @@ Visualization Manager:
           Pose Graph: true
           Value: true
         Mapping:
-          HeadOctomap: true
-          Map: true
-          Map (with Virtual Obstacles): true
-          OctoMap: true
-          SLAM Graph Edges: true
-          SLAM Graph Vertices: true
-          Trajectory: true
+          "": true
           Value: true
         Planning:
-          Base:
-            Global:
-              Costmap: true
-              Plan:
-                Global Planner: true
-                Navfn: true
-                Value: true
-              Potential: true
-              Value: true
-              Voxel Grid: true
-            Goal: true
-            Local:
-              Cost: true
-              Costmap: true
-              Plan:
-                DWA: true
-                Pal: true
-                Trajectory: true
-                Value: true
-              Trajectories: true
-              Value: true
+          "":
+            "": true
             Value: true
           Value: true
         Robot:
-          Dynamic Footprint: true
-          Dynamics: true
-          Footprint: true
-          Mode: true
-          Odometry: true
-          RobotModel: true
-          Sensors:
-            Depth Cloud: true
-            Laser: true
-            RGBD scan: true
-            Sonar Cloud: true
-            Sonars: true
+          "":
+            "": true
             Value: true
-            Velodyne Cloud: true
-            Virtual Obstacles: true
-          TF: true
-          Twist: true
           Value: true
         TeleopPerson:
           Axes: true
+          Distance line: true
+          Distance text: true
           TeleopPersons: true
           Value: true
         TrackedPersons: true
@@ -1143,6 +1106,22 @@ Visualization Manager:
           Z offset:
             Use Z position from message: false
             Value: 0
+        - Class: rviz/Marker
+          Enabled: true
+          Marker Topic: /distance_text_marker
+          Name: Distance text
+          Namespaces:
+            "": true
+          Queue Size: 100
+          Value: true
+        - Class: rviz/Marker
+          Enabled: true
+          Marker Topic: /distance_line_marker
+          Name: Distance line
+          Namespaces:
+            "": true
+          Queue Size: 100
+          Value: true
       Enabled: true
       Name: TeleopPerson
   Enabled: true

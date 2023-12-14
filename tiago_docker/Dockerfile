@@ -90,7 +90,7 @@ COPY mytiago_pedsim/modified_scripts/spawn_pedsim_agents.py /root/ros_ws/src/ped
 # Copy files into the image
 RUN mkdir -p ~/ros_ws/src/myTIAGo/
 COPY mytiago_tmule /root/ros_ws/src/myTIAGo/mytiago_tmule
-COPY mytiago_navigation /root/ros_ws/src/myTIAGo/mytiago_navigation
+COPY mytiago_rviz /root/ros_ws/src/myTIAGo/mytiago_rviz
 COPY mytiago_gazebo /root/ros_ws/src/myTIAGo/mytiago_gazebo
 COPY mytiago_plans /root/ros_ws/src/myTIAGo/mytiago_plans
 COPY mytiago_actions /root/ros_ws/src/myTIAGo/mytiago_actions
