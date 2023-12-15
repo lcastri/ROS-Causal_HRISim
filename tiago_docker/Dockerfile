@@ -86,6 +86,7 @@ COPY mytiago_pedsim/modified_scripts/keyboard_teleop.py /root/ros_ws/src/pedsim_
 COPY mytiago_pedsim/modified_scripts/simulate_diff_drive_ped.cpp /root/ros_ws/src/pedsim_ros/pedsim_simulator/src
 COPY mytiago_pedsim/modified_scripts/CMakeLists.txt /root/ros_ws/src/pedsim_ros/pedsim_simulator/
 COPY mytiago_pedsim/modified_scripts/spawn_pedsim_agents.py /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/scripts
+COPY mytiago_pedsim/modified_scripts/actor_model.sdf /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/models
 
 # Copy files into the image
 RUN mkdir -p ~/ros_ws/src/myTIAGo/

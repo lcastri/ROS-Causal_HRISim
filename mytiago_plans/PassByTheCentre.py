@@ -13,8 +13,8 @@ from pnp_cmd_ros import *
 
 
 def PassByTheCentre(p):
-    goal_list = [[7.396, -6.888, 2.347], 
-                 [-7.497, 7.345, -0.739]]
+    goal_list = [["5", "-5", "2.347"], 
+                 ["-5","5", "-0.739"]]
     for _ in range(50):
         for g in goal_list:
             p.exec_action('goto', "_".join(g))
