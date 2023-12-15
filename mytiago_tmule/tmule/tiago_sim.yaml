@@ -86,10 +86,10 @@ windows:
     tags: ['viz']
     panes:
       - 'rviz -d "$(rospack find mytiago_rviz)/config/rviz/tiago_rviz_sim.rviz" --fixed-frame map'
-      - 'rosrun mytiago_rviz distance_visualiser.py'
+      - 'roslaunch mytiago_rviz distance_rviz.launch'
+      # - 'rosrun mytiago_rviz distance_visualiser.py _dist_threshold:=2.0'
   - name: pedsim
     tags: ['pedsim']
     panes:
       - 'roslaunch mytiago_pedsim mysimulator.launch scenario:=$SCENARIO robot_mode:=$ROBOT_MODE max_robot_speed:=$MAX_ROBOT_SPEED robot_radius:=$ROBOT_RADIUS kbd_teleop:=$KBD_TELEOP with_ped:=$WITH_PED ped_x:=$HUMAN_x ped_y:=$HUMAN_y ped_theta:=0'
       - 'rosrun pedsim_simulator keyboard_teleop.py'
-      # - 'rosrun pedsim_simulator keyboard_teleop.py _dist_threshold:=2.0'

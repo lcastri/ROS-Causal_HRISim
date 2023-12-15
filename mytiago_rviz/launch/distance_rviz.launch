@@ -1,0 +1,5 @@
+<launch>
+  <node name="distance_visualiser" pkg="mytiago_rviz" type="distance_visualiser.py" output="screen">
+    <param name="dist_threshold" value="2.0" type="float"/>
+  </node>
+</launch>
