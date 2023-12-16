@@ -17,12 +17,12 @@ tm-show
 ```
 once inside the tmule, run the following command to change panel:
 ```
-Ctrl+B
+Ctrl+b
 panel number [0-6]
 ```
 and finally to stop it
 ```
-Ctrl+B
+Ctrl+b
 panel number 0
 tm-stop
 ```
