@@ -5,12 +5,10 @@ from visualization_msgs.msg import Marker
 from pedsim_msgs.msg import TrackedPersons
 from geometry_msgs.msg import PoseWithCovarianceStamped, Point
 from message_filters import ApproximateTimeSynchronizer, Subscriber
-import sys
 
 
 def define_color(distance, marker):
     if distance > DIST_THRESHOLD:
-    # if distance > 1.5:
         marker.color.b = 1.0
         marker.color.r = 0.0
     else:
@@ -58,8 +56,7 @@ def distance_callback(person, robot):
 if __name__ == '__main__':
     rospy.init_node('distance_marker_publisher')
     
-    # DIST_THRESHOLD = rospy.set_param('dist_threshold', 1.5) 
-    DIST_THRESHOLD = rospy.get_param('dist_threshold', 1.5) 
+    DIST_THRESHOLD = rospy.get_param('distance_visualiser/dist_threshold', 1.5) 
 
     person_sub = Subscriber('/ped/control/teleop_persons', TrackedPersons)
     robot_sub = Subscriber('/robot_pose', PoseWithCovarianceStamped)

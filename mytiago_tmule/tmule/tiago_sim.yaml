@@ -87,7 +87,6 @@ windows:
     panes:
       - 'rviz -d "$(rospack find mytiago_rviz)/config/rviz/tiago_rviz_sim.rviz" --fixed-frame map'
       - 'roslaunch mytiago_rviz distance_rviz.launch'
-      # - 'rosrun mytiago_rviz distance_visualiser.py _dist_threshold:=2.0'
   - name: pedsim
     tags: ['pedsim']
     panes:
