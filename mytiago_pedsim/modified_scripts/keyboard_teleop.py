@@ -90,7 +90,7 @@ def getKey():
 
 
 speed = 1 # 0.2 # added by Luca
-turn = 1
+turn = 0.5#1
 
 
 def vels(speed, turn):

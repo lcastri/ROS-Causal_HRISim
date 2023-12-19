@@ -15,8 +15,10 @@ docker build -f tiago_docker/Dockerfile -t ${image_name} .
 
 echo " "
 echo "Running docker container..."
-docker run --name ${container_name} -it --rm --network host -e DISPLAY=$DISPLAY -e NVIDIA_DRIVER_CAPABILITIES=all -e QT_X11_NO_MITSHM=1 -v $HOME/.Xauthority:/root/.Xauthority:rw -v /tmp/.X11-unix:/tmp/.X11-unix ${image_name} --privileged --gpus all
+docker run --name ${container_name} -it --rm  -e DISPLAY=$DISPLAY -e NVIDIA_DRIVER_CAPABILITIES=all -e QT_X11_NO_MITSHM=1 -v $HOME/.Xauthority:/root/.Xauthority:rw -v /tmp/.X11-unix:/tmp/.X11-unix  --privileged --gpus all --network host ${image_name}
 
 echo " "
 echo "Closing docker container..."
 xhost -local:
+
+
