@@ -90,5 +90,10 @@ windows:
   - name: pedsim
     tags: ['pedsim']
     panes:
-      #- 'roslaunch mytiago_pedsim mysimulator.launch scenario:=$SCENARIO robot_mode:=$ROBOT_MODE max_robot_speed:=$MAX_ROBOT_SPEED robot_radius:=$ROBOT_RADIUS kbd_teleop:=$KBD_TELEOP with_ped:=$WITH_PED ped_x:=$HUMAN_x ped_y:=$HUMAN_y ped_theta:=0'
       - 'rosrun pedsim_simulator keyboard_teleop.py'
+      - 'roslaunch mytiago_pedsim mysimulator.launch scenario:=$SCENARIO robot_mode:=$ROBOT_MODE max_robot_speed:=$MAX_ROBOT_SPEED robot_radius:=$ROBOT_RADIUS kbd_teleop:=$KBD_TELEOP with_ped:=$WITH_PED ped_x:=$HUMAN_x ped_y:=$HUMAN_y ped_theta:=0'
+      # - 'cd ~/ros_ws/src/myTIAGo/mytiago_pedsim; echo -e "\033[1;31mRun here run_pedsim.sh\033[0m"'
+  - name: recording
+    tags: ['rec']
+    panes:
+      - 'cd ~/shared; echo -e "\033[1;31mLaunch here the recording launch file: roslaunch mytiago_recording recording.launch bagname:=BAGNAME\033[0m"'

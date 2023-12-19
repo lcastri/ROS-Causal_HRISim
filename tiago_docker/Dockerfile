@@ -102,6 +102,7 @@ COPY mytiago_pedsim/scenarios /root/ros_ws/src/pedsim_ros/pedsim_simulator/scena
 COPY mytiago_pedsim/launch/mysimulator.launch /root/ros_ws/src/pedsim_ros/pedsim_simulator/launch/
 COPY mytiago_pedsim/worlds /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/worlds
 COPY mytiago_pedsim/launch/gazebo_plugin.launch /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/launch/
+COPY mytiago_recording /root/ros_ws/src/myTIAGo/mytiago_recording
 
 # Copy maps into the image
 RUN mkdir -p ~/.pal/tiago_maps/configurations/
@@ -111,6 +112,9 @@ COPY mytiago_gazebo/tiago_maps/maze /root/.pal/tiago_maps/configurations/maze
 RUN mkdir -p ~/.gazebo/models
 COPY mytiago_gazebo/models /root/.gazebo/models
 RUN echo "export GAZEBO_MODEL_PATH=~/.gazebo/models:$GAZEBO_MODEL_PATH" >> ~/.bashrc
+
+# Create a shared folder with the host machine
+RUN mkdir -p ~/shared
 
 # Set the entrypoint to run the script
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

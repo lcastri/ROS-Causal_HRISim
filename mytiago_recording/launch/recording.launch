@@ -1,0 +1,29 @@
+<launch>
+
+  <arg name="bagname" />
+
+  <node name="rosbag_record_data" pkg="rosbag" type="record"
+      args="record -O /root/shared/$(arg bagname).bag
+            /map                                                                                                             
+            /mobile_base_controller/odom                                                                                     
+            /move_base/goal                                                                                  
+            /ped/control/teleop_persons                                                                                              
+            /pedsim_simulator/simulated_agents
+            /robot_pose                              
+            /tf                                                                                
+            /tf_static"
+  />
+            <!-- /map                                                                                                             
+            /mobile_base_controller/odom                                                                                     
+            /move_base/goal                                                                                  
+            /ped/control/teleop_persons                                                                                              
+            /pedsim_simulator/simulated_agents
+            /robot_pose                                                                              
+            /scan                                               
+            /scan_raw                                 
+            /tf                                                                                
+            /tf_static                                            
+            /head_controller/state                                                                                               
+            /torso_controller/state" -->
+
+</launch>
