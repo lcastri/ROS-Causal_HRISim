@@ -30,11 +30,9 @@
 # Modified the topics for pedsim compartibility and to avoid installing
 # all turtlebot software for simple keyboard teleop
 
-import math
 import rospy
 
 from geometry_msgs.msg import Twist
-from pedsim_msgs.msg  import AgentStates
 
 import sys
 import select
@@ -91,36 +89,20 @@ def getKey():
     return key
 
 
-speed = 1.5 # 0.2 # added by Luca
-# turn = 0.5 # Added by Luca
+speed = 1 # 0.2 # added by Luca
+turn = 0.5#1
+
 
 def vels(speed, turn):
     return "currently:\tspeed %s\tturn %s " % (speed, turn)
 
-def get_turn(): # Added by Luca
-    global LINEAR_VELOCITY
-    t = 2*math.pi/(LINEAR_VELOCITY + 1) # Added by Luca
-    # rospy.logwarn("lvel: " + str(round(LINEAR_VELOCITY,2)) + "- turn: " + str(round(t,2)))
-    return t
-
-
-def teleop_actor_poses_callback(actors:AgentStates):
-    global LINEAR_VELOCITY
-
-    for actor in actors.agent_states:
-        LINEAR_VELOCITY = abs(actor.twist.linear.x)
-        return
-
 
 if __name__ == "__main__":
-    global LINEAR_VELOCITY
-    LINEAR_VELOCITY = 0
-    
     settings = termios.tcgetattr(sys.stdin)
 
     rospy.init_node('pedsim_keyboard_teleop')
     pub = rospy.Publisher('/ped/control/cmd_vel', Twist, queue_size=5)
-    rospy.Subscriber("/ped/control/gz_persons", AgentStates, teleop_actor_poses_callback)
+
     x = 0
     th = 0
     status = 0
@@ -131,11 +113,9 @@ if __name__ == "__main__":
     control_speed = 0
     control_turn = 0
     try:
-        turn = get_turn() # Added by Luca
         print(msg)
         print(vels(speed, turn))
         while(1):
-            turn = get_turn() # Added by Luca
             key = getKey()
             if key in moveBindings.keys():
                 x = moveBindings[key][0]
@@ -143,7 +123,7 @@ if __name__ == "__main__":
                 count = 0
             elif key in speedBindings.keys():
                 speed = speed * speedBindings[key][0]
-                # turn = turn * speedBindings[key][1] # Added by Luca
+                turn = turn * speedBindings[key][1]
                 count = 0
 
                 print(vels(speed, turn))

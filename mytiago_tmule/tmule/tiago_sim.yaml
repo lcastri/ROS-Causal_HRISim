@@ -86,7 +86,7 @@ windows:
     tags: ['viz']
     panes:
       - 'rviz -d "$(rospack find mytiago_rviz)/config/rviz/tiago_rviz_sim.rviz" --fixed-frame map'
-      - 'roslaunch mytiago_rviz distance_rviz.launch'
+      - 'roslaunch mytiago_rviz visualisation_rviz.launch'
   - name: pedsim
     tags: ['pedsim']
     panes:
@@ -96,4 +96,10 @@ windows:
   - name: recording
     tags: ['rec']
     panes:
+      - 'cd ~/shared; echo -e "\033[1;31mLaunch here the recording launch file: roslaunch mytiago_recording recording.launch bagname:=BAGNAME\033[0m"'
+  - name: experiment
+    tags: ['rec']
+    panes:
+      - 'cd ~/ros_ws/src/myTIAGo/mytiago_plans; echo -e "\033[1;31mStart your plan here, e.g.\n python Inspection.py\033[0m"'
+      - 'rosrun pedsim_simulator keyboard_teleop.py'
       - 'cd ~/shared; echo -e "\033[1;31mLaunch here the recording launch file: roslaunch mytiago_recording recording.launch bagname:=BAGNAME\033[0m"'
