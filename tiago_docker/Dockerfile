@@ -93,6 +93,7 @@ RUN mkdir -p ~/ros_ws/src/myTIAGo/
 COPY mytiago_tmule /root/ros_ws/src/myTIAGo/mytiago_tmule
 COPY mytiago_rviz /root/ros_ws/src/myTIAGo/mytiago_rviz
 COPY mytiago_gazebo /root/ros_ws/src/myTIAGo/mytiago_gazebo
+COPY mytiago_gazebo/modified_scripts/local_planner.yaml /root/ros_ws/src/pal_navigation_cfg_public/pal_navigation_cfg_tiago/config/base/teb
 COPY mytiago_plans /root/ros_ws/src/myTIAGo/mytiago_plans
 COPY mytiago_actions /root/ros_ws/src/myTIAGo/mytiago_actions
 COPY mytiago_conditions /root/ros_ws/src/myTIAGo/mytiago_conditions
@@ -103,6 +104,7 @@ COPY mytiago_pedsim/launch/mysimulator.launch /root/ros_ws/src/pedsim_ros/pedsim
 COPY mytiago_pedsim/worlds /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/worlds
 COPY mytiago_pedsim/launch/gazebo_plugin.launch /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/launch/
 COPY mytiago_recording /root/ros_ws/src/myTIAGo/mytiago_recording
+# COPY mytiago_postprocessing /root/ros_ws/src/myTIAGo/mytiago_postprocessing
 
 # Copy maps into the image
 RUN mkdir -p ~/.pal/tiago_maps/configurations/

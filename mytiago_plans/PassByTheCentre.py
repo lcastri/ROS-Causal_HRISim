@@ -11,16 +11,18 @@ from pnp_cmd_ros import *
 import time
 
 def PassByTheCentre(p):
-    seconds = 45
+    SECONDS = 30
+    N = 8
+    
     p.exec_action('goto', "-5_5_-0.739")
     
-    for i in range(seconds, 0, -1):
+    for i in range(SECONDS, 0, -1):
         print("Countdown: " + str(i))
         time.sleep(1)  # Wait for 1 second
     
     goal_list = [["5", "-5", "2.347"], 
                  ["-5","5", "-0.739"]]
-    for _ in range(15):
+    for _ in range(N):
         for g in goal_list:
             p.exec_action('goto', "_".join(g))
                       
