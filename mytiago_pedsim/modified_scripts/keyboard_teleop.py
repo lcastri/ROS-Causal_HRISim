@@ -33,6 +33,7 @@
 import rospy
 
 from geometry_msgs.msg import Twist
+from std_msgs.msg import Float32
 
 import sys
 import select
@@ -47,6 +48,9 @@ Moving around:
    j    k    l
    m    ,    .
 
+a : robot velocity scaling factor 0.5 
+s : robot velocity scaling factor 1.0 
+d : robot velocity scaling factor 2.0
 q/z : increase/decrease max speeds by 10%
 w/x : increase/decrease only linear speed by 10%
 e/c : increase/decrease only angular speed by 10%
@@ -76,6 +80,12 @@ speedBindings = {
     'c': (1, .9),
 }
 
+scalingFactorBindings = {
+    'a': 0.5,
+    's': 1.0,
+    'd': 2.0,
+}
+
 
 def getKey():
     tty.setraw(sys.stdin.fileno())
@@ -102,6 +112,7 @@ if __name__ == "__main__":
 
     rospy.init_node('pedsim_keyboard_teleop')
     pub = rospy.Publisher('/ped/control/cmd_vel', Twist, queue_size=5)
+    pub_scaling_factor = rospy.Publisher('twist_mux/scaling_factor', Float32, queue_size=5)
 
     x = 0
     th = 0
@@ -130,6 +141,12 @@ if __name__ == "__main__":
                 if (status == 14):
                     print(msg)
                 status = (status + 1) % 15
+            elif key in scalingFactorBindings.keys():
+                float_msg = Float32()
+                float_msg.data = scalingFactorBindings[key]
+
+                pub_scaling_factor.publish(float_msg)
+                
             elif key == ' ' or key == 'k':
                 x = 0
                 th = 0

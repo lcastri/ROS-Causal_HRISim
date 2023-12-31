@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 try:
     sys.path.insert(0, os.environ["PNP_HOME"] + '/scripts')
@@ -10,22 +11,70 @@ import pnp_cmd_ros
 from pnp_cmd_ros import *
 import time
 
+
+def HasRecordingStopped(prefix = "/record_"):
+    command = ['rosnode', 'list']  # Command to list all active ROS nodes
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    stdout, stderr = process.communicate()
+
+    if process.returncode == 0:
+
+        # Split the output by newline to get a list of node names
+        active_nodes = stdout.splitlines()
+
+        # Filter the node names that start with the specified prefix
+        matching_nodes = [node for node in active_nodes if node.startswith(prefix)]
+
+        if len(matching_nodes) > 0:
+            return False
+        else:
+            return True
+    else:
+        print(f"Error: {stderr}")
+        return None
+
+
 def PassByTheCentre(p):
-    SECONDS = 30
-    N = 8
+    # SECONDS = 30
+    N = int(sys.argv[1])
+    BAGNAME = str(sys.argv[2])
+    G1 = ["5", "-5", "-0.739"]
+    G1bis = ["5", "-5", "2.347"]
+    G2 = ["-5","5", "2.347"]
+    G2bis = ["-5","5", "-0.739"]
     
     p.exec_action('goto', "-5_5_-0.739")
     
-    for i in range(SECONDS, 0, -1):
-        print("Countdown: " + str(i))
-        time.sleep(1)  # Wait for 1 second
+    # for i in range(SECONDS, 0, -1):
+    #     print("Countdown: " + str(i))
+    #     time.sleep(1)  # Wait for 1 second
     
-    goal_list = [["5", "-5", "2.347"], 
-                 ["-5","5", "-0.739"]]
+    goal_list = [G1, 
+                 G2]
+    goalbis_list = [G1bis, 
+                    G2bis]
+    
+    count = 0
     for _ in range(N):
-        for g in goal_list:
+        for g, gbis in zip(goal_list, goalbis_list):
+            # Start recording
+            p.action_cmd('record', BAGNAME + str(count), 'start')
+            # Go to goal
             p.exec_action('goto', "_".join(g))
-                      
+            # Stop recording
+            p.action_cmd('record', BAGNAME + str(count), 'stop')
+            
+            # this is to make sure that the recording i-th is stopped 
+            # before executing run i+1 th
+            while not HasRecordingStopped():
+                time.sleep(.1)
+                
+            # Turn around
+            p.exec_action('goto', "_".join(gbis))
+            # Increase rosbag number
+            count += 1
+            # Sleep before restarting
+            time.sleep(1)
 
 
 if __name__ == "__main__":

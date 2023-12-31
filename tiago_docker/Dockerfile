@@ -97,6 +97,7 @@ COPY mytiago_gazebo/modified_scripts/local_planner.yaml /root/ros_ws/src/pal_nav
 COPY mytiago_plans /root/ros_ws/src/myTIAGo/mytiago_plans
 COPY mytiago_actions /root/ros_ws/src/myTIAGo/mytiago_actions
 COPY mytiago_conditions /root/ros_ws/src/myTIAGo/mytiago_conditions
+COPY mytiago_twist_mux /root/ros_ws/src/myTIAGo/mytiago_twist_mux
 COPY scripts /root/ros_ws/src/myTIAGo/scripts
 COPY mytiago_pedsim /root/ros_ws/src/myTIAGo/mytiago_pedsim
 COPY mytiago_pedsim/scenarios /root/ros_ws/src/pedsim_ros/pedsim_simulator/scenarios
@@ -104,7 +105,7 @@ COPY mytiago_pedsim/launch/mysimulator.launch /root/ros_ws/src/pedsim_ros/pedsim
 COPY mytiago_pedsim/worlds /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/worlds
 COPY mytiago_pedsim/launch/gazebo_plugin.launch /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/launch/
 COPY mytiago_recording /root/ros_ws/src/myTIAGo/mytiago_recording
-# COPY mytiago_postprocessing /root/ros_ws/src/myTIAGo/mytiago_postprocessing
+COPY mytiago_twist_mux/modified_scripts/twist_mux.launch /opt/ros/noetic/share/twist_mux/launch
 
 # Copy maps into the image
 RUN mkdir -p ~/.pal/tiago_maps/configurations/

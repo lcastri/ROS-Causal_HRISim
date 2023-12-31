@@ -73,11 +73,11 @@ windows:
     tags: ['core']
     panes:
       - 'roslaunch pnp_ros pnp_ros.launch plans_folder:=$PNP_PLANS actions_folder:=$PNP_ACTIONS conditions_folder:=$PNP_CONDITIONS'
-      - 'cd ~/ros_ws/src/myTIAGo/mytiago_plans; echo "Start your plan here, e.g.\n python Inspection.py"'
   - name: gazebo
     tags: ['core', 'robot', 'nav']
     panes:
       - 'roslaunch mytiago_gazebo simulation.launch robot:=$TIAGO_TYPE public_sim:=true world:=$WORLD TIAGO_x:=$TIAGO_x TIAGO_y:=$TIAGO_y TIAGO_z:=$TIAGO_z TIAGO_R:=$TIAGO_R TIAGO_P:=$TIAGO_P TIAGO_Y:=$TIAGO_Y'
+      - 'rosrun mytiago_twist_mux mytwist_mux.py'
   - name: navigation
     tags: ['nav']
     panes:
@@ -92,13 +92,13 @@ windows:
     panes:
       - 'rosrun pedsim_simulator keyboard_teleop.py'
       - 'roslaunch mytiago_pedsim mysimulator.launch scenario:=$SCENARIO robot_mode:=$ROBOT_MODE max_robot_speed:=$MAX_ROBOT_SPEED robot_radius:=$ROBOT_RADIUS kbd_teleop:=$KBD_TELEOP with_ped:=$WITH_PED ped_x:=$HUMAN_x ped_y:=$HUMAN_y ped_theta:=0'
-  - name: recording
-    tags: ['rec']
-    panes:
-      - 'cd ~/shared; echo -e "\033[1;31mLaunch here the recording launch file: roslaunch mytiago_recording recording.launch bagname:=BAGNAME\033[0m"'
+  # - name: recording
+  #   tags: ['rec']
+  #   panes:
+  #     - 'cd ~/shared; echo -e "\033[1;31mLaunch here the recording launch file: roslaunch mytiago_recording recording.launch bagname:=BAGNAME\033[0m"'
   - name: experiment
     tags: ['rec']
     panes:
-      - 'cd ~/ros_ws/src/myTIAGo/mytiago_plans; echo -e "\033[1;31mStart your plan here, e.g.\n python Inspection.py\033[0m"'
+      - 'cd ~/ros_ws/src/myTIAGo/mytiago_plans; echo -e "\033[1;31mStart your plan here: python PassByTheCentre.py nRepetition Bagname, e.g.\n python PassByTheCentre.py 8 robotPriority\033[0m"'
       - 'rosrun pedsim_simulator keyboard_teleop.py'
-      - 'cd ~/shared; echo -e "\033[1;31mLaunch here the recording launch file: roslaunch mytiago_recording recording.launch bagname:=BAGNAME\033[0m"'
+      # - 'cd ~/shared; echo -e "\033[1;31mLaunch here the recording launch file: roslaunch mytiago_recording recording.launch bagname:=BAGNAME\033[0m"'
