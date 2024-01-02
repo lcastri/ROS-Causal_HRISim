@@ -11,11 +11,11 @@ import pnp_cmd_ros
 from pnp_cmd_ros import *
 import time
 
-
-def HasRecordingStopped(prefix = "/record_"):
+def findRecordingNode(prefix = "/record_"):
     command = ['rosnode', 'list']  # Command to list all active ROS nodes
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     stdout, stderr = process.communicate()
+    matching_nodes = list()
 
     if process.returncode == 0:
 
@@ -24,14 +24,23 @@ def HasRecordingStopped(prefix = "/record_"):
 
         # Filter the node names that start with the specified prefix
         matching_nodes = [node for node in active_nodes if node.startswith(prefix)]
+    return matching_nodes
 
-        if len(matching_nodes) > 0:
-            return False
-        else:
-            return True
+
+def HasRecordingStopped():
+    recordingNode = findRecordingNode()
+    if len(recordingNode) > 0:
+        return False
     else:
-        print(f"Error: {stderr}")
-        return None
+        return True
+    
+    
+def HasRecordingStarted():
+    recordingNode = findRecordingNode()
+    if len(recordingNode) > 0:
+        return True
+    else:
+        return False
 
 
 def PassByTheCentre(p):
@@ -57,13 +66,20 @@ def PassByTheCentre(p):
     count = 0
     for _ in range(N):
         for g, gbis in zip(goal_list, goalbis_list):
+            
             # Start recording
             p.action_cmd('record', BAGNAME + str(count), 'start')
+            # this is to make sure that the recording has started
+            # before executing run i-th
+            while not HasRecordingStarted():
+                time.sleep(.1)
+            time.sleep(1)
+                
             # Go to goal
             p.exec_action('goto', "_".join(g))
+            
             # Stop recording
             p.action_cmd('record', BAGNAME + str(count), 'stop')
-            
             # this is to make sure that the recording i-th is stopped 
             # before executing run i+1 th
             while not HasRecordingStopped():
