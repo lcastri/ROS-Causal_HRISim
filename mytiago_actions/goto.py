@@ -13,9 +13,7 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import actionlib
 import math
 
-"""
-Starts and stops the object detection node
-"""
+
 class goto(AbstractAction):
 
     def _start_action(self):

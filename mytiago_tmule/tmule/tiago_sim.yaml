@@ -68,7 +68,6 @@ windows:
     tags: ['core', 'robot', 'nav']
     panes:
       - roscore
-      - htop
   - name: planning
     tags: ['core']
     panes:
@@ -90,7 +89,7 @@ windows:
   - name: pedsim
     tags: ['pedsim']
     panes:
-      - 'rosrun pedsim_simulator keyboard_teleop.py'
+      # - 'rosrun pedsim_simulator keyboard_teleop.py'
       - 'roslaunch mytiago_pedsim mysimulator.launch scenario:=$SCENARIO robot_mode:=$ROBOT_MODE max_robot_speed:=$MAX_ROBOT_SPEED robot_radius:=$ROBOT_RADIUS kbd_teleop:=$KBD_TELEOP with_ped:=$WITH_PED ped_x:=$HUMAN_x ped_y:=$HUMAN_y ped_theta:=0'
   # - name: recording
   #   tags: ['rec']

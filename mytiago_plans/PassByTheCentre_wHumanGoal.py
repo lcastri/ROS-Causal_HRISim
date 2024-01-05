@@ -51,15 +51,18 @@ def PassByTheCentre(p):
     G1bis = ["5", "-5", "2.347"]
     G2 = ["-5","5", "2.347"]
     G2bis = ["-5","5", "-0.739"]
+    A1 = ["3.5", "-5", "-5", "3.5", "-6.5", "-6.5"]
+    A2 = ["5", "-3.5", "-3.5", "5", "6.5", "6.5"]
     
     p.exec_action('goto', "-5_5_-0.739")
        
     goal_list = [G1, G2]
     goalbis_list = [G1bis, G2bis]
+    area_list = [A1, A2]
     
     count = 0
     for _ in range(N):
-        for g, gbis in zip(goal_list, goalbis_list):
+        for g, gbis, a in zip(goal_list, goalbis_list, area_list):
             
             # Start recording
             p.action_cmd('record', BAGNAME + str(count), 'start')
@@ -70,6 +73,7 @@ def PassByTheCentre(p):
             time.sleep(1)
                 
             # Go to goal
+            p.exec_action('generateRandomGoal', "_".join(a))
             p.exec_action('goto', "_".join(g))
             
             # Stop recording

@@ -905,28 +905,57 @@ Visualization Manager:
           Value: true
         Grid: true
         Localization:
-          Localization Quality: true
-          Pose: true
-          Pose Graph: true
+          "": true
           Value: true
         Mapping:
           "": true
           Value: true
         Planning:
-          "":
-            "": true
+          Base:
+            Global:
+              Costmap: true
+              Plan:
+                Global Planner: true
+                Navfn: true
+                Value: true
+              Potential: true
+              Value: true
+              Voxel Grid: true
+            Goal: true
+            Local:
+              Cost: true
+              Costmap: true
+              Plan:
+                DWA: true
+                Pal: true
+                Trajectory: true
+                Value: true
+              Trajectories: true
+              Value: true
             Value: true
           Value: true
         Robot:
-          "":
-            "": true
+          Dynamic Footprint: true
+          Dynamics: true
+          Footprint: true
+          Mode: true
+          Odometry: true
+          RobotModel: true
+          Sensors:
+            Depth Cloud: true
+            Laser: true
+            RGBD scan: true
+            Sonar Cloud: true
+            Sonars: true
             Value: true
+            Velodyne Cloud: true
+            Virtual Obstacles: true
+          TF: true
+          Twist: true
           Value: true
         TeleopPerson:
-          Axes: true
-          Distance line: true
-          Distance text: true
-          TeleopPersons: true
+          "": true
+          Marker: true
           Value: true
         TrackedPersons: true
         Tracking:
@@ -1120,6 +1149,14 @@ Visualization Manager:
           Name: Distance line
           Namespaces:
             "": true
+          Queue Size: 100
+          Value: true
+        - Class: rviz/Marker
+          Enabled: true
+          Marker Topic: goal_marker
+          Name: Goal
+          Namespaces:
+            {}
           Queue Size: 100
           Value: true
       Enabled: true

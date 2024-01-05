@@ -10,11 +10,8 @@ except:
 import rospy
 from AbstractAction import AbstractAction
 import subprocess
-import signal
 
-"""
-Starts and stops the object detection node
-"""
+
 class record(AbstractAction):
     
     def find_rosnode_with_prefix(self, prefix):
@@ -42,7 +39,7 @@ class record(AbstractAction):
         rospy.loginfo('STARTED record action')
         if self.params:
            
-            command = "rosbag record -O /root/shared/" + str(self.params[0]) + ".bag /map /mobile_base_controller/odom /move_base/goal /ped/control/teleop_persons /pedsim_simulator/simulated_agents /robot_pose /tf /tf_static"
+            command = "rosbag record -O /root/shared/" + str(self.params[0]) + ".bag /map /mobile_base_controller/odom /move_base/goal /ped/control/teleop_persons /pedsim_simulator/simulated_agents /robot_pose /tf /tf_static /goal_marker"
             
             # Start recording.
             self.process = subprocess.Popen(command, stdin=subprocess.PIPE, shell=True, executable='/bin/bash')

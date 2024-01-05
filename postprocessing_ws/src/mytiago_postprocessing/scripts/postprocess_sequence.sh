@@ -1,0 +1,30 @@
+#! /bin/bash
+
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=robotPriority0
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=robotPriority1
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=robotPriority2
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=robotPriority3
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=robotPriority4
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=robotPriority5
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=robotPriority6
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=robotPriority7
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=robotPriority8
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=robotPriority9
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=humanPriority0
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=humanPriority1
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=humanPriority2
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=humanPriority3
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=humanPriority4
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=humanPriority5
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=humanPriority6
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=humanPriority7
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=humanPriority8
+# roslaunch mytiago_postprocessing postprocessing.launch bagname:=humanPriority9
+roslaunch mytiago_postprocessing postprocessing.launch bagname:=humanOff0
+roslaunch mytiago_postprocessing postprocessing.launch bagname:=humanOff1
+roslaunch mytiago_postprocessing postprocessing.launch bagname:=humanOff2
+roslaunch mytiago_postprocessing postprocessing.launch bagname:=humanOff3
+roslaunch mytiago_postprocessing postprocessing.launch bagname:=robotOff0
+roslaunch mytiago_postprocessing postprocessing.launch bagname:=robotOff1
+roslaunch mytiago_postprocessing postprocessing.launch bagname:=robotOff2
+roslaunch mytiago_postprocessing postprocessing.launch bagname:=robotOff3

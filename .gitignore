@@ -355,7 +355,7 @@ dist/
 # bag
 *.bag
 
-# tiago_docker_ws
+# postprocessing_ws
 *.catkin_tools
 */devel
 */logs

@@ -9,14 +9,15 @@ import message_filters
 import rospy
 import pandas as pd
 from pedsim_msgs.msg import TrackedPersons
+from visualization_msgs.msg import Marker
 import tf
+import numpy as np
 
 
 FILENAME = str(rospy.get_param("/mytiago_postprocessing/bagname"))
 DATAPATH = str(rospy.get_param("/mytiago_postprocessing/datapath"))
 NODE_NAME = 'mytiago_postprocessing'
 NODE_RATE = 10 #Hz
-
 
 
 def get_2DPose(p: PoseWithCovarianceStamped):
@@ -53,14 +54,19 @@ class DataHandler():
         """
         Class constructor. Init publishers and subscribers
         """
+        self.std_dev = 0.01
+        self.r_gx = -5
+        self.r_gy = 5
+        self.h_gx = 5
+        self.h_gy = 5
         
-        self.g_x = -5
-        self.g_y = 5
+        self.df = pd.DataFrame(columns=['r_gx', 'r_gy', 'h_gx', 'h_gy', 'r_x', 'r_y', 'r_theta', 'r_v', 'h_x', 'h_y', 'h_theta', 'h_v'])                           
         
-        self.df = pd.DataFrame(columns=['g_x', 'g_y', 'r_x', 'r_y', 'r_theta', 'r_v', 'h_x', 'h_y', 'h_theta', 'h_v'])                           
+        # Robot Goal subscriber
+        self.sub_robot_goal = rospy.Subscriber('/move_base/goal', MoveBaseActionGoal, self.cb_robot_goal)
         
         # Goal subscriber
-        self.sub_goal = rospy.Subscriber('/move_base/goal', MoveBaseActionGoal, self.cb_goal)
+        self.sub_human_goal = rospy.Subscriber('/goal_marker', Marker, self.cb_human_goal)
         
         # Odometry subscriber
         self.sub_odom = message_filters.Subscriber("/mobile_base_controller/odom", Odometry)
@@ -81,9 +87,14 @@ class DataHandler():
         self.ats.registerCallback(self.cb_handle_data)
         
 
-    def cb_goal(self, goal: MoveBaseActionGoal):
-        self.g_x = goal.goal.target_pose.pose.position.x
-        self.g_y = goal.goal.target_pose.pose.position.y
+    def cb_robot_goal(self, goal: MoveBaseActionGoal):
+        self.r_gx = goal.goal.target_pose.pose.position.x
+        self.r_gy = goal.goal.target_pose.pose.position.y
+        
+        
+    def cb_human_goal(self, goal: Marker):
+        self.h_gx = goal.pose.position.x
+        self.h_gy = goal.pose.position.y
                 
                 
     def cb_handle_data(self, odom: Odometry, 
@@ -104,7 +115,7 @@ class DataHandler():
         r_x, r_y, r_theta = get_2DPose(robot_pose)
         
         # Base linear & angular velocity
-        r_v = odom.twist.twist.linear.x
+        r_v = abs(odom.twist.twist.linear.x)
         # base_ang_vel = odom.twist.twist.angular.z
         
         
@@ -112,13 +123,14 @@ class DataHandler():
         h_x = p.pose.pose.position.x
         h_y = p.pose.pose.position.y
         h_theta = p.pose.pose.orientation.z
-        h_v = p.twist.twist.linear.x
+        h_v = abs(p.twist.twist.linear.x)
                   
         # appending new data row in Dataframe
-        self.df.loc[len(self.df)] = {'g_x': self.g_x, 'g_y': self.g_y,
-                                     'r_x': r_x, 'r_y': r_y, 'r_theta': r_theta, 'r_v': r_v,
-                                     'h_x': h_x, 'h_y':h_y, 'h_theta': h_theta, 'h_v': h_v,
-                                    }                    
+        self.df.loc[len(self.df)] = {'r_gx': self.r_gx, 'r_gy': self.r_gy,
+                                     'h_gx': self.h_gx, 'h_gy': self.h_gy,
+                                     'r_x': r_x + np.random.normal(0, self.std_dev), 'r_y': r_y + np.random.normal(0, self.std_dev), 'r_theta': r_theta, 'r_v': r_v + np.random.normal(0, self.std_dev),
+                                     'h_x': h_x + np.random.normal(0, self.std_dev), 'h_y':h_y + np.random.normal(0, self.std_dev), 'h_theta': h_theta, 'h_v': h_v + np.random.normal(0, self.std_dev),
+                                    }
 
 if __name__ == '__main__':
     os.makedirs(DATAPATH, exist_ok=True)
@@ -132,5 +144,8 @@ if __name__ == '__main__':
     data_handler = DataHandler()
         
     rospy.spin()
+    
+    data_handler.df = data_handler.df.assign(h_gx=data_handler.h_gx)
+    data_handler.df = data_handler.df.assign(h_gy=data_handler.h_gy)
             
     data_handler.df.to_csv(DATAPATH + "/" + FILENAME + "_raw.csv")
