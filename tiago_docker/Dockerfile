@@ -109,7 +109,7 @@ COPY mytiago_twist_mux/modified_scripts/twist_mux.launch /opt/ros/noetic/share/t
 
 # Copy maps into the image
 RUN mkdir -p ~/.pal/tiago_maps/configurations/
-COPY mytiago_gazebo/tiago_maps/maze /root/.pal/tiago_maps/configurations/maze
+COPY mytiago_gazebo/tiago_maps/ /root/.pal/tiago_maps/configurations/
 
 # Create .gazebo folders
 RUN mkdir -p ~/.gazebo/models

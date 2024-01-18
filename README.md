@@ -7,7 +7,17 @@ only run the docker:
 ```
 sudo ./run_docker.sh
 ```
-once inside the docker, run the following command to start a tmule session
+once inside the docker, run the following command to choose the map:
+```
+export WORLD="maze"
+```
+the available maps are:
+- "maze";
+- "maze_corridor";
+- "maze_corridor_withTurn";
+- "maze_corridor_withDoors".
+
+Run the following command to start a tmule session:
 ```
 tm-start
 ```

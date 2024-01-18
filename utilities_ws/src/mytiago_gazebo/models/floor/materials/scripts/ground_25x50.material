@@ -1,0 +1,15 @@
+material ground_25x50
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture aws_robomaker_warehouse_GroundB_01.png
+	      scale 0.1 0.1
+      }
+    }
+  }
+}
+
