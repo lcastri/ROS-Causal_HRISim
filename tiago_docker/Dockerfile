@@ -72,6 +72,21 @@ RUN cd ~/ros_ws/src && \
     ln -s ~/ros_ws/PetriNetPlans/PNPros/ROS_bridge/pnp_msgs .
 RUN echo "export PNP_HOME=~/ros_ws/src/pnp_ros/" >> ~/.bashrc
 
+# F-PCMCI intall
+RUN DEBIAN_FRONTEND=noninteractive pip install --upgrade setuptools wheel
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \ 
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends default-jdk
+ENV JAVA_HOME "/lib/jvm/java-11-openjdk-amd64/bin/java"
+RUN cd ~/ros_ws
+RUN git clone https://github.com/pwollstadt/IDTxl.git
+RUN DEBIAN_FRONTEND=noninteractive pip install jpype1
+RUN DEBIAN_FRONTEND=noninteractive pip install pyopencl
+RUN DEBIAN_FRONTEND=noninteractive pip install ecos
+RUN DEBIAN_FRONTEND=noninteractive pip install numba
+RUN DEBIAN_FRONTEND=noninteractive pip install mpmath
+RUN cd ~/ros_ws/IDTxl && pip install .
+RUN DEBIAN_FRONTEND=noninteractive pip install --use-pep517 fpcmci
+
 # Clone and install pedsim
 # COPY pedsim_ros /root/ros_ws/src/pedsim_ros
 RUN cd ~/ros_ws/src/ && \
@@ -106,6 +121,8 @@ COPY mytiago_pedsim/worlds /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/worl
 COPY mytiago_pedsim/launch/gazebo_plugin.launch /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/launch/
 COPY mytiago_recording /root/ros_ws/src/myTIAGo/mytiago_recording
 COPY mytiago_twist_mux/modified_scripts/twist_mux.launch /opt/ros/noetic/share/twist_mux/launch
+COPY mytiago_twist_mux/modified_scripts/twist_mux.launch /opt/ros/noetic/share/twist_mux/launch
+COPY mytiago_causal_discovery /root/ros_ws/src/myTIAGo/mytiago_causal_discovery
 
 # Copy maps into the image
 RUN mkdir -p ~/.pal/tiago_maps/configurations/
@@ -118,6 +135,7 @@ RUN echo "export GAZEBO_MODEL_PATH=~/.gazebo/models:$GAZEBO_MODEL_PATH" >> ~/.ba
 
 # Create a shared folder with the host machine
 RUN mkdir -p ~/shared
+
 
 # Set the entrypoint to run the script
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
