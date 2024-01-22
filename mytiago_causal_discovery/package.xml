@@ -60,7 +60,7 @@
   <build_export_depend>std_msgs</build_export_depend>
   <build_export_depend>pedsim_msgs</build_export_depend>
   <exec_depend>geometry_msgs</exec_depend>
-  <exec_depend>message_generation</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>pedsim_msgs</exec_depend>

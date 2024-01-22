@@ -48,17 +48,11 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * uncomment the generate_messages entry below
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
-## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Human.msg
-#   Humans.msg
-#   HumanBodyJoint.msg
-#   HumanSkeletonConfig.msg
-#   SceneObject.msg
-#   SceneObjects.msg
-#   CausalModel.msg
-# )
+# Generate messages in the 'msg' folder
+add_message_files(
+  FILES
+  CausalModel.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -74,12 +68,11 @@ find_package(catkin REQUIRED COMPONENTS
 #   Action2.action
 # )
 
-## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   geometry_msgs   
-#   std_msgs
-# )
+# Generate added messages and services with any dependencies listed here
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -112,7 +105,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 
 catkin_package(
-  CATKIN_DEPENDS message_runtime 
+  CATKIN_DEPENDS rospy std_msgs message_runtime
 )
 
 catkin_package(

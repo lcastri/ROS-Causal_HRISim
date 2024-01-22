@@ -40,7 +40,7 @@ class CausalDiscovery():
         df = Data(self.df)
         cdm = FPCMCI(df, 
                      f_alpha = FALPHA,
-                     alpha = ALPHA,
+                     pcmci_alpha = ALPHA,
                      min_lag = MINLAG, 
                      max_lag = MAXLAG, 
                      sel_method = TE(TEestimator.Gaussian), 
@@ -92,10 +92,12 @@ if __name__ == '__main__':
     # Publisher
     pub_causal_model = rospy.Publisher('/hri/causal_model', CausalModel, queue_size=10)
     
+    rospy.logdebug("Waiting for a csv file...")
     while not rospy.is_shutdown():
         
         csv, name = find_csv()
         if csv is not None:
+            rospy.logdebug("Processing file: " + name)
             dc = CausalDiscovery(pd.read_csv(csv), name)
             cm = dc.run()
             
