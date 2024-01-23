@@ -4,6 +4,7 @@ from enum import Enum
 import glob
 import json
 import os
+import numpy as np
 from tigramite.independence_tests.gpdc import GPDC
 from fpcmci.CPrinter import CPLevel
 from fpcmci.FPCMCI import FPCMCI
@@ -14,7 +15,8 @@ import rospy
 import pandas as pd
 from mytiago_causal_discovery.msg import CausalModel
 from std_msgs.msg import Header
-
+from sklearn.utils._testing import ignore_warnings
+from sklearn.exceptions import ConvergenceWarning
 
 class CausalDiscoveryMethod(Enum):
     PCMCI = "pcmci"
@@ -22,7 +24,7 @@ class CausalDiscoveryMethod(Enum):
 
 
 NODE_NAME = "mytiago_causal_discovery"
-NODE_RATE = 1 # [Hz]
+NODE_RATE = 10 # [Hz]
 CDM = str(rospy.get_param("/mytiago_causal_discovery/cd_method", default = "fpcmci"))
 FALPHA = float(rospy.get_param("/mytiago_causal_discovery/filter_alpha", default = 0.05))
 ALPHA = float(rospy.get_param("/mytiago_causal_discovery/sig_alpha", default = 0.05))
@@ -36,6 +38,7 @@ class CausalDiscovery():
         self.df = df
         self.dfname = dfname
         
+    @ignore_warnings(category=ConvergenceWarning)
     def run(self):
         df = Data(self.df)
         cdm = FPCMCI(df, 
@@ -50,14 +53,14 @@ class CausalDiscovery():
                      resfolder = RES_DIR + '/' + self.dfname)
         
         if CDM == CausalDiscoveryMethod.FPCMCI.value:
-            cdm.run()
+            feature, causalmodel = cdm.run()
         elif CDM == CausalDiscoveryMethod.PCMCI.value:
-            cdm.run_pcmci()
+            feature, causalmodel = cdm.run_pcmci()
             
-        cdm.dag(label_type = LabelType.Lag)
+        cdm.dag(label_type = LabelType.Lag, node_layout='circular')
         cdm.timeseries_dag()
         
-        return cdm.CM.g
+        return feature, causalmodel
         
         
 def find_csv(file_pattern='data_*.csv'):
@@ -72,7 +75,7 @@ def find_csv(file_pattern='data_*.csv'):
         file_name = os.path.basename(file_path)
         data_id = int(file_name.split('_')[1].split('.')[0])
             
-        # Update min ID and file if the current ID is smaller
+        # Update min ID and file if the current ID is smallerexit
         if data_id < min_id:
             min_id = data_id
             min_id_file = file_path
@@ -80,7 +83,7 @@ def find_csv(file_pattern='data_*.csv'):
 
     return min_id_file, min_file_name
                 
-        
+                
 if __name__ == '__main__':
     # Create res pool directory
     os.makedirs(RES_DIR, exist_ok=True)
@@ -92,18 +95,30 @@ if __name__ == '__main__':
     # Publisher
     pub_causal_model = rospy.Publisher('/hri/causal_model', CausalModel, queue_size=10)
     
-    rospy.logdebug("Waiting for a csv file...")
+    rospy.logwarn("Waiting for a csv file...")
     while not rospy.is_shutdown():
         
         csv, name = find_csv()
         if csv is not None:
-            rospy.logdebug("Processing file: " + name)
+            rospy.logwarn("Processing file: " + name)
             dc = CausalDiscovery(pd.read_csv(csv), name)
-            cm = dc.run()
+            f, cm = dc.run()
             
             msg = CausalModel()
             msg.header = Header()
-            msg.causal_model = json.dumps(cm)
-            pub_causal_model.publish(cm)
+            msg.header.stamp = rospy.Time.now()
+            
+            cs = cm.get_skeleton()
+            val = cm.get_val_matrix()
+            pval = cm.get_pval_matrix()
+            rospy.logwarn("CAUSAL STRUCTURE: " + str(cs))
+            rospy.logwarn("VAL MATRIX: " + str(val))
+            rospy.logwarn("PVAL MATRIX: " + str(pval))
+            msg.features = f
+            msg.causal_structure.data = cs.flatten().tolist()
+            msg.val_matrix.data = val.flatten().tolist()
+            msg.pval_matrix.data = pval.flatten().tolist()
+            msg.original_shape = list(cs.shape)
+            pub_causal_model.publish(msg)
                 
         rate.sleep()

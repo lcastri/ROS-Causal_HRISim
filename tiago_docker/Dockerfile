@@ -72,23 +72,22 @@ RUN cd ~/ros_ws/src && \
     ln -s ~/ros_ws/PetriNetPlans/PNPros/ROS_bridge/pnp_msgs .
 RUN echo "export PNP_HOME=~/ros_ws/src/pnp_ros/" >> ~/.bashrc
 
-# F-PCMCI intall
+# install fpcmci
 RUN DEBIAN_FRONTEND=noninteractive pip install --upgrade setuptools wheel
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \ 
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends default-jdk
 ENV JAVA_HOME "/lib/jvm/java-11-openjdk-amd64/bin/java"
-RUN cd ~/ros_ws
-RUN git clone https://github.com/pwollstadt/IDTxl.git
+RUN cd ~/ros_ws && \
+    git clone -b v1.4 https://github.com/pwollstadt/IDTxl.git
 RUN DEBIAN_FRONTEND=noninteractive pip install jpype1
-RUN DEBIAN_FRONTEND=noninteractive pip install pyopencl
-RUN DEBIAN_FRONTEND=noninteractive pip install ecos
-RUN DEBIAN_FRONTEND=noninteractive pip install numba
 RUN DEBIAN_FRONTEND=noninteractive pip install mpmath
 RUN cd ~/ros_ws/IDTxl && pip install .
-RUN DEBIAN_FRONTEND=noninteractive pip install --use-pep517 fpcmci
+RUN echo pipp
+RUN cd ~/ros_ws/ && \
+    git clone -b causal-hri https://github.com/lcastri/fpcmci.git && \
+    cd ~/ros_ws/fpcmci && pip install --use-pep517 .
 
 # Clone and install pedsim
-# COPY pedsim_ros /root/ros_ws/src/pedsim_ros
 RUN cd ~/ros_ws/src/ && \
     git clone https://github.com/srl-freiburg/pedsim_ros.git && \
     cd pedsim_ros && \

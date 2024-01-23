@@ -165,6 +165,8 @@ class DataCollector():
         # appending new data row in Dataframe
         noise = np.zeros(8)
         if ADDNOISE: noise = np.random.normal(0, STD, size = 8)
+        if self.rg == (None, None): self.rg = (r_x, r_y)
+        if self.hg == (None, None): self.hg = (h_x, h_y)
         self.df.loc[len(self.df)] = {'time': odom.header.stamp.to_sec(),
                                      'r_gx': self.rg[0], 'r_gy': self.rg[1],
                                      'h_gx': self.hg[0], 'h_gy': self.hg[1],
