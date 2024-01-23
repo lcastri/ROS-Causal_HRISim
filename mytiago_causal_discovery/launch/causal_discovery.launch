@@ -11,6 +11,8 @@
   <arg name="filter_alpha" default="0.05"/>
   <arg name="min_lag" default="1"/>
   <arg name="max_lag" default="1"/>
+  <arg name="id_format" default="%Y%m%d_%H%M%S"/>
+  <arg name="csv_prefix" default="data_"/>
 
   <node name="mytiago_data_collector" pkg="mytiago_causal_discovery" type="collecting_data.py" output="screen">
     <param name="data_dir"   value="$(arg data_dir)"/> 
@@ -19,6 +21,8 @@
     <param name="subsampling"  value="$(arg subsampling)"/>
     <param name="addnoise"  value="$(arg addnoise)"/>
     <param name="std"  value="$(arg std)"/>
+    <param name="id_format"  value="$(arg id_format)"/>
+    <param name="csv_prefix"  value="$(arg csv_prefix)"/>
   </node>
 
   <node name="mytiago_causal_discovery" pkg="mytiago_causal_discovery" type="causal_discovery.py" output="screen">
@@ -29,6 +33,8 @@
     <param name="filter_alpha"   value="$(arg filter_alpha)"/>
     <param name="min_lag"   value="$(arg min_lag)"/>
     <param name="max_lag"   value="$(arg max_lag)"/>
+    <param name="id_format"   value="$(arg id_format)"/>
+    <param name="csv_prefix"   value="$(arg csv_prefix)"/>
   </node>
   
 </launch>

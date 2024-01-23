@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 
+from datetime import datetime
 import numpy as np
 import rospy
 import pandas as pd
@@ -18,11 +19,13 @@ from pedsim_msgs.msg import TrackedPersons
 NODE_NAME = "mytiago_data_collector"
 NODE_RATE = 10 # [Hz]
 TS_LENGTH = float(rospy.get_param("/mytiago_data_collector/ts_length", default = 150)) # [s]
-DATA_DIR = str(rospy.get_param("/mytiago_data_collector/data_dir", default = '/root/shared/')) + '/data_pool'
+DATA_DIR = str(rospy.get_param("/mytiago_data_collector/data_dir", default = '/root/shared/')) + 'data_pool'
 DT = float(rospy.get_param("/mytiago_data_collector/dt", default = 0.1))
 SUBSAMPLING = bool(rospy.get_param("/mytiago_data_collector/subsampling", default = False))
 ADDNOISE = bool(rospy.get_param("/mytiago_data_collector/addnoise", default = False))
 STD = bool(rospy.get_param("/mytiago_data_collector/std", default = 0.05))
+ID_FORMAT = str(rospy.get_param("/mytiago_data_collector/id_format", default = '%Y%m%d_%H%M%S'))
+CSV_PREFIX = str(rospy.get_param("/mytiago_data_collector/cas_prefix", default = 'data_'))
 
 
 def get_2DPose(p: PoseWithCovarianceStamped):
@@ -81,26 +84,6 @@ class DataCollector():
                                                                 allow_headerless = True)
 
         self.ats.registerCallback(self.cb_handle_data)
-        
-    @property
-    def last_csv_id(self):
-        file_pattern='data_*.csv'
-
-        file_list = glob.glob(os.path.join(DATA_DIR, file_pattern))
-        max_id = -1
-
-        if not file_list:
-            return max_id
-
-        for file_path in file_list:
-            # Extract ID from the file name
-            file_name = os.path.basename(file_path)
-            data_id = int(file_name.split('_')[1].split('.')[0])
-                
-            # Update max ID if the current ID is greater
-            max_id = max(max_id, data_id)
-
-        return max_id
                     
 
     def cb_robot_goal(self, goal: MoveBaseActionGoal):
@@ -145,7 +128,9 @@ class DataCollector():
                 
                 # subsample your dataset
                 if SUBSAMPLING: self.df = self.subsampling(DT)
-                self.df.to_csv(DATA_DIR + '/data_' + str(self.last_csv_id + 1) + '.csv')
+                timestamp_str = datetime.now().strftime(ID_FORMAT)
+
+                self.df.to_csv(DATA_DIR + '/' + CSV_PREFIX + timestamp_str + '.csv', index=False)
             
             # Init dataframe    
             self.df = pd.DataFrame(columns=['time', 'r_gx', 'r_gy', 'h_gx', 'h_gy', 'r_x', 'r_y', 'r_theta', 'r_v', 'h_x', 'h_y', 'h_theta', 'h_v'])
