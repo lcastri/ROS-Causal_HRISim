@@ -56,6 +56,9 @@ def get_2DPose(p: PoseWithCovarianceStamped):
 class DataCollector():
 
     def __init__(self) -> None:
+        """
+        DataCollector constructor
+        """
         self.df = None
         self.time_init = None
         self.rg = (None, None)

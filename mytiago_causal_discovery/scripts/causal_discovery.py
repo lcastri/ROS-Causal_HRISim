@@ -39,11 +39,25 @@ CSV_PREFIX = str(rospy.get_param("/mytiago_causal_discovery/cas_prefix", default
 
 class CausalDiscovery():
     def __init__(self, df: pd.DataFrame, dfname) -> None:
+        """
+        CausalDiscovery constructor
+
+        Args:
+            df (pd.DataFrame): csv file converted into a dataframe
+            dfname (str): csv file name
+        """
         self.df = df
         self.dfname = dfname
         
     @ignore_warnings(category=ConvergenceWarning)
     def run(self):
+        """
+        Run causal discovery algorithm
+
+        Returns:
+            list(str): list of selected features
+            DAG: causal model
+        """
         df = Data(self.df)
         f_list = deepcopy(df.features)
         if "time" in f_list: f_list.remove("time")
@@ -71,9 +85,20 @@ class CausalDiscovery():
         return feature, causalmodel
         
 
-def extract_timestamp_from_filename(file_name, file_prefix=CSV_PREFIX, file_extension='.csv'):
+def extract_timestamp_from_filename(file_path, file_prefix=CSV_PREFIX, file_extension='.csv'):
+    """
+    Extract timestamp from the file_path
+
+    Args:
+        file_path (str): file path
+        file_prefix (str, optional): csv file prefix. Defaults to CSV_PREFIX.
+        file_extension (str, optional): file extenstion. Defaults to '.csv'.
+
+    Returns:
+        str: timestamp
+    """
     # Extract the timestamp from the file name
-    file = os.path.basename(file_name)
+    file = os.path.basename(file_path)
     start_index = len(file_prefix)
     end_index = file.find(file_extension)
     timestamp_str = file[start_index:end_index]
@@ -83,6 +108,17 @@ def extract_timestamp_from_filename(file_name, file_prefix=CSV_PREFIX, file_exte
 
 
 def get_file(file_prefix=CSV_PREFIX, file_extension='.csv'):
+    """
+    Get file to process
+
+    Args:
+        file_prefix (str, optional): csv file prefix. Defaults to CSV_PREFIX.
+        file_extension (str, optional): file extenstion. Defaults to '.csv'.
+
+    Returns:
+        str: file path
+        str: file name
+    """
     # Construct the file pattern based on the prefix and extension
     file_pattern = os.path.join(DATA_DIR, f'{file_prefix}*{file_extension}')
 
