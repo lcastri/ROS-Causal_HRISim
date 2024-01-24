@@ -5,6 +5,7 @@ from datetime import datetime
 from enum import Enum
 import glob
 import os
+import subprocess
 from tigramite.independence_tests.gpdc import GPDC
 from fpcmci.CPrinter import CPLevel
 from fpcmci.FPCMCI import FPCMCI
@@ -34,10 +35,14 @@ MINLAG = int(rospy.get_param("/mytiago_causal_discovery/min_lag", default = 1))
 MAXLAG = int(rospy.get_param("/mytiago_causal_discovery/max_lag", default = 1))
 DATA_DIR = str(rospy.get_param("/mytiago_causal_discovery/data_dir", default = '/root/shared/')) + 'data_pool'
 RES_DIR = str(rospy.get_param("/mytiago_causal_discovery/res_dir", default = '/root/shared/')) + 'cm_pool'
+POSTPROCESS_DIR = str(rospy.get_param("/mytiago_causal_discovery/postprocess_dir", default = '/root/shared/')) + 'postprocess_pool'
 ID_FORMAT = str(rospy.get_param("/mytiago_causal_discovery/id_format", default = '%Y%m%d_%H%M%S'))
 CSV_PREFIX = str(rospy.get_param("/mytiago_causal_discovery/cas_prefix", default = 'data_'))
+POSTPROCESS_SCRIPT = str(rospy.get_param("/mytiago_causal_discovery/postprocess_script", ""))
+
 
 class CausalDiscovery():
+    
     def __init__(self, df: pd.DataFrame, dfname) -> None:
         """
         CausalDiscovery constructor
@@ -48,6 +53,7 @@ class CausalDiscovery():
         """
         self.df = df
         self.dfname = dfname
+        
         
     @ignore_warnings(category=ConvergenceWarning)
     def run(self):
@@ -137,6 +143,7 @@ def get_file(file_prefix=CSV_PREFIX, file_extension='.csv'):
 if __name__ == '__main__':
     # Create res pool directory
     os.makedirs(RES_DIR, exist_ok=True)
+    if POSTPROCESS_SCRIPT != "": os.makedirs(POSTPROCESS_DIR, exist_ok=True)
     
     # Node
     rospy.init_node(NODE_NAME, anonymous=True)
@@ -150,6 +157,10 @@ if __name__ == '__main__':
         
         csv, name = get_file()
         if csv is not None:
+            if POSTPROCESS_SCRIPT != "":
+                subprocess.check_call(["python", POSTPROCESS_SCRIPT])
+                csv = '/'.join([POSTPROCESS_DIR, os.path.basename(csv)])
+            
             rospy.logwarn("Processing file: " + name)
             dc = CausalDiscovery(pd.read_csv(csv), name)
             f, cm = dc.run()

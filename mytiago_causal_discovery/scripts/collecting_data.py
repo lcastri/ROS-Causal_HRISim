@@ -6,7 +6,6 @@ import numpy as np
 import rospy
 import pandas as pd
 import os
-import glob
 import message_filters
 from nav_msgs.msg import Odometry
 from move_base_msgs.msg import MoveBaseActionGoal

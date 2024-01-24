@@ -1,6 +1,8 @@
 <launch>
   <arg name="data_dir" default = "/root/shared/"/>
   <arg name="res_dir" default = "/root/shared/"/>
+  <arg name="postprocess_dir" default = "/root/shared/"/>
+  <arg name="postprocess_script" default = ""/>
   <arg name="ts_length" default="150"/> 
   <arg name="dt" default="0.1"/> 
   <arg name="subsampling" default="false"/> 
@@ -35,6 +37,8 @@
     <param name="max_lag"   value="$(arg max_lag)"/>
     <param name="id_format"   value="$(arg id_format)"/>
     <param name="csv_prefix"   value="$(arg csv_prefix)"/>
+    <param name="postprocess_script"   value="$(find mytiago_causal_discovery)/postprocess_scripts/$(arg postprocess_script)"/>
+    <param name="postprocess_dir"   value="$(arg postprocess_dir)"/>
   </node>
   
 </launch>
