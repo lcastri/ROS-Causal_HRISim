@@ -35,9 +35,10 @@ MINLAG = int(rospy.get_param("/mytiago_causal_discovery/min_lag", default = 1))
 MAXLAG = int(rospy.get_param("/mytiago_causal_discovery/max_lag", default = 1))
 DATA_DIR = str(rospy.get_param("/mytiago_causal_discovery/data_dir", default = '/root/shared/')) + 'data_pool'
 RES_DIR = str(rospy.get_param("/mytiago_causal_discovery/res_dir", default = '/root/shared/')) + 'cm_pool'
-POSTPROCESS_DIR = str(rospy.get_param("/mytiago_causal_discovery/postprocess_dir", default = '/root/shared/')) + 'postprocess_pool'
+POSTPROCESS_DATA_DIR = str(rospy.get_param("/mytiago_causal_discovery/postprocess_data_dir", default = '/root/shared/')) + 'postprocess_pool'
 ID_FORMAT = str(rospy.get_param("/mytiago_causal_discovery/id_format", default = '%Y%m%d_%H%M%S'))
 CSV_PREFIX = str(rospy.get_param("/mytiago_causal_discovery/cas_prefix", default = 'data_'))
+POSTPROCESS_SCRIPT_DIR = str(rospy.get_param("/mytiago_causal_discovery/postprocess_script_dir", ""))
 POSTPROCESS_SCRIPT = str(rospy.get_param("/mytiago_causal_discovery/postprocess_script", ""))
 
 
@@ -68,6 +69,9 @@ class CausalDiscovery():
         f_list = deepcopy(df.features)
         if "time" in f_list: f_list.remove("time")
         df.shrink(f_list)
+        # df.shrink(["r_v", r"r_{\theta}", r"r_{\theta_{g}}", "r_{d_g}", "r_{risk}", r"r_{\omega}", r"r_{d_{obs}}", 
+        #            "h_v", r"h_{\theta}", r"h_{\theta_{g}}", "h_{d_g}", "h_{risk}", r"h_{\omega}", r"h_{d_{obs}}"])
+        df.shrink(["r_v", r"r_{\theta}", r"r_{\theta_{g}}", "r_{d_g}", "r_{risk}", r"r_{\omega}", r"r_{d_{obs}}"])
         cdm = FPCMCI(df, 
                      f_alpha = FALPHA,
                      pcmci_alpha = ALPHA,
@@ -143,7 +147,7 @@ def get_file(file_prefix=CSV_PREFIX, file_extension='.csv'):
 if __name__ == '__main__':
     # Create res pool directory
     os.makedirs(RES_DIR, exist_ok=True)
-    if POSTPROCESS_SCRIPT != "": os.makedirs(POSTPROCESS_DIR, exist_ok=True)
+    if POSTPROCESS_SCRIPT != "": os.makedirs(POSTPROCESS_DATA_DIR, exist_ok=True)
     
     # Node
     rospy.init_node(NODE_NAME, anonymous=True)
@@ -158,11 +162,18 @@ if __name__ == '__main__':
         csv, name = get_file()
         if csv is not None:
             if POSTPROCESS_SCRIPT != "":
-                subprocess.check_call(["python", POSTPROCESS_SCRIPT])
-                csv = '/'.join([POSTPROCESS_DIR, os.path.basename(csv)])
+                rospy.logwarn("Postprocessing file: " + name)
+                subprocess.check_call(["python", POSTPROCESS_SCRIPT_DIR + POSTPROCESS_SCRIPT, "--csv", name])
+                pp_csv = '/'.join([POSTPROCESS_DATA_DIR, os.path.basename(csv)])
             
-            rospy.logwarn("Processing file: " + name)
-            dc = CausalDiscovery(pd.read_csv(csv), name)
+            if POSTPROCESS_SCRIPT != "":
+                rospy.logwarn("Causal analysis on: " + pp_csv)
+                d = pd.read_csv(pp_csv)
+            else:
+                rospy.logwarn("Causal analysis on: " + csv)
+                d = pd.read_csv(csv)
+                
+            dc = CausalDiscovery(d, name)
             f, cm = dc.run()
             
             if len(f) > 0:
@@ -183,9 +194,12 @@ if __name__ == '__main__':
                 msg.original_shape = list(cs.shape)
                 pub_causal_model.publish(msg)
                 
-            rospy.logwarn("Removing file: " + name)
+            rospy.logwarn("Removing file: " + csv)
             os.chmod(csv, stat.S_IWUSR | stat.S_IRUSR | stat.S_IXUSR)
             os.remove(csv)
-
+            if POSTPROCESS_SCRIPT != "":
+                rospy.logwarn("Removing file: " + pp_csv)
+                os.chmod(pp_csv, stat.S_IWUSR | stat.S_IRUSR | stat.S_IXUSR)
+                os.remove(pp_csv)
                 
         rate.sleep()

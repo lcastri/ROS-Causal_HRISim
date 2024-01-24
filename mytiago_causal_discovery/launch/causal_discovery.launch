@@ -1,13 +1,10 @@
 <launch>
   <arg name="data_dir" default = "/root/shared/"/>
   <arg name="res_dir" default = "/root/shared/"/>
-  <arg name="postprocess_dir" default = "/root/shared/"/>
-  <arg name="postprocess_script" default = ""/>
-  <arg name="ts_length" default="150"/> 
-  <arg name="dt" default="0.1"/> 
-  <arg name="subsampling" default="false"/> 
-  <arg name="addnoise" default="false"/> 
-  <arg name="std" default="0.05"/>
+  <arg name="postprocess_data_dir" default = "/root/shared/"/>
+  <arg name="postprocess_script_dir" default = "$(find mytiago_causal_discovery)/postprocess_scripts/"/>
+  <!-- <arg name="postprocess_script" default = ""/> -->
+  <arg name="postprocess_script" default = "postprocess.py"/>
   <arg name="cd_method" default="fpcmci"/>
   <arg name="sig_alpha" default="0.05"/>
   <arg name="filter_alpha" default="0.05"/>
@@ -15,17 +12,6 @@
   <arg name="max_lag" default="1"/>
   <arg name="id_format" default="%Y%m%d_%H%M%S"/>
   <arg name="csv_prefix" default="data_"/>
-
-  <node name="mytiago_data_collector" pkg="mytiago_causal_discovery" type="collecting_data.py" output="screen">
-    <param name="data_dir"   value="$(arg data_dir)"/> 
-    <param name="ts_length"   value="$(arg ts_length)"/> 
-    <param name="dt"   value="$(arg dt)"/> 
-    <param name="subsampling"  value="$(arg subsampling)"/>
-    <param name="addnoise"  value="$(arg addnoise)"/>
-    <param name="std"  value="$(arg std)"/>
-    <param name="id_format"  value="$(arg id_format)"/>
-    <param name="csv_prefix"  value="$(arg csv_prefix)"/>
-  </node>
 
   <node name="mytiago_causal_discovery" pkg="mytiago_causal_discovery" type="causal_discovery.py" output="screen">
     <param name="data_dir"   value="$(arg data_dir)"/> 
@@ -37,8 +23,9 @@
     <param name="max_lag"   value="$(arg max_lag)"/>
     <param name="id_format"   value="$(arg id_format)"/>
     <param name="csv_prefix"   value="$(arg csv_prefix)"/>
-    <param name="postprocess_script"   value="$(find mytiago_causal_discovery)/postprocess_scripts/$(arg postprocess_script)"/>
-    <param name="postprocess_dir"   value="$(arg postprocess_dir)"/>
+    <param name="postprocess_data_dir"   value="$(arg postprocess_data_dir)"/>
+    <param name="postprocess_script_dir" value="$(arg postprocess_script_dir)"/>
+    <param name="postprocess_script" value="$(arg postprocess_script)"/>
   </node>
   
 </launch>

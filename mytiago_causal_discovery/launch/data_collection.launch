@@ -1,0 +1,27 @@
+<launch>
+  <arg name="data_dir" default = "/root/shared/"/>
+  <arg name="ts_length" default="450"/> 
+  <!-- <arg name="ts_length" default="150"/>  -->
+  <arg name="dt" default="0.3"/> 
+  <!-- <arg name="dt" default="0.1"/>  -->
+  <arg name="subsampling" default="true"/> 
+  <!-- <arg name="subsampling" default="false"/>  -->
+  <arg name="addnoise" default="true"/> 
+  <!-- <arg name="addnoise" default="false"/>  -->
+  <arg name="std" default="0.025"/>
+  <!-- <arg name="std" default="0.05"/> -->
+  <arg name="id_format" default="%Y%m%d_%H%M%S"/>
+  <arg name="csv_prefix" default="data_"/>
+
+  <node name="mytiago_data_collector" pkg="mytiago_causal_discovery" type="collecting_data.py" output="screen">
+    <param name="data_dir"   value="$(arg data_dir)"/> 
+    <param name="ts_length"   value="$(arg ts_length)"/> 
+    <param name="dt"   value="$(arg dt)"/> 
+    <param name="subsampling"  value="$(arg subsampling)"/>
+    <param name="addnoise"  value="$(arg addnoise)"/>
+    <param name="std"  value="$(arg std)"/>
+    <param name="id_format"  value="$(arg id_format)"/>
+    <param name="csv_prefix"  value="$(arg csv_prefix)"/>
+  </node>
+ 
+</launch>

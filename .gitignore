@@ -355,7 +355,7 @@ dist/
 # bag
 *.bag
 
-# postprocessing_ws
+# utilities_ws
 *.catkin_tools
 */devel
 */logs
