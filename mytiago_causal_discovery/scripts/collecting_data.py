@@ -22,7 +22,8 @@ DATA_DIR = str(rospy.get_param("/mytiago_data_collector/data_dir", default = '/r
 DT = float(rospy.get_param("/mytiago_data_collector/dt", default = 0.1))
 SUBSAMPLING = bool(rospy.get_param("/mytiago_data_collector/subsampling", default = False))
 ADDNOISE = bool(rospy.get_param("/mytiago_data_collector/addnoise", default = False))
-STD = bool(rospy.get_param("/mytiago_data_collector/std", default = 0.05))
+STD = [float(x) for x in rospy.get_param('/mytiago_data_collector/std').split(',')]
+# STD = float(rospy.get_param("/mytiago_data_collector/std", default = 0.05))
 ID_FORMAT = str(rospy.get_param("/mytiago_data_collector/id_format", default = '%Y%m%d_%H%M%S'))
 CSV_PREFIX = str(rospy.get_param("/mytiago_data_collector/cas_prefix", default = 'data_'))
 
@@ -59,6 +60,7 @@ class DataCollector():
         DataCollector constructor
         """
         self.df = None
+        self.raw = None
         self.time_init = None
         self.rg = (None, None)
         self.hg = (None, None)
@@ -127,15 +129,20 @@ class DataCollector():
                 # this is to make sure that the dataframe contains data with time in ascending order.
                 # with ApproximateTimeSynchronizer might not be always true
                 self.df.sort_values(by = 'time', ascending = True, inplace = True, ignore_index = True)
+                self.raw.sort_values(by = 'time', ascending = True, inplace = True, ignore_index = True)
                 
                 # subsample your dataset
-                if SUBSAMPLING: self.df = self.subsampling(DT)
+                if SUBSAMPLING: self.df = self.subsampling(self.df, DT)
+                if SUBSAMPLING: self.raw = self.subsampling(self.raw, DT)
                 timestamp_str = datetime.now().strftime(ID_FORMAT)
 
                 self.df.to_csv(DATA_DIR + '/' + CSV_PREFIX + timestamp_str + '.csv', index=False)
+                self.raw.to_csv(DATA_DIR + '/raw' + timestamp_str + '.csv', index=False)
+
             
             # Init dataframe    
             self.df = pd.DataFrame(columns=['time', 'r_{gx}', 'r_{gy}', 'r_x', 'r_y', 'r_{\theta}', 'r_v', 'r_{\omega}', 'h_{gx}', 'h_{gy}', 'h_x', 'h_y', 'h_{\theta}', 'h_v', 'h_{\omega}'])
+            self.raw = pd.DataFrame(columns=['time', 'r_{gx}', 'r_{gy}', 'r_x', 'r_y', 'r_{\theta}', 'r_v', 'r_{\omega}', 'h_{gx}', 'h_{gy}', 'h_x', 'h_y', 'h_{\theta}', 'h_v', 'h_{\omega}'])
             self.time_init = time_now
 
         # Robot 2D pose (x, y, theta) and velocity
@@ -152,21 +159,38 @@ class DataCollector():
         h_omega = abs(p.twist.twist.angular.z)
                   
         # appending new data row in Dataframe
-        noise = np.zeros(10)
-        if ADDNOISE: noise = np.random.normal(0, STD, size = 10)
+        nrx = np.random.normal(0, STD[0]) if ADDNOISE else 0
+        nry = np.random.normal(0, STD[0]) if ADDNOISE else 0
+        nrtheta = np.random.normal(0, STD[1]) if ADDNOISE else 0
+        nrv = np.random.normal(0, STD[2]) if ADDNOISE else 0
+        nromega = np.random.normal(0, STD[3]) if ADDNOISE else 0
+        nhx = np.random.normal(0, STD[4]) if ADDNOISE else 0
+        nhy = np.random.normal(0, STD[4]) if ADDNOISE else 0
+        nhtheta = np.random.normal(0, STD[5]) if ADDNOISE else 0
+        nhv = np.random.normal(0, STD[6]) if ADDNOISE else 0
+        nhomega = np.random.normal(0, STD[7]) if ADDNOISE else 0
+        
         if self.rg == (None, None): self.rg = (r_x, r_y)
         if self.hg == (None, None): self.hg = (h_x, h_y)
         self.df.loc[len(self.df)] = {'time': odom.header.stamp.to_sec(),
                                      'r_{gx}': self.rg[0], 'r_{gy}': self.rg[1],
-                                     'r_x': r_x + noise[0], 'r_y': r_y + noise[1], 
-                                     'r_{\theta}': r_theta + noise[2], 'r_v': r_v + noise[3], 'r_{\omega}': r_omega + noise[4],
+                                     'r_x': r_x + nrx, 'r_y': r_y + nry, 
+                                     'r_{\theta}': r_theta + nrtheta, 'r_v': r_v + nrv, 'r_{\omega}': r_omega + nromega,
                                      'h_{gx}': self.hg[0], 'h_{gy}': self.hg[1],
-                                     'h_x': h_x + noise[5], 'h_y':h_y + noise[6],
-                                     'h_{\theta}': h_theta + noise[7], 'h_v': h_v + noise[8], 'h_{\omega}': h_omega + noise[9],
+                                     'h_x': h_x + nhx, 'h_y':h_y + nhy,
+                                     'h_{\theta}': h_theta + nhtheta, 'h_v': h_v + nhv, 'h_{\omega}': h_omega + nhomega,
+                                    }
+        self.raw.loc[len(self.raw)] = {'time': odom.header.stamp.to_sec(),
+                                     'r_{gx}': self.rg[0], 'r_{gy}': self.rg[1],
+                                     'r_x': r_x, 'r_y': r_y, 
+                                     'r_{\theta}': r_theta, 'r_v': r_v, 'r_{\omega}': r_omega,
+                                     'h_{gx}': self.hg[0], 'h_{gy}': self.hg[1],
+                                     'h_x': h_x, 'h_y':h_y,
+                                     'h_{\theta}': h_theta, 'h_v': h_v, 'h_{\omega}': h_omega,
                                     }
         
         
-    def subsampling(self, dt, tol = 0.01):
+    def subsampling(self, df: pd.DataFrame, dt, tol = 0.01):
         """
         subsampling the dataframe taking a sample each dt secs
         
@@ -177,13 +201,13 @@ class DataCollector():
         Returns:
             pd.DataFrame: subsampled dataframe
         """
-        sd = pd.DataFrame(columns=self.df.columns)
-        sd.loc[0] = self.df.loc[0]
-        init_t = self.df.time.values[0]
-        for i in range(1, len(self.df)):
-            if self.df.time.values[i] - init_t >= dt - tol:
-                sd.loc[i] = self.df.loc[i]
-                init_t = self.df.time.values[i]
+        sd = pd.DataFrame(columns=df.columns)
+        sd.loc[0] = df.loc[0]
+        init_t = df.time.values[0]
+        for i in range(1, len(df)):
+            if df.time.values[i] - init_t >= dt - tol:
+                sd.loc[i] = df.loc[i]
+                init_t = df.time.values[i]
         return sd.reset_index(drop=True)
         
 

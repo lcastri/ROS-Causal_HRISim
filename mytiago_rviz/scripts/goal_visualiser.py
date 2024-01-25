@@ -16,7 +16,7 @@ def get_goal_from_rosparam():
     while not rospy.is_shutdown():
         try:
             # Read goal points from rosparam
-            g = rospy.get_param('/ped/random_goal')
+            g = rospy.get_param('/hri/human_goal')
         except:
             continue
         

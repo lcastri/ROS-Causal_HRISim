@@ -52,7 +52,7 @@ class generateRandomGoal(AbstractAction):
             g = generate_random_point(p1, p2, p3)
             
             print("GENERATED POINT: " + str(g))
-            rospy.set_param('/ped/random_goal', g)
+            rospy.set_param('/hri/human_goal', g)
 
             self.params.append("done")
     

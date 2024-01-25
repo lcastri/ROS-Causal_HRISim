@@ -1,5 +1,4 @@
 import os
-import subprocess
 import sys
 try:
     sys.path.insert(0, os.environ["PNP_HOME"] + '/scripts')
@@ -11,42 +10,10 @@ import pnp_cmd_ros
 from pnp_cmd_ros import *
 import time
 
-def findRecordingNode(prefix = "/record_"):
-    command = ['rosnode', 'list']  # Command to list all active ROS nodes
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    stdout, stderr = process.communicate()
-    matching_nodes = list()
-
-    if process.returncode == 0:
-
-        # Split the output by newline to get a list of node names
-        active_nodes = stdout.splitlines()
-
-        # Filter the node names that start with the specified prefix
-        matching_nodes = [node for node in active_nodes if node.startswith(prefix)]
-    return matching_nodes
-
-
-def HasRecordingStopped():
-    recordingNode = findRecordingNode()
-    if len(recordingNode) > 0:
-        return False
-    else:
-        return True
-    
-    
-def HasRecordingStarted():
-    recordingNode = findRecordingNode()
-    if len(recordingNode) > 0:
-        return True
-    else:
-        return False
-
 
 def PassByTheCentre(p):
     # SECONDS = 30
     N = int(sys.argv[1])
-    BAGNAME = str(sys.argv[2])
     G1 = ["5", "-5", "-0.739"]
     G1bis = ["5", "-5", "2.347"]
     G2 = ["-5","5", "2.347"]

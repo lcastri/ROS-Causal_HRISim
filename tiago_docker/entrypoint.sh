@@ -21,7 +21,8 @@ echo " "
    echo "function tm-show(){  tmux a -t tiago_sim ; }" >> ~/.bashrc
 
    cd ~/ros_ws
-   catkin build 
+   catkin build
+   export WORLD='maze'
    source ~/ros_ws/devel/setup.bash
    exec "/bin/bash"
 

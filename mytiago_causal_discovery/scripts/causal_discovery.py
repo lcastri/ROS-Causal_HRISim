@@ -40,6 +40,7 @@ ID_FORMAT = str(rospy.get_param("/mytiago_causal_discovery/id_format", default =
 CSV_PREFIX = str(rospy.get_param("/mytiago_causal_discovery/cas_prefix", default = 'data_'))
 POSTPROCESS_SCRIPT_DIR = str(rospy.get_param("/mytiago_causal_discovery/postprocess_script_dir", ""))
 POSTPROCESS_SCRIPT = str(rospy.get_param("/mytiago_causal_discovery/postprocess_script", ""))
+SELECTED_AGENT = str(rospy.get_param("/mytiago_causal_discovery/selected_agent", "h"))
 
 
 class CausalDiscovery():
@@ -71,7 +72,11 @@ class CausalDiscovery():
         df.shrink(f_list)
         # df.shrink(["r_v", r"r_{\theta}", r"r_{\theta_{g}}", "r_{d_g}", "r_{risk}", r"r_{\omega}", r"r_{d_{obs}}", 
         #            "h_v", r"h_{\theta}", r"h_{\theta_{g}}", "h_{d_g}", "h_{risk}", r"h_{\omega}", r"h_{d_{obs}}"])
-        df.shrink(["r_v", r"r_{\theta}", r"r_{\theta_{g}}", "r_{d_g}", "r_{risk}", r"r_{\omega}", r"r_{d_{obs}}"])
+        # df.shrink(["r_v", r"r_{\theta}", r"r_{\theta_{g}}", "r_{d_g}", "r_{risk}", r"r_{\omega}", r"r_{d_{obs}}"])
+        variables = ["_v", r"_{\theta}", r"_{\theta_{g}}", "_{d_g}", "_{risk}", r"_{\omega}", r"_{d_{obs}}"]
+        variables = [SELECTED_AGENT + v for v in variables]
+        df.shrink(variables)
+        
         cdm = FPCMCI(df, 
                      f_alpha = FALPHA,
                      pcmci_alpha = ALPHA,
@@ -89,7 +94,7 @@ class CausalDiscovery():
             feature, causalmodel = cdm.run_pcmci()
         
         if len(feature) > 0:   
-            cdm.dag(label_type = LabelType.Lag, node_layout='circular')
+            cdm.dag(label_type = LabelType.NoLabels)
             cdm.timeseries_dag()
         
         return feature, causalmodel

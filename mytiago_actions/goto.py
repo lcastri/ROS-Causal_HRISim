@@ -37,6 +37,7 @@ class goto(AbstractAction):
             self.goal_msg.target_pose.pose.orientation.z = math.sin(float(self.params[2]) / 2)
             self.goal_msg.target_pose.pose.orientation.w = math.cos(float(self.params[2]) / 2)
 
+
             self.client.send_goal(self.goal_msg, done_cb=self._on_goTo_done)
             rospy.loginfo("Waiting for goTo result...")
 
@@ -56,5 +57,6 @@ class goto(AbstractAction):
 
         reached = False
         if len(params) > 0 and params[-1] == "done":
+            rospy.set_param('/hri/robot_goalreached', True)
             reached = True
         return reached

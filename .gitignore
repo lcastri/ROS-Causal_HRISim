@@ -360,3 +360,6 @@ dist/
 */devel
 */logs
 *.csv
+
+/results/*
+/shared/*
