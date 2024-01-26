@@ -7,9 +7,9 @@ Panels:
         - /Planning1/Base1/Global1
         - /Planning1/Base1/Global1/Plan1
         - /Mapping1/Map1
-        - /TeleopPerson1
+        - /TeleopPerson1/Risk1
       Splitter Ratio: 0.4197138249874115
-    Tree Height: 803
+    Tree Height: 1190
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -316,13 +316,13 @@ Visualization Manager:
           Queue Size: 100
           Value: true
         - Class: rviz/Marker
-          Enabled: true
+          Enabled: false
           Marker Topic: text_marker
           Name: Mode
           Namespaces:
-            "": true
+            {}
           Queue Size: 100
-          Value: true
+          Value: false
         - Class: rviz/Group
           Displays:
             - Alpha: 0.5
@@ -905,33 +905,22 @@ Visualization Manager:
           Value: true
         Grid: true
         Localization:
-          "": true
+          Localization Quality: true
+          Pose: true
+          Pose Graph: true
           Value: true
         Mapping:
-          "": true
+          HeadOctomap: true
+          Map: true
+          Map (with Virtual Obstacles): true
+          OctoMap: true
+          SLAM Graph Edges: true
+          SLAM Graph Vertices: true
+          Trajectory: true
           Value: true
         Planning:
-          Base:
-            Global:
-              Costmap: true
-              Plan:
-                Global Planner: true
-                Navfn: true
-                Value: true
-              Potential: true
-              Value: true
-              Voxel Grid: true
-            Goal: true
-            Local:
-              Cost: true
-              Costmap: true
-              Plan:
-                DWA: true
-                Pal: true
-                Trajectory: true
-                Value: true
-              Trajectories: true
-              Value: true
+          "":
+            "": true
             Value: true
           Value: true
         Robot:
@@ -954,8 +943,13 @@ Visualization Manager:
           Twist: true
           Value: true
         TeleopPerson:
-          "": true
-          Marker: true
+          Axes: true
+          Distance line: true
+          Distance text: true
+          Goal: true
+          Risk: true
+          Risk text: true
+          TeleopPersons: true
           Value: true
         TrackedPersons: true
         Tracking:
@@ -1118,7 +1112,7 @@ Visualization Manager:
           Render detection IDs: false
           Render history: true
           Render person visual: true
-          Render track IDs: true
+          Render track IDs: false
           Render track state: false
           Render velocities: true
           Show DELETED tracks: false
@@ -1136,25 +1130,41 @@ Visualization Manager:
             Use Z position from message: false
             Value: 0
         - Class: rviz/Marker
-          Enabled: true
+          Enabled: false
           Marker Topic: /distance_text_marker
           Name: Distance text
           Namespaces:
-            "": true
+            {}
           Queue Size: 100
-          Value: true
+          Value: false
         - Class: rviz/Marker
-          Enabled: true
+          Enabled: false
           Marker Topic: /distance_line_marker
           Name: Distance line
           Namespaces:
-            "": true
+            {}
           Queue Size: 100
-          Value: true
+          Value: false
         - Class: rviz/Marker
           Enabled: true
           Marker Topic: goal_marker
           Name: Goal
+          Namespaces:
+            {}
+          Queue Size: 100
+          Value: true
+        - Class: rviz/Marker
+          Enabled: false
+          Marker Topic: risk_marker
+          Name: Risk triangle
+          Namespaces:
+            {}
+          Queue Size: 100
+          Value: false
+        - Class: rviz/Marker
+          Enabled: true
+          Marker Topic: riskcube_marker
+          Name: Risk
           Namespaces:
             {}
           Queue Size: 100
@@ -1189,7 +1199,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 29.181808471679688
+      Distance: 31.182514190673828
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -1197,25 +1207,25 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -5.889739990234375
-        Y: -2.276808738708496
-        Z: -2.1074306964874268
+        X: -3.1041603088378906
+        Y: 0.977763295173645
+        Z: -3.330108404159546
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.46480053663253784
+      Pitch: 0.6548004150390625
       Target Frame: <Fixed Frame>
-      Yaw: 0.5091167092323303
+      Yaw: 0.3091158866882324
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 1016
+  Height: 1403
   Hide Left Dock: false
   Hide Right Dock: true
-  QMainWindow State: 000000ff00000000fd0000000400000000000002770000035efc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003b0000035e000000c700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001c0043006f006d00700072006500730073006500640020004d0061007001000002f5000000c90000000000000000fb0000000800520047004200440000000293000001060000001600ffffff000000010000010f00000396fc0200000004fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730000000028000000c10000005c00fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730000000028000000a30000000000000000fb0000000a0056006900650077007300000000ef000002cf000000a000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000007800000003efc0100000002fb0000000800540069006d00650100000000000007800000030700fffffffb0000000800540069006d00650100000000000004500000000000000000000005030000035e00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000018b000004e1fc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003b000004e1000000c700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001c0043006f006d00700072006500730073006500640020004d0061007001000002f5000000c90000000000000000fb0000000800520047004200440000000293000001060000001600ffffff000000010000010f00000396fc0200000004fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730000000028000000c10000005c00fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730000000028000000a30000000000000000fb0000000a0056006900650077007300000000ef000002cf000000a000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e1000001970000000300000a000000003efc0100000002fb0000000800540069006d0065010000000000000a000000030700fffffffb0000000800540069006d006501000000000000045000000000000000000000086f000004e100000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   RGBD:
     collapsed: false
   Selection:
@@ -1226,6 +1236,6 @@ Window Geometry:
     collapsed: true
   Views:
     collapsed: true
-  Width: 1920
-  X: 0
-  Y: 27
+  Width: 2560
+  X: 2560
+  Y: 0

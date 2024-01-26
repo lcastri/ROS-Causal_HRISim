@@ -33,7 +33,7 @@ def distance_callback(person, robot):
     text_marker.action = Marker.ADD
     text_marker.scale.z = 0.3  # Text size
     text_marker.pose.position = person_point
-    text_marker.pose.position.z += 2.3  # Offset text slightly above point1
+    text_marker.pose.position.z += 2  # Offset text slightly above point1
     text_marker.text = "dist: {:.2f}m".format(distance)
     define_color(distance, text_marker)
     text_marker.color.a = 1.0
@@ -56,7 +56,7 @@ def distance_callback(person, robot):
 if __name__ == '__main__':
     rospy.init_node('distance_marker_publisher')
     
-    DIST_THRESHOLD = rospy.get_param('distance_visualiser/dist_threshold', 1.5) 
+    DIST_THRESHOLD = rospy.get_param('/hri/safe_distance', 5) 
 
     person_sub = Subscriber('/ped/control/teleop_persons', TrackedPersons)
     robot_sub = Subscriber('/robot_pose', PoseWithCovarianceStamped)

@@ -125,6 +125,7 @@ COPY mytiago_recording /root/ros_ws/src/myTIAGo/mytiago_recording
 COPY mytiago_twist_mux/modified_scripts/twist_mux.launch /opt/ros/noetic/share/twist_mux/launch
 COPY mytiago_twist_mux/modified_scripts/twist_mux.launch /opt/ros/noetic/share/twist_mux/launch
 COPY mytiago_causal_discovery /root/ros_ws/src/myTIAGo/mytiago_causal_discovery
+COPY mytiago_risk /root/ros_ws/src/myTIAGo/mytiago_risk
 
 # Copy maps into the image
 RUN mkdir -p ~/.pal/tiago_maps/configurations/

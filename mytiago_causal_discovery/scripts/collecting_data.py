@@ -13,6 +13,7 @@ from visualization_msgs.msg import Marker
 from geometry_msgs.msg import PoseWithCovarianceStamped
 import tf
 from pedsim_msgs.msg import TrackedPersons
+from mytiago_risk.msg import Risk
 
 
 NODE_NAME = "mytiago_data_collector"
@@ -79,11 +80,14 @@ class DataCollector():
                 
         # Robot pose subscriber
         sub_robot_pose = message_filters.Subscriber('/robot_pose', PoseWithCovarianceStamped)
+        
+        sub_risk = message_filters.Subscriber('/hri/risk', Risk)
                 
         # Init synchronizer and assigning a callback 
         self.ats = message_filters.ApproximateTimeSynchronizer([sub_odom, 
                                                                 sub_people, 
-                                                                sub_robot_pose], 
+                                                                sub_robot_pose,
+                                                                sub_risk], 
                                                                 queue_size = 10, slop = 0.1,
                                                                 allow_headerless = True)
 
@@ -112,7 +116,8 @@ class DataCollector():
                 
     def cb_handle_data(self, odom: Odometry, 
                              people: TrackedPersons, 
-                             robot_pose: PoseWithCovarianceStamped):
+                             robot_pose: PoseWithCovarianceStamped,
+                             risk: Risk):
         """
         Synchronized callback
 
@@ -141,8 +146,8 @@ class DataCollector():
 
             
             # Init dataframe    
-            self.df = pd.DataFrame(columns=['time', 'r_{gx}', 'r_{gy}', 'r_x', 'r_y', 'r_{\theta}', 'r_v', 'r_{\omega}', 'h_{gx}', 'h_{gy}', 'h_x', 'h_y', 'h_{\theta}', 'h_v', 'h_{\omega}'])
-            self.raw = pd.DataFrame(columns=['time', 'r_{gx}', 'r_{gy}', 'r_x', 'r_y', 'r_{\theta}', 'r_v', 'r_{\omega}', 'h_{gx}', 'h_{gy}', 'h_x', 'h_y', 'h_{\theta}', 'h_v', 'h_{\omega}'])
+            self.df = pd.DataFrame(columns=['time', 'r_{gx}', 'r_{gy}', 'r_x', 'r_y', 'r_{\theta}', 'r_v', 'r_{\omega}', 'h_{gx}', 'h_{gy}', 'h_x', 'h_y', 'h_{\theta}', 'h_v', 'h_{\omega}', 'h_{risk}'])
+            self.raw = pd.DataFrame(columns=['time', 'r_{gx}', 'r_{gy}', 'r_x', 'r_y', 'r_{\theta}', 'r_v', 'r_{\omega}', 'h_{gx}', 'h_{gy}', 'h_x', 'h_y', 'h_{\theta}', 'h_v', 'h_{\omega}', 'h_{risk}'])
             self.time_init = time_now
 
         # Robot 2D pose (x, y, theta) and velocity
@@ -157,6 +162,7 @@ class DataCollector():
         h_theta = p.pose.pose.orientation.z
         h_v = abs(p.twist.twist.linear.x)
         h_omega = abs(p.twist.twist.angular.z)
+        h_risk = risk.risk.data
                   
         # appending new data row in Dataframe
         nrx = np.random.normal(0, STD[0]) if ADDNOISE else 0
@@ -178,7 +184,7 @@ class DataCollector():
                                      'r_{\theta}': r_theta + nrtheta, 'r_v': r_v + nrv, 'r_{\omega}': r_omega + nromega,
                                      'h_{gx}': self.hg[0], 'h_{gy}': self.hg[1],
                                      'h_x': h_x + nhx, 'h_y':h_y + nhy,
-                                     'h_{\theta}': h_theta + nhtheta, 'h_v': h_v + nhv, 'h_{\omega}': h_omega + nhomega,
+                                     'h_{\theta}': h_theta + nhtheta, 'h_v': h_v + nhv, 'h_{\omega}': h_omega + nhomega, 'h_{risk}': h_risk
                                     }
         self.raw.loc[len(self.raw)] = {'time': odom.header.stamp.to_sec(),
                                      'r_{gx}': self.rg[0], 'r_{gy}': self.rg[1],
@@ -186,7 +192,7 @@ class DataCollector():
                                      'r_{\theta}': r_theta, 'r_v': r_v, 'r_{\omega}': r_omega,
                                      'h_{gx}': self.hg[0], 'h_{gy}': self.hg[1],
                                      'h_x': h_x, 'h_y':h_y,
-                                     'h_{\theta}': h_theta, 'h_v': h_v, 'h_{\omega}': h_omega,
+                                     'h_{\theta}': h_theta, 'h_v': h_v, 'h_{\omega}': h_omega, 'h_{risk}': h_risk
                                     }
         
         

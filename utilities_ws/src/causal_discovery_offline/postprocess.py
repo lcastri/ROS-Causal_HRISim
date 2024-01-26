@@ -103,7 +103,8 @@ class Agent():
             float: risk
         """
         
-        risk = self.v[t]
+        risk = 0
+        # risk = self.v[t]
         
         # Calculate relative velocity vector
         Vrel = Point(obs.dv(t).x - self.dv(t).x, obs.dv(t).y - self.dv(t).y)
@@ -137,7 +138,8 @@ class Agent():
                 steering_effort_measure = min(P.distance(LineString([cone_origin, inter_l])), P.distance(LineString([cone_origin, inter_r])))           
                 risk = risk + 1/time_collision_measure + steering_effort_measure
                     
-        return math.exp(risk)
+        # return math.exp(risk)
+        return risk
 
        
 
@@ -196,7 +198,6 @@ if __name__ == '__main__':
                      }
 
     # Save the processed data to another CSV file
-    # df["risk"] = pd.concat([df["h_{risk}"].loc[1:], pd.Series([0])], ignore_index=True)
     df = df[1:-1]
     df[r"h_v"].plot()
     df[r"h_{d_g}"].plot()
