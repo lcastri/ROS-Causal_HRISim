@@ -4,7 +4,6 @@ import pandas as pd
 from shapely.geometry import *
 import math
 
-STD = [0.025, 0.01, 0.1, 0.02, 0.035, 0.04, 0.05, 0.045]
 
 class Agent():
     def __init__(self, name, x, y, theta, v, omega) -> None:
@@ -144,12 +143,16 @@ class Agent():
 
 if __name__ == '__main__': 
        
-    DATA_DIR = '/home/lucacastri/git/TIAGo-docker/utilities_ws/src/causal_discovery_offline/data'
-    POSTPROCESS_DIR = '/home/lucacastri/git/TIAGo-docker/utilities_ws/src/causal_discovery_offline/ppdata'
+    DATA_DIR = '~/git/TIAGo-docker/utilities_ws/src/causal_discovery_offline/data'
+    POSTPROCESS_DIR = '~/git/TIAGo-docker/utilities_ws/src/causal_discovery_offline/ppdata'
     csv_name = 'raw20240125_154606'
+    # csv_name = 'raw20240125_155709'
     INPUT_CSV = DATA_DIR + '/' + csv_name + '.csv'
     OUTPUT_CSV = POSTPROCESS_DIR + '/' + csv_name + '.csv'
 
+    STD = [0.01, 0.05, 0.09, 0.02, 
+           0.01, 0.04, 0.02, 0.045]
+    
     # Read the CSV into a pandas DataFrame
     data = pd.read_csv(INPUT_CSV)
     
@@ -157,11 +160,13 @@ if __name__ == '__main__':
     R = Agent("R", data["r_x"] + np.random.normal(0, STD[0], nsize),
                    data["r_y"] + np.random.normal(0, STD[0], nsize), 
                    data["r_{\theta}"] + np.random.normal(0, STD[1], nsize), 
-                   data["r_v"], data["r_{\omega}"]) 
+                   data["r_v"] + np.random.normal(0, STD[0], nsize), 
+                   data["r_{\omega}"] + np.random.normal(0, STD[1], nsize)) 
     H = Agent("H", data["h_x"] + np.random.normal(0, STD[4], nsize), 
                    data["h_y"] + np.random.normal(0, STD[4], nsize),
                    data["h_{\theta}"] + np.random.normal(0, STD[5], nsize),
-                   data["h_v"], data["h_{\omega}"])
+                   data["h_v"] + np.random.normal(0, STD[4], nsize), 
+                   data["h_{\omega}"] + np.random.normal(0, STD[5], nsize))
     RG = Agent("RG", data["r_{gx}"], data["r_{gy}"], np.zeros_like(data["r_{gy}"]), np.zeros_like(data["r_{gy}"]), np.zeros_like(data["r_{gy}"]))
     HG = Agent("HG", data["h_{gx}"], data["h_{gy}"], np.zeros_like(data["r_{gy}"]), np.zeros_like(data["r_{gy}"]), np.zeros_like(data["r_{gy}"]))
             
@@ -171,34 +176,35 @@ if __name__ == '__main__':
             
     for i in range(1, len(data)):
         dt = data['time'].loc[i] - data['time'].loc[i-1]
-        df.loc[i] = {"r_v" : R.v[i], 
-                     "r_{d_g}" : R.dist(i, RG), 
-                     "r_{risk}" : R.risk(i-1, H), 
-                     r"r_{d_{obs}}" : R.dist(i, H), 
-                     r"r_{\theta}" : R.theta[i], 
+        df.loc[i] = {"r_v" : R.v[i],
+                     "r_{d_g}" : R.dist(i, RG),
+                     "r_{risk}" : R.risk(i-1, H),
+                     r"r_{d_{obs}}" : R.dist(i, H),
+                     r"r_{\theta}" : R.theta[i],
                      r"r_{\theta_{gr}}" : R.heading(i, RG), 
                      r"r_{\theta_{g}}" : R.bearing(i, RG), 
                      r"r_{\omega}" : R.omega[i],
-                    #  "h_v" : H.myv(i, dt),
-                     "h_v" : H.v[i],
+                    #  "h_v" : H.v[i],
+                     "h_v" : H.myv(i, dt),
                      "h_{d_g}" : H.dist(i, HG), 
                      "h_{risk}" : H.risk(i-1, R), 
                      r"h_{d_{obs}}" : H.dist(i, R),
                      r"h_{\theta}" : H.theta[i], 
                      r"h_{\theta_{gr}}" : H.heading(i, HG), 
                      r"h_{\theta_{g}}" : H.bearing(i, HG), 
-                     r"h_{\omega}" : H.myomega(i, dt),
-                    #  r"h_{\omega}" : H.omega[i],
+                     r"h_{\omega}" : H.omega[i],
                      }
 
     # Save the processed data to another CSV file
-    df = df[1:]
-    df[r"h_{\theta_{gr}}"].plot()
-    df[r"h_{\omega}"].plot()
-    df[r"h_{d_{obs}}"].plot()
+    # df["risk"] = pd.concat([df["h_{risk}"].loc[1:], pd.Series([0])], ignore_index=True)
+    df = df[1:-1]
     df[r"h_v"].plot()
     df[r"h_{d_g}"].plot()
-    plt.legend([r"$h_{\theta_{gr}}$", r"$h_{\omega}$", r"$h_{d_{obs}}$", "$h_v$", "$h_{d_g}$"])
+    df[r"h_{risk}"].plot()
+    df[r"h_{\theta}"].plot()
+    df[r"h_{\theta_{g}}"].plot()
+    # df[r"h_{d_{obs}}"].plot()
+    plt.legend([r"$h_{\theta_{gr}}$", r"$h_{\omega}$", r"$h_{risk}$", "$h_v$", "$h_{d_g}$"])
 
     plt.show()
     df.to_csv(OUTPUT_CSV, index=False)

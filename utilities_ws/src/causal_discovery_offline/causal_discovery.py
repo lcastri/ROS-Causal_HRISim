@@ -7,12 +7,13 @@ from fpcmci.basics.constants import LabelType
 
 SELECTED_AGENT = 'h'
 
-DATA_DIR = '/home/lucacastri/git/TIAGo-docker/utilities_ws/src/causal_discovery_offline/ppdata'
+DATA_DIR = '~/git/TIAGo-docker/utilities_ws/src/causal_discovery_offline/ppdata'
 csv_name = 'raw20240125_154606'
+# csv_name = 'raw20240125_155709'
 
 df = Data(DATA_DIR + '/' + csv_name + ".csv")
 
-variables = ["_v", "_{d_g}", r"_{d_{obs}}", r"_{\theta_{gr}}", r"_{\omega}"]
+variables = ["_v", "_{d_g}", r"_{d_{obs}}", r"_{\theta}", r"_{\theta_{g}}"]
 # variables = ["_v", r"_{\theta}", r"_{\theta_{g}}", "_{d_g}", "_{risk}", r"_{\omega}", r"_{d_{obs}}"]
 variables = [SELECTED_AGENT + v for v in variables]
 df.shrink(variables)
