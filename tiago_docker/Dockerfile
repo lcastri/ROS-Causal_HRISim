@@ -96,44 +96,32 @@ RUN cd ~/ros_ws/src/ && \
     cd pedsim_ros && \
     git submodule update --init --recursive
 # files has been modified to allow single agent scenario and to expose robot_radius
-COPY mytiago_pedsim/modified_scripts/simulator.cpp /root/ros_ws/src/pedsim_ros/pedsim_simulator/src
-COPY mytiago_pedsim/modified_scripts/agent.cpp /root/ros_ws/src/pedsim_ros/pedsim_simulator/src/element
-COPY mytiago_pedsim/modified_scripts/config.h /root/ros_ws/src/pedsim_ros/pedsim_simulator/include/pedsim_simulator
-COPY mytiago_pedsim/modified_scripts/keyboard_teleop.py /root/ros_ws/src/pedsim_ros/pedsim_simulator/scripts
-COPY mytiago_pedsim/modified_scripts/simulate_diff_drive_ped.cpp /root/ros_ws/src/pedsim_ros/pedsim_simulator/src
-COPY mytiago_pedsim/modified_scripts/CMakeLists.txt /root/ros_ws/src/pedsim_ros/pedsim_simulator/
-COPY mytiago_pedsim/modified_scripts/spawn_pedsim_agents.py /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/scripts
-COPY mytiago_pedsim/modified_scripts/actor_model.sdf /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/models
+COPY myTIAGo/mytiago_pedsim/modified_scripts/simulator.cpp /root/ros_ws/src/pedsim_ros/pedsim_simulator/src
+COPY myTIAGo/mytiago_pedsim/modified_scripts/agent.cpp /root/ros_ws/src/pedsim_ros/pedsim_simulator/src/element
+COPY myTIAGo/mytiago_pedsim/modified_scripts/config.h /root/ros_ws/src/pedsim_ros/pedsim_simulator/include/pedsim_simulator
+COPY myTIAGo/mytiago_pedsim/modified_scripts/keyboard_teleop.py /root/ros_ws/src/pedsim_ros/pedsim_simulator/scripts
+COPY myTIAGo/mytiago_pedsim/modified_scripts/simulate_diff_drive_ped.cpp /root/ros_ws/src/pedsim_ros/pedsim_simulator/src
+COPY myTIAGo/mytiago_pedsim/modified_scripts/CMakeLists.txt /root/ros_ws/src/pedsim_ros/pedsim_simulator/
+COPY myTIAGo/mytiago_pedsim/modified_scripts/spawn_pedsim_agents.py /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/scripts
+COPY myTIAGo/mytiago_pedsim/modified_scripts/actor_model.sdf /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/models
 
 # Copy files into the image
 RUN mkdir -p ~/ros_ws/src/myTIAGo/
-COPY mytiago_tmule /root/ros_ws/src/myTIAGo/mytiago_tmule
-COPY mytiago_rviz /root/ros_ws/src/myTIAGo/mytiago_rviz
-COPY mytiago_gazebo /root/ros_ws/src/myTIAGo/mytiago_gazebo
-COPY mytiago_gazebo/modified_scripts/local_planner.yaml /root/ros_ws/src/pal_navigation_cfg_public/pal_navigation_cfg_tiago/config/base/teb
-COPY mytiago_plans /root/ros_ws/src/myTIAGo/mytiago_plans
-COPY mytiago_actions /root/ros_ws/src/myTIAGo/mytiago_actions
-COPY mytiago_conditions /root/ros_ws/src/myTIAGo/mytiago_conditions
-COPY mytiago_twist_mux /root/ros_ws/src/myTIAGo/mytiago_twist_mux
-COPY scripts /root/ros_ws/src/myTIAGo/scripts
-COPY mytiago_pedsim /root/ros_ws/src/myTIAGo/mytiago_pedsim
-COPY mytiago_pedsim/scenarios /root/ros_ws/src/pedsim_ros/pedsim_simulator/scenarios
-COPY mytiago_pedsim/launch/mysimulator.launch /root/ros_ws/src/pedsim_ros/pedsim_simulator/launch/
-COPY mytiago_pedsim/worlds /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/worlds
-COPY mytiago_pedsim/launch/gazebo_plugin.launch /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/launch/
-COPY mytiago_recording /root/ros_ws/src/myTIAGo/mytiago_recording
-COPY mytiago_twist_mux/modified_scripts/twist_mux.launch /opt/ros/noetic/share/twist_mux/launch
-COPY mytiago_twist_mux/modified_scripts/twist_mux.launch /opt/ros/noetic/share/twist_mux/launch
-COPY mytiago_causal_discovery /root/ros_ws/src/myTIAGo/mytiago_causal_discovery
-COPY mytiago_risk /root/ros_ws/src/myTIAGo/mytiago_risk
+COPY myTIAGo /root/ros_ws/src/myTIAGo
+COPY myTIAGo/mytiago_gazebo/modified_scripts/local_planner.yaml /root/ros_ws/src/pal_navigation_cfg_public/pal_navigation_cfg_tiago/config/base/teb
+COPY myTIAGo/mytiago_pedsim/scenarios /root/ros_ws/src/pedsim_ros/pedsim_simulator/scenarios
+COPY myTIAGo/mytiago_pedsim/launch/mysimulator.launch /root/ros_ws/src/pedsim_ros/pedsim_simulator/launch/
+COPY myTIAGo/mytiago_pedsim/worlds /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/worlds
+COPY myTIAGo/mytiago_pedsim/launch/gazebo_plugin.launch /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/launch/
+COPY myTIAGo/mytiago_twist_mux/modified_scripts/twist_mux.launch /opt/ros/noetic/share/twist_mux/launch
 
 # Copy maps into the image
 RUN mkdir -p ~/.pal/tiago_maps/configurations/
-COPY mytiago_gazebo/tiago_maps/ /root/.pal/tiago_maps/configurations/
+COPY myTIAGo/mytiago_gazebo/tiago_maps/ /root/.pal/tiago_maps/configurations/
 
 # Create .gazebo folders
 RUN mkdir -p ~/.gazebo/models
-COPY mytiago_gazebo/models /root/.gazebo/models
+COPY myTIAGo/mytiago_gazebo/models /root/.gazebo/models
 RUN echo "export GAZEBO_MODEL_PATH=~/.gazebo/models:$GAZEBO_MODEL_PATH" >> ~/.bashrc
 
 # Create a shared folder with the host machine

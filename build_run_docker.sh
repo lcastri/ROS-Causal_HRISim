@@ -14,6 +14,7 @@ systemctl start docker
 echo " "
 echo "Building ${container_name} docker..."
 docker build -f tiago_docker/Dockerfile -t ${image_name} .
+docker rmi $(docker images -qa -f 'dangling=true')
 
 echo " "
 echo "Running docker container..."

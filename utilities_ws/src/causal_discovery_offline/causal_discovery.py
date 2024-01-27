@@ -4,16 +4,15 @@ from fpcmci.FPCMCI import FPCMCI
 from fpcmci.preprocessing.data import Data
 from fpcmci.selection_methods.TE import TE, TEestimator
 from fpcmci.basics.constants import LabelType
+from fpcmci.preprocessing.subsampling_methods.Static import Static
 
 SELECTED_AGENT = 'h'
 
 DATA_DIR = '~/git/TIAGo-docker/utilities_ws/src/causal_discovery_offline/ppdata'
-csv_name = 'raw20240125_154606'
-# csv_name = 'raw20240125_155709'
+csv_name = 'raw20240127_174317'
 
-df = Data(DATA_DIR + '/' + csv_name + ".csv")
-
-variables = ["_v", "_{d_g}", r"_{d_{obs}}", r"_{\theta}", r"_{\theta_{g}}"]
+df = Data(DATA_DIR + '/' + csv_name + ".csv", subsampling=Static(2))
+variables = ["_v", "_{d_g}", r"_{risk}", r"_{\theta}", r"_{\theta_{g}}"]
 # variables = ["_v", r"_{\theta}", r"_{\theta_{g}}", "_{d_g}", "_{risk}", r"_{\omega}", r"_{d_{obs}}"]
 variables = [SELECTED_AGENT + v for v in variables]
 df.shrink(variables)
@@ -28,7 +27,7 @@ cdm = FPCMCI(df,
              sel_method = TE(TEestimator.Gaussian), 
              val_condtest = GPDC(significance = 'analytic', gp_params = None),
              verbosity = CPLevel.DEBUG,
-             neglect_only_autodep = True,
+             neglect_only_autodep = False,
              resfolder = csv_name)
 
 feature, causalmodel = cdm.run()
