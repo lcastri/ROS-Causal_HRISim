@@ -1,6 +1,6 @@
 <launch>
   <arg name="data_dir" default = "/root/shared/"/>
-  <arg name="ts_length" default="450"/> 
+  <arg name="ts_length" default="300"/> 
   <!-- <arg name="ts_length" default="150"/>  -->
   <arg name="dt" default="0.3"/> 
   <!-- <arg name="dt" default="0.1"/>  -->

@@ -962,12 +962,9 @@ Visualization Manager:
           Twist: true
           Value: true
         TeleopPerson:
-          Axes: true
-          Distance line: true
-          Distance text: true
-          Goal: true
-          Risk triangle: true
-          TeleopPersons: true
+          "": true
+          Goal line: true
+          Risk: true
           Value: true
         TrackedPersons: true
         Tracking:
@@ -1168,7 +1165,15 @@ Visualization Manager:
           Marker Topic: goal_marker
           Name: Goal
           Namespaces:
-            {}
+            "": true
+          Queue Size: 100
+          Value: true
+        - Class: rviz/Marker
+          Enabled: true
+          Marker Topic: linegoal_marker
+          Name: Goal line
+          Namespaces:
+            "": true
           Queue Size: 100
           Value: true
         - Class: rviz/Marker

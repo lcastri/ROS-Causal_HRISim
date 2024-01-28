@@ -9,7 +9,7 @@ import message_filters
 from move_base_msgs.msg import MoveBaseActionGoal
 from visualization_msgs.msg import Marker
 from pedsim_msgs.msg import TrackedPersons
-from mytiago_risk.msg import Risk
+from mytiago_human.msg import Risk, HumanState
 from mytiago_robot.msg import RobotState
 
 
@@ -48,15 +48,11 @@ class DataCollector():
         sub_robot = message_filters.Subscriber("/hri/robot_state", RobotState)
         
         # Person subscriber
-        sub_people = message_filters.Subscriber('/ped/control/teleop_persons', TrackedPersons)
-        
-        # Risk
-        sub_risk = message_filters.Subscriber('/hri/risk', Risk)
-                
+        sub_people = message_filters.Subscriber('/hri/human_state', HumanState)
+                        
         # Init synchronizer and assigning a callback 
         self.ats = message_filters.ApproximateTimeSynchronizer([sub_robot, 
-                                                                sub_people, 
-                                                                sub_risk], 
+                                                                sub_people], 
                                                                 queue_size = 10, slop = 0.1,
                                                                 allow_headerless = True)
 
@@ -83,16 +79,13 @@ class DataCollector():
         self.hg = (goal.pose.position.x, goal.pose.position.y)
                 
                 
-    def cb_handle_data(self, robot: RobotState, 
-                             people: TrackedPersons, 
-                             risk: Risk):
+    def cb_handle_data(self, robot: RobotState, human: HumanState):
         """
         Synchronized callback
 
         Args:
             robot (RobotState): robot state
-            people (TrackedPersons): tracked people
-            risk (Risk): risk of collision
+            human (HumanState): tracked person
         """
         time_now = robot.header.stamp.to_sec()
         if self.time_init is None or (time_now - self.time_init >= TS_LENGTH):
@@ -109,13 +102,15 @@ class DataCollector():
                 if SUBSAMPLING: self.raw = self.subsampling(self.raw, DT)
                 timestamp_str = datetime.now().strftime(ID_FORMAT)
 
+                rospy.logwarn("CSV file saved: " + CSV_PREFIX + timestamp_str + '.csv')
                 self.df.to_csv(DATA_DIR + '/' + CSV_PREFIX + timestamp_str + '.csv', index=False)
                 self.raw.to_csv(DATA_DIR + '/raw' + timestamp_str + '.csv', index=False)
 
             
-            # Init dataframe    
-            self.df = pd.DataFrame(columns=['time', 'r_{gx}', 'r_{gy}', 'r_x', 'r_y', 'r_{\theta}', 'r_v', 'r_{\omega}', 'h_{gx}', 'h_{gy}', 'h_x', 'h_y', 'h_{\theta}', 'h_v', 'h_{\omega}', 'h_{risk}'])
-            self.raw = pd.DataFrame(columns=['time', 'r_{gx}', 'r_{gy}', 'r_x', 'r_y', 'r_{\theta}', 'r_v', 'r_{\omega}', 'h_{gx}', 'h_{gy}', 'h_x', 'h_y', 'h_{\theta}', 'h_v', 'h_{\omega}', 'h_{risk}'])
+            # Init dataframe
+            columns = ['time', 'r_{gx}', 'r_{gy}', 'r_x', 'r_y', 'r_{\theta}', 'r_v', 'r_{\omega}', 'h_{gx}', 'h_{gy}', 'h_x', 'h_y', 'h_{\theta}', 'h_v', 'h_{\omega}', 'h_{risk}', 'h_{d_g}', 'h_{\theta_g}']
+            self.df = pd.DataFrame(columns=columns)
+            self.raw = pd.DataFrame(columns=columns)
             self.time_init = time_now
 
         # Robot 2D pose (x, y, theta) and velocity
@@ -125,14 +120,15 @@ class DataCollector():
         r_v = robot.twist.linear.x
         r_w = robot.twist.angular.z
         
-        # Human 2D pose (x, y, theta) and velocity
-        p = people.tracks[0]            
-        h_x = p.pose.pose.position.x
-        h_y = p.pose.pose.position.y
-        h_theta = p.pose.pose.orientation.z
-        h_v = p.twist.twist.linear.x
-        h_w = p.twist.twist.angular.z
-        h_risk = risk.risk.data
+        # Human 2D pose (x, y, theta) and velocity            
+        h_x = human.pose2D.x
+        h_y = human.pose2D.y
+        h_theta = human.pose2D.theta
+        h_v = human.twist.linear.x
+        h_w = human.twist.angular.z
+        h_risk = human.risk.risk.data
+        h_dg = human.dg.data
+        h_thetag = human.thetag.data
                   
         # appending new data row in Dataframe
         nrx = np.random.normal(0, STD[0]) if ADDNOISE else 0
@@ -154,15 +150,17 @@ class DataCollector():
                                      'r_{\theta}': r_theta + nrtheta, 'r_v': r_v + nrv, 'r_{\omega}': r_w + nrw,
                                      'h_{gx}': self.hg[0], 'h_{gy}': self.hg[1],
                                      'h_x': h_x + nhx, 'h_y':h_y + nhy,
-                                     'h_{\theta}': h_theta + nhtheta, 'h_v': h_v + nhv, 'h_{\omega}': h_w + nhw, 'h_{risk}': h_risk
+                                     'h_{\theta}': h_theta + nhtheta, 'h_v': h_v + nhv, 'h_{\omega}': h_w + nhw, 
+                                     'h_{risk}': h_risk, 'h_{d_g}': h_dg, 'h_{\theta_g}': h_thetag
                                     }
         self.raw.loc[len(self.raw)] = {'time': robot.header.stamp.to_sec(),
                                      'r_{gx}': self.rg[0], 'r_{gy}': self.rg[1],
                                      'r_x': r_x, 'r_y': r_y, 
                                      'r_{\theta}': r_theta, 'r_v': r_v, 'r_{\omega}': r_w,
                                      'h_{gx}': self.hg[0], 'h_{gy}': self.hg[1],
-                                     'h_x': h_x, 'h_y':h_y,
-                                     'h_{\theta}': h_theta, 'h_v': h_v, 'h_{\omega}': h_w, 'h_{risk}': h_risk
+                                     'h_x': h_x, 'h_y': h_y,
+                                     'h_{\theta}': h_theta, 'h_v': h_v, 'h_{\omega}': h_w, 
+                                     'h_{risk}': h_risk, 'h_{d_g}': h_dg, 'h_{\theta_g}': h_thetag
                                     }
         
         

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(mytiago_risk)
+project(mytiago_human)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
  add_compile_options(-std=c++11)
@@ -13,10 +13,9 @@ project(mytiago_risk)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
-  visualization_msgs
-  pedsim_msgs
   rospy
   std_msgs
+  pedsim_msgs
   message_generation
 )
 
@@ -29,6 +28,7 @@ find_package(catkin REQUIRED COMPONENTS
 # Generate messages in the 'msg' folder
 add_message_files(
   FILES
+  HumanState.msg
   Risk.msg
 )
 

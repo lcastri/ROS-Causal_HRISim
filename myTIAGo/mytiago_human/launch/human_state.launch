@@ -1,0 +1,13 @@
+<launch>
+  <param name="/hri/safe_distance" value="7.5"/>
+  <param name="/hri/obs_size" value="2.5"/>
+
+  <node name="human_state" pkg="mytiago_human" type="human_state.py" output="screen">
+    <param name="addnoise" value="false"/>
+    <param name="nxy" value="0.05"/>
+    <param name="ntheta" value="0.1"/>
+    <param name="nv" value="0.075"/>
+    <param name="nw" value="0.08"/>
+  </node>
+
+</launch>

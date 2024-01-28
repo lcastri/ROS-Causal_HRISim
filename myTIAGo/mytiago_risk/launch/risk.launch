@@ -1,8 +1,0 @@
-<launch>
-  <param name="/hri/safe_distance" value="7.5"/>
-  <param name="/hri/obs_size" value="2.5"/>
-
-  <node name="risk" pkg="mytiago_risk" type="risk.py" output="screen">
-  </node>
-
-</launch>
