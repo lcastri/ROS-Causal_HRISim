@@ -14,7 +14,7 @@ from fpcmci.selection_methods.TE import TE, TEestimator
 from fpcmci.basics.constants import LabelType
 import rospy
 import pandas as pd
-from mytiago_causal_discovery.msg import CausalModel
+from tscausaldisco.msg import CausalModel
 from std_msgs.msg import Header
 from sklearn.utils._testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
@@ -26,21 +26,21 @@ class CausalDiscoveryMethod(Enum):
     FPCMCI = "fpcmci"
 
 
-NODE_NAME = "mytiago_causal_discovery"
+NODE_NAME = "tscausaldisco"
 NODE_RATE = 10 # [Hz]
-CDM = str(rospy.get_param("/mytiago_causal_discovery/cd_method", default = "fpcmci"))
-FALPHA = float(rospy.get_param("/mytiago_causal_discovery/filter_alpha", default = 0.05))
-ALPHA = float(rospy.get_param("/mytiago_causal_discovery/sig_alpha", default = 0.05))
-MINLAG = int(rospy.get_param("/mytiago_causal_discovery/min_lag", default = 1))
-MAXLAG = int(rospy.get_param("/mytiago_causal_discovery/max_lag", default = 1))
-DATA_DIR = str(rospy.get_param("/mytiago_causal_discovery/data_dir", default = '/root/shared/')) + 'data_pool'
-RES_DIR = str(rospy.get_param("/mytiago_causal_discovery/res_dir", default = '/root/shared/')) + 'cm_pool'
-POSTPROCESS_DATA_DIR = str(rospy.get_param("/mytiago_causal_discovery/postprocess_data_dir", default = '/root/shared/')) + 'postprocess_pool'
-ID_FORMAT = str(rospy.get_param("/mytiago_causal_discovery/id_format", default = '%Y%m%d_%H%M%S'))
-CSV_PREFIX = str(rospy.get_param("/mytiago_causal_discovery/cas_prefix", default = 'data_'))
-POSTPROCESS_SCRIPT_DIR = str(rospy.get_param("/mytiago_causal_discovery/postprocess_script_dir", ""))
-POSTPROCESS_SCRIPT = str(rospy.get_param("/mytiago_causal_discovery/postprocess_script", ""))
-SELECTED_AGENT = str(rospy.get_param("/mytiago_causal_discovery/selected_agent", "h"))
+CDM = str(rospy.get_param("/tscausaldisco/cd_method", default = "fpcmci"))
+FALPHA = float(rospy.get_param("/tscausaldisco/filter_alpha", default = 0.05))
+ALPHA = float(rospy.get_param("/tscausaldisco/sig_alpha", default = 0.05))
+MINLAG = int(rospy.get_param("/tscausaldisco/min_lag", default = 1))
+MAXLAG = int(rospy.get_param("/tscausaldisco/max_lag", default = 1))
+DATA_DIR = str(rospy.get_param("/tscausaldisco/data_dir", default = '/root/shared/')) + 'data_pool'
+RES_DIR = str(rospy.get_param("/tscausaldisco/res_dir", default = '/root/shared/')) + 'cm_pool'
+POSTPROCESS_DATA_DIR = str(rospy.get_param("/tscausaldisco/postprocess_data_dir", default = '/root/shared/')) + 'postprocess_pool'
+ID_FORMAT = str(rospy.get_param("/tscausaldisco/id_format", default = '%Y%m%d_%H%M%S'))
+CSV_PREFIX = str(rospy.get_param("/tscausaldisco/cas_prefix", default = 'data_'))
+POSTPROCESS_SCRIPT_DIR = str(rospy.get_param("/tscausaldisco/postprocess_script_dir", ""))
+POSTPROCESS_SCRIPT = str(rospy.get_param("/tscausaldisco/postprocess_script", ""))
+VARS = ["r" + v for v in str(rospy.get_param("/tscausaldisco/vars")).split(",")]
 
 
 class CausalDiscovery():
@@ -67,15 +67,7 @@ class CausalDiscovery():
             DAG: causal model
         """
         df = Data(self.df)
-        f_list = deepcopy(df.features)
-        if "time" in f_list: f_list.remove("time")
-        df.shrink(f_list)
-        # df.shrink(["r_v", r"r_{\theta}", r"r_{\theta_{g}}", "r_{d_g}", "r_{risk}", r"r_{\omega}", r"r_{d_{obs}}", 
-        #            "h_v", r"h_{\theta}", r"h_{\theta_{g}}", "h_{d_g}", "h_{risk}", r"h_{\omega}", r"h_{d_{obs}}"])
-        # df.shrink(["r_v", r"r_{\theta}", r"r_{\theta_{g}}", "r_{d_g}", "r_{risk}", r"r_{\omega}", r"r_{d_{obs}}"])
-        variables = ["_v", r"_{\theta}", r"_{\theta_{g}}", "_{d_g}", "_{risk}", r"_{\omega}", r"_{d_{obs}}"]
-        variables = [SELECTED_AGENT + v for v in variables]
-        df.shrink(variables)
+        df.shrink(VARS)
         
         cdm = FPCMCI(df, 
                      f_alpha = FALPHA,

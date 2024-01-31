@@ -78,17 +78,17 @@ windows:
       - 'roslaunch mytiago_gazebo simulation.launch robot:=$TIAGO_TYPE public_sim:=true world:=$WORLD TIAGO_x:=$TIAGO_x TIAGO_y:=$TIAGO_y TIAGO_z:=$TIAGO_z TIAGO_R:=$TIAGO_R TIAGO_P:=$TIAGO_P TIAGO_Y:=$TIAGO_Y'
       - 'rviz -d "$(rospack find mytiago_rviz)/config/rviz/tiago_rviz_sim.rviz" --fixed-frame map'
       - 'roslaunch mytiago_rviz visualisation_rviz.launch'
-  - name: robot
-    tags: ['robot']
+  - name: scenario
+    tags: ['scene']
     panes:
       - 'roslaunch tiago_2dnav_gazebo navigation.launch public_sim:=true global_planner:=$GLOBAL_PLANNER local_planner:=$LOCAL_PLANNER localization:=$LOCALIZATION config_base_path:=$CONFIG_BASE_PATH map:=$MAP'
       - 'rosrun mytiago_twist_mux mytwist_mux.py'
-      - 'rosrun mytiago_robot robot_state.py'
-  - name: human
-    tags: ['human']
-    panes:
       - 'roslaunch mytiago_pedsim mysimulator.launch scenario:=$SCENARIO robot_mode:=$ROBOT_MODE max_robot_speed:=$MAX_ROBOT_SPEED robot_radius:=$ROBOT_RADIUS kbd_teleop:=$KBD_TELEOP with_ped:=$WITH_PED ped_x:=$HUMAN_x ped_y:=$HUMAN_y ped_theta:=0'
-      - 'roslaunch mytiago_human human_state.launch'
+  - name: roscausal
+    tags: ['roscausal']
+    panes:
+      - 'roslaunch roscausal_robot robot_state.launch'
+      - 'roslaunch roscausal_human human_state.launch'
   - name: experiment
     tags: ['rec']
     panes:

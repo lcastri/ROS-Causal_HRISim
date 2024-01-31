@@ -40,7 +40,7 @@ cdm = FPCMCI(df,
              val_condtest = GPDC(significance = 'analytic', gp_params = None),
              verbosity = CPLevel.DEBUG,
              neglect_only_autodep = False,
-             resfolder = "PUTTANA")
+             resfolder = "res")
 
 feature, causalmodel = cdm.run()
 # feature, causalmodel = cdm.run_pcmci()

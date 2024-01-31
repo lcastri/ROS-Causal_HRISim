@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>mytiago_causal_discovery</name>
+  <name>tscausaldisco</name>
   <version>0.0.0</version>
-  <description>The mytiago_causal_discovery package</description>
+  <description>The tscausaldisco package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->

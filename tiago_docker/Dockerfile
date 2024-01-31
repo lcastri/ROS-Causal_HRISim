@@ -82,7 +82,6 @@ RUN cd ~/ros_ws && \
 RUN DEBIAN_FRONTEND=noninteractive pip install jpype1
 RUN DEBIAN_FRONTEND=noninteractive pip install mpmath
 RUN cd ~/ros_ws/IDTxl && pip install .
-RUN echo BLABLA
 RUN cd ~/ros_ws/ && \
     git clone -b causal-hri https://github.com/lcastri/fpcmci.git && \
     cd ~/ros_ws/fpcmci && pip install --use-pep517 .
@@ -95,6 +94,12 @@ RUN cd ~/ros_ws/src/ && \
     git clone https://github.com/srl-freiburg/pedsim_ros.git && \
     cd pedsim_ros && \
     git submodule update --init --recursive
+
+# Clone and install roscausal
+RUN echo BLACI
+RUN cd ~/ros_ws/src/ && \
+    git clone https://github.com/lcastri/roscausal.git 
+
 # files has been modified to allow single agent scenario and to expose robot_radius
 COPY myTIAGo/mytiago_pedsim/modified_scripts/simulator.cpp /root/ros_ws/src/pedsim_ros/pedsim_simulator/src
 COPY myTIAGo/mytiago_pedsim/modified_scripts/agent.cpp /root/ros_ws/src/pedsim_ros/pedsim_simulator/src/element
