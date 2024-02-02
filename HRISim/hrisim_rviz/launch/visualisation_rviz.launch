@@ -1,0 +1,12 @@
+<launch>
+  <node name="distance_visualiser" pkg="hrisim_rviz" type="distance_visualiser.py" output="screen">
+  </node>
+  <node name="centre_visualiser" pkg="hrisim_rviz" type="centre_visualiser.py" output="screen">
+  </node>
+  <node name="goal_visualiser" pkg="hrisim_rviz" type="goal_visualiser.py" output="screen">
+  </node>
+  <node name="risk_visualiser" pkg="hrisim_rviz" type="risk_visualiser.py" output="screen">
+  </node>
+  <node name="linegoal_visualiser" pkg="hrisim_rviz" type="linegoal_visualiser.py" output="screen">
+  </node>
+</launch>

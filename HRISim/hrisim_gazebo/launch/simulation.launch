@@ -1,0 +1,60 @@
+<launch>
+  <arg name="world"                     default="maze"/>
+  <arg name="scenario"                  default="single_agent_avoidance"/>
+  <arg name="robot"                     default="iron"/>
+  <arg name="arm"                       default="$(eval {'iron': False}.get(arg('robot'), True))"/>
+  <arg name="end_effector"              default="$(eval {'iron': 'false', 'steel': 'pal-gripper', 'titanium': 'pal-hey5'}.get(arg('robot'), 'pal-gripper'))"/>
+  <arg name="ft_sensor"                 default="$(eval {'titanium': 'schunk-ft'}.get(arg('robot'), 'false'))"/>
+  <arg name="laser_model"               default="sick-571"/>
+  <arg name="camera_model"              default="orbbec-astra"/>
+  <arg name="multi"                     default=""/>
+  <arg name="TIAGO_x"                   default="0.0"/>
+  <arg name="TIAGO_y"                   default="0.0"/>
+  <arg name="TIAGO_z"                   default="0.0"/>
+  <arg name="TIAGO_R"                   default="0.0"/>
+  <arg name="TIAGO_P"                   default="0.0"/>
+  <arg name="TIAGO_Y"                   default="0.0"/>
+  <arg name="gui"                       default="true"/>
+  <arg name="debug"                     default="false"/>
+  <arg name="public_sim"                default="false"/>
+  <arg name="tuck_arm"                  default="true"/>
+  <arg name="recording"                 default="false"/>
+  <arg name="extra_gazebo_args"         default=""/>
+  <arg name="use_moveit_camera"         default="false"/>
+  <arg name="use_dynamic_footprint"     default="false"/>
+  <arg name="base_type"                 default="pmb2"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name"              value="$(find hrisim_gazebo)/worlds/$(arg world).world"/>
+  </include>
+
+  <!-- spawn robot in simulation -->
+  <include file="$(find tiago_gazebo)/launch/tiago_spawn.launch">
+    <arg name="arm"                     value="$(arg arm)"/>
+    <arg name="end_effector"            value="$(arg end_effector)"/>
+    <arg name="ft_sensor"               value="$(arg ft_sensor)"/>
+    <arg name="laser_model"             value="$(arg laser_model)"/>
+    <arg name="camera_model"            value="$(arg camera_model)"/>
+    <arg name="multi"                   value="$(arg multi)"/>
+    <arg name="gzpose"                  value="-x $(arg TIAGO_x) -y $(arg TIAGO_y) -z $(arg TIAGO_z) -R $(arg TIAGO_R) -P $(arg TIAGO_P) -Y $(arg TIAGO_Y)"/>
+    <arg name="base_type"               value="$(arg base_type)"/>
+  </include>
+
+  <!-- bring up robot -->
+  <include file="$(find tiago_gazebo)/launch/simulation_tiago_bringup.launch">
+    <arg name="arm"                     value="$(arg arm)"/>
+    <arg name="end_effector"            value="$(arg end_effector)"/>
+    <arg name="ft_sensor"               value="$(arg ft_sensor)"/>
+    <arg name="laser_model"             value="$(arg laser_model)"/>
+    <arg name="camera_model"            value="$(arg camera_model)"/>
+    <arg name="public_sim"              value="$(arg public_sim)"/>
+    <arg name="use_moveit_camera"       value="$(arg use_moveit_camera)"/>
+    <arg name="use_dynamic_footprint"   value="$(arg use_dynamic_footprint)"/>
+    <arg name="base_type"               value="$(arg base_type)"/>
+  </include>
+
+  <!-- this node spawn pedsim actors to gazebo once, then the plugin updates their pose -->  
+  <node pkg="pedsim_gazebo_plugin" type="spawn_pedsim_agents.py" name="spawn_pedsim_agents"  output="screen">
+  </node>
+
+</launch>
