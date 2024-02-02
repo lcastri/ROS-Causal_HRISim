@@ -1,7 +1,7 @@
 #!/bin/bash
 
-container_name=TIAGo
-image_name=tiago-docker
+container_name=HRISim
+image_name=hrisim-docker
 
 xhost +local:
 

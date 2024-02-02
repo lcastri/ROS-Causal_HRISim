@@ -1,0 +1,13 @@
+<launch>
+  <arg name="bagname"/>
+
+  <!-- rosbags play -->
+  <param name="use_sim_time" value="true" />
+  <node name="rosbag_play_data" pkg="rosbag" type="play" 
+        args="--clock $(find hrisim_postprocessing)/bags/$(arg bagname).bag" required="true"/>
+
+  <node name="hrisim_postprocessing" pkg="hrisim_postprocessing" type="postprocessing.py" output="screen">
+    <param name="bagname"   value="$(arg bagname)"/> 
+    <param name="datapath"  value="$(find hrisim_postprocessing)/data"/>
+  </node>
+</launch>

@@ -101,7 +101,7 @@ ipch/
 *.ncb
 *.opendb
 *.opensdf
-*.sdf
+# *.sdf
 *.cachefile
 *.VC.db
 *.VC.VC.opendb
@@ -355,8 +355,11 @@ dist/
 # bag
 *.bag
 
-# postprocessing_ws
+# utilities_ws
 *.catkin_tools
 */devel
 */logs
 *.csv
+
+/results/*
+/shared/*

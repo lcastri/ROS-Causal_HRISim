@@ -1,7 +1,7 @@
 #!/bin/bash
 
-container_name=TIAGo
-image_name=tiago-docker
+container_name=HRISim
+image_name=hrisim-docker
 host_folder=$(pwd)/shared
 container_folder=/root/shared
 
@@ -13,7 +13,11 @@ systemctl start docker
 
 echo " "
 echo "Building ${container_name} docker..."
-docker build -f tiago_docker/Dockerfile -t ${image_name} .
+docker build -f hrisim_docker/Dockerfile -t ${image_name} .
+
+echo " "
+echo "Removing old images..."
+docker rmi $(docker images -qa -f 'dangling=true')
 
 echo " "
 echo "Running docker container..."

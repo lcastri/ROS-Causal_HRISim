@@ -1,9 +1,0 @@
-<launch>
-  <node name="distance_visualiser" pkg="mytiago_rviz" type="distance_visualiser.py" output="screen">
-    <param name="dist_threshold" value="2.0"/>
-  </node>
-  <node name="centre_visualiser" pkg="mytiago_rviz" type="centre_visualiser.py" output="screen">
-  </node>
-  <node name="goal_visualiser" pkg="mytiago_rviz" type="goal_visualiser.py" output="screen">
-  </node>
-</launch>

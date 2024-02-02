@@ -1,4 +1,4 @@
-# TIAGo-docker
+# ROS-Causal_HRISim
 build and run the docker:
 ```
 sudo ./build_run_docker.sh
