@@ -79,13 +79,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 ENV JAVA_HOME "/lib/jvm/java-11-openjdk-amd64/bin/java"
 RUN cd ~/ros_ws && \
     git clone -b v1.4 https://github.com/pwollstadt/IDTxl.git
-# RUN DEBIAN_FRONTEND=noninteractive pip install jpype1
-# RUN DEBIAN_FRONTEND=noninteractive pip install mpmath
 RUN cd ~/ros_ws/IDTxl && pip install .
 RUN DEBIAN_FRONTEND=noninteractive pip install fpcmci --use-pep517
-# RUN cd ~/ros_ws/ && \
-#     git clone -b causal-hri https://github.com/lcastri/fpcmci.git && \
-#     cd ~/ros_ws/fpcmci && pip install --use-pep517 .
 
 # Installing pkgs for postprocessing
 RUN DEBIAN_FRONTEND=noninteractive pip install shapely
