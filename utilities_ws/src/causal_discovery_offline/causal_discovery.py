@@ -10,7 +10,7 @@ from fpcmci.basics.constants import LabelType, ImageExt
 
 SELECTED_AGENT = 'h'
 
-DATA_DIR = '~/git/TIAGo-docker/utilities_ws/src/causal_discovery_offline/ppdata'
+DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/ppdata'
 # CSV_NAME = ["data_20240131_182712", "data_20240131_182942"]
 CSV_NAME = ["data_20240131_234259", "data_20240131_234529"]
 ldf = list()
@@ -35,16 +35,14 @@ cdm = FPCMCI(df,
              val_condtest = GPDC(significance = 'analytic', gp_params = None),
              verbosity = CPLevel.DEBUG,
              neglect_only_autodep = False,
-             resfolder = "results/CIAO")
-            #  resfolder = "results/" + '__'.join(CSV_NAME))
+             resfolder = "results/" + '__'.join(CSV_NAME))
 
 start = time()
 feature, causalmodel = cdm.run()
 elapsed_fpcmci = time() - start
 fpcmci_time = str(timedelta(seconds = elapsed_fpcmci))
 print(fpcmci_time)
-# feature, causalmodel = cdm.run_pcmci()
 
 if len(feature) > 0:   
     cdm.dag(label_type = LabelType.Lag, img_ext = ImageExt.PDF)
-    cdm.timeseries_dag(node_size=6, font_size=16, img_ext = ImageExt.PDF)
+    cdm.timeseries_dag(node_size=6, font_size=16, img_ext = ImageExt.PDF, node_proximity=3)

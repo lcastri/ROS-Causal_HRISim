@@ -58,8 +58,8 @@ init_cmd: |
   # robot_mode == 0: CONTROLLED implies that the robot's velocity is set by some planning algorithm like DWA. Its very similar to the teleoperation mode, using tf in the mix is just a layer on top of this -->
   # robot_mode == 1: TELEOPERATION , we map the output of a teleop node (like joystick) to drive the robot -->
   # robot_mode == 2: SOCIAL mode means the robot's velocity is set by the social force just like the other agents -->
-  export_default ROBOT_MODE "1"
-  export_default MAX_ROBOT_SPEED "1.5"
+  export_default HUMAN_MODE "1"
+  export_default MAX_HUMAN_SPEED "1.5"
   export_default ROBOT_RADIUS "2"
   export_default WITH_PED "true"
   export_default KBD_TELEOP "true"
@@ -89,7 +89,7 @@ windows:
     panes:
       - 'roslaunch tiago_2dnav_gazebo navigation.launch public_sim:=true global_planner:=$GLOBAL_PLANNER local_planner:=$LOCAL_PLANNER localization:=$LOCALIZATION config_base_path:=$CONFIG_BASE_PATH map:=$MAP'
       - 'rosrun hrisim_twist_mux mytwist_mux.py'
-      - 'roslaunch hrisim_pedsim mysimulator.launch scenario:=$SCENARIO robot_mode:=$ROBOT_MODE max_robot_speed:=$MAX_ROBOT_SPEED robot_radius:=$ROBOT_RADIUS kbd_teleop:=$KBD_TELEOP with_ped:=$WITH_PED ped_x:=$HUMAN_x ped_y:=$HUMAN_y ped_theta:=0'
+      - 'roslaunch hrisim_pedsim mysimulator.launch scenario:=$SCENARIO robot_mode:=$HUMAN_MODE max_robot_speed:=$MAX_HUMAN_SPEED robot_radius:=$ROBOT_RADIUS kbd_teleop:=$KBD_TELEOP with_ped:=$WITH_PED ped_x:=$HUMAN_x ped_y:=$HUMAN_y ped_theta:=0'
       - 'roslaunch hrisim_risk risk.launch'
   - name: roscausal
     tags: ['roscausal']
