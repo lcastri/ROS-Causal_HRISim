@@ -2,13 +2,20 @@
 A Gazebo-based human-robot interaction simulator that accurately mimics HRI scenarios involving a [TIAGo](https://pal-robotics.com/robots/tiago/) robot and multiple pedestrians modelled using the [pedsim_ros](https://github.com/srl-freiburg/pedsim_ros) ROS library. To better emulate human behaviours, we incorporated the option for user teleoperation (via keyboard) of a simulated person, not influenced by social forces.
 
 <p float="left">
-    <img src="https://github.com/lcastri/ROS-Causal_HRISim/blob/main/images/basic.gif" width="33%" height="33%" />
+    <img src="https://github.com/lcastri/ROS-Causal_HRISim/blob/main/images/singleagent.gif" width="33%" height="33%" />
     <img src="https://github.com/lcastri/ROS-Causal_HRISim/blob/main/images/corridor.gif" width="33%" height="33%" />
     <img src="https://github.com/lcastri/ROS-Causal_HRISim/blob/main/images/multiagent.gif" width="33%" height="33%" />
 </p>
 
 
 The simulator has been designed to facilitate the setup of real-life HRI scenarios and the execution of causal analysis within them. For the latter, [ROS-Causal](https://github.com/lcastri/roscausal), a ROS-based causal analysis framework for HRI applications, has been integrated in the ROS-Causal_HRISim simulator.
+
+## Features
+* Individual and group walking pedestrian using social force model
+* Social activities simulation
+* Single person teleoperation
+* Personalisable HRI scenario and world
+* Causal analysis
 
 ## How to use
 ### Build and run
@@ -52,3 +59,8 @@ Ctrl+b
 panel number 0
 tm-stop
 ```
+
+## Recent changes
+| Version | Changes |
+| :---: | ----------- |
+| 1.0.0 | package released|
