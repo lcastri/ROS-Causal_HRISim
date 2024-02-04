@@ -20,10 +20,11 @@ echo " "
    echo "function tm-restart(){  tmule -c ~/ros_ws/src/HRISim/hrisim_tmule/tmule/tiago_sim.yaml -W 3 relaunch ; }" >> ~/.bashrc
    echo "function tm-show(){  tmux a -t tiago_sim ; }" >> ~/.bashrc
 
+   source /opt/ros/noetic/setup.bash
    cd ~/ros_ws
    catkin build
-   export WORLD='maze'
    source ~/ros_ws/devel/setup.bash
+   echo "source ~/ros_ws/devel/setup.bash" >> ~/.bashrc
    exec "/bin/bash"
 
 } || {

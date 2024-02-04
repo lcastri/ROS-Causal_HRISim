@@ -23,6 +23,13 @@
   <arg name="use_moveit_camera"         default="false"/>
   <arg name="use_dynamic_footprint"     default="false"/>
   <arg name="base_type"                 default="pmb2"/>
+  <arg name="spawn_agent"               default="true"/>
+  <arg name="spawn_teleop_agent"        default="true"/>
+  <arg name="spawn_timeout"             default="10.0"/>
+
+  <param name="/pedsim_simulator/spawn_agent" value="$(arg spawn_agent)" type="bool"/>
+  <param name="/pedsim_simulator/spawn_teleop_agent" value="$(arg spawn_teleop_agent)" type="bool"/>
+  <param name="/pedsim_simulator/spawn_timeout" value="$(arg spawn_timeout)" type="double"/>
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name"              value="$(find hrisim_gazebo)/worlds/$(arg world).world"/>

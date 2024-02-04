@@ -40,16 +40,16 @@ RUN DEBIAN_FRONTEND=noninteractive rosdep install -y --from-paths src --ignore-s
 COPY hrisim_docker/tiago_controller_conf_package.xml /root/ros_ws/src/tiago_robot/tiago_controller_configuration/package.xml
 
 # Build the workspace
-RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && catkin build -DCATKIN_ENABLE_TESTING=0 -j 1"
+#RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && catkin build -DCATKIN_ENABLE_TESTING=0 -j 1"
 
 # Set up ros_ws
-RUN echo "source ~/ros_ws/devel/setup.bash" >> ~/.bashrc
+#RUN echo "source ~/ros_ws/devel/setup.bash" >> ~/.bashrc
 
-# Copy the entrypoint.sh script into the image and give execute permissions to the script
-COPY hrisim_docker/entrypoint.sh /usr/local/bin/
-COPY hrisim_docker/robot_entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/robot_entrypoint.sh
+# # Copy the entrypoint.sh script into the image and give execute permissions to the script
+# COPY hrisim_docker/entrypoint.sh /usr/local/bin/
+# COPY hrisim_docker/robot_entrypoint.sh /usr/local/bin/
+# RUN chmod +x /usr/local/bin/entrypoint.sh
+# RUN chmod +x /usr/local/bin/robot_entrypoint.sh
 
 # Install tmux and TMuLE
 RUN DEBIAN_FRONTEND=noninteractive pip install tmule
@@ -93,7 +93,13 @@ RUN cd ~/ros_ws/src/ && \
 
 # Clone and install roscausal
 RUN cd ~/ros_ws/src/ && \
-    git clone https://github.com/lcastri/roscausal.git 
+    git clone https://github.com/lcastri/roscausal.git
+
+# Copy the entrypoint.sh script into the image and give execute permissions to the script
+COPY hrisim_docker/entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY hrisim_docker/robot_entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/robot_entrypoint.sh
 
 # files has been modified to allow single agent scenario and to expose robot_radius
 COPY HRISim/hrisim_pedsim/modified_scripts/simulator.cpp /root/ros_ws/src/pedsim_ros/pedsim_simulator/src

@@ -14,9 +14,9 @@ from pedsim_msgs.msg  import AgentStates
 # xml file containing a gazebo model to represent agent, currently is represented by a cubic but can be changed
 global xml_file
 
-def actor_poses_callback(actors):
-    global AGENT_SPAWN
-    if not AGENT_SPAWN:
+def cb_actor_poses(actors):
+    global AGENT_SPAWNED
+    if not AGENT_SPAWNED:
         for actor in actors.agent_states:
             actor_id = str( actor.id )
             actor_pose = actor.pose
@@ -32,11 +32,11 @@ def actor_poses_callback(actors):
 
             spawn_model(actor_id, xml_string, "", model_pose, "world")
         rospy.logwarn("All autonomous agents have been spawn")
-        AGENT_SPAWN = True
+        AGENT_SPAWNED = True
         
-def teleop_actor_poses_callback(actors):
-    global TELEOP_AGENT_SPAWN
-    if not TELEOP_AGENT_SPAWN:
+def cb_teleop_actor_poses(actors):
+    global TELEOP_AGENT_SPAWNED
+    if not TELEOP_AGENT_SPAWNED:
         for actor in actors.agent_states:
             actor_id = str( actor.id )
             actor_pose = actor.pose
@@ -52,17 +52,17 @@ def teleop_actor_poses_callback(actors):
 
             spawn_model(actor_id, xml_string, "", model_pose, "world")
         rospy.logwarn("All teleop agents have been spawn")
-        TELEOP_AGENT_SPAWN = True
+        TELEOP_AGENT_SPAWNED = True
 
 if __name__ == '__main__':
 
     rospy.init_node("spawn_pedsim_agents")
     rate = rospy.Rate(10)
     
-    global AGENT_SPAWN, TELEOP_AGENT_SPAWN
-    AGENT_SPAWN = True
-    TELEOP_AGENT_SPAWN = False
-
+    global AGENT_SPAWNED, TELEOP_AGENT_SPAWNED
+    AGENT_SPAWNED = not bool(rospy.get_param('/pedsim_simulator/spawn_agent'))
+    TELEOP_AGENT_SPAWNED = not bool(rospy.get_param('/pedsim_simulator/spawn_teleop_agent'))
+    TIMEOUT = float(rospy.get_param('/pedsim_simulator/spawn_timeout', 10))
     rospack1 = RosPack()
     pkg_path = rospack1.get_path('pedsim_gazebo_plugin')
     default_actor_model_file = pkg_path + "/models/actor_model.sdf"
@@ -75,10 +75,12 @@ if __name__ == '__main__':
     rospy.wait_for_service("gazebo/spawn_sdf_model")
     spawn_model = rospy.ServiceProxy("gazebo/spawn_sdf_model", SpawnModel)
     print("service: spawn_sdf_model is available ....")
-    rospy.Subscriber("/pedsim_simulator/simulated_agents", AgentStates, actor_poses_callback)
-    rospy.Subscriber("/ped/control/gz_persons", AgentStates, teleop_actor_poses_callback)
+    rospy.Subscriber("/pedsim_simulator/simulated_agents", AgentStates, cb_actor_poses)
+    rospy.Subscriber("/ped/control/gz_persons", AgentStates, cb_teleop_actor_poses)
 
+    init = rospy.Time.now().to_sec()
     while not rospy.is_shutdown():
-        if AGENT_SPAWN and TELEOP_AGENT_SPAWN:
+        if init - rospy.Time.now().to_sec() >= TIMEOUT: rospy.signal_shutdown("Timeout")
+        if AGENT_SPAWNED and TELEOP_AGENT_SPAWNED:
             rospy.signal_shutdown("All agents have been spawned!")
         rate.sleep()

@@ -34,9 +34,12 @@ init_cmd: |
   export_default TIAGO_Y "0.0"
 
   # world arguments
-  # export_default WORLD "maze"
+  # choose a map between: maze, maze_corridor, maze_corridor_withTurn, maze_corridor_withDoors
+  export_default WORLD "maze"
   export_default GZ_GUI "false"
-  export_default SCENARIO "single_agent_avoidance"
+
+  # choose a map between: single_agent_avoidance, multi_agent_avoidance
+  export_default SCENARIO "multi_agent_avoidance"
 
   # navigation specific arguments
   export_default GLOBAL_PLANNER "global_planner"
@@ -62,6 +65,9 @@ init_cmd: |
   export_default KBD_TELEOP "true"
   export_default HUMAN_x "-5"
   export_default HUMAN_y "5"
+  export_default SPAWN_AGENT "true"
+  export_default SPAWN_TELEOP_AGENT "true"
+  export_default SPAWN_TIMEOUT "10.0"
 
 windows:
   - name: roscore
@@ -75,7 +81,7 @@ windows:
   - name: visual
     tags: ['core', 'robot']
     panes:
-      - 'roslaunch hrisim_gazebo simulation.launch robot:=$TIAGO_TYPE public_sim:=true world:=$WORLD TIAGO_x:=$TIAGO_x TIAGO_y:=$TIAGO_y TIAGO_z:=$TIAGO_z TIAGO_R:=$TIAGO_R TIAGO_P:=$TIAGO_P TIAGO_Y:=$TIAGO_Y'
+      - 'roslaunch hrisim_gazebo simulation.launch robot:=$TIAGO_TYPE public_sim:=true world:=$WORLD TIAGO_x:=$TIAGO_x TIAGO_y:=$TIAGO_y TIAGO_z:=$TIAGO_z TIAGO_R:=$TIAGO_R TIAGO_P:=$TIAGO_P TIAGO_Y:=$TIAGO_Y spawn_agent:=$SPAWN_AGENT spawn_teleop_agent:=$SPAWN_TELEOP_AGENT spawn_timeout:=$SPAWN_TIMEOUT'
       - 'rviz -d "$(rospack find hrisim_rviz)/config/rviz/tiago_rviz_sim.rviz" --fixed-frame map'
       - 'roslaunch hrisim_rviz visualisation_rviz.launch'
   - name: scenario
@@ -91,7 +97,7 @@ windows:
       - 'roslaunch roscausal_robot robot_state.launch'
       - 'roslaunch roscausal_human human_state.launch'
   - name: experiment
-    tags: ['rec']
+    tags: ['exp']
     panes:
       - 'cd ~/ros_ws/src/HRISim/hrisim_plans; echo -e "\033[1;31mStart your plan here: python PassByTheCentre.py nRepetition Bagname, e.g.\n python PassByTheCentre.py 8 robotPriority\033[0m"'
       - 'rosrun pedsim_simulator keyboard_teleop.py'
