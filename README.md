@@ -85,8 +85,8 @@ For more details on how to define plans, actions, and conditions, visit the [Pet
 ### Causal analysis
 The causal analysis is perform through the [ROS-Causal](https://github.com/lcastri/roscausal) ROS library. An example of causal model reconstructed from a HRI scenario involving the TIAGo robot and a single teleoperated human is shown in the following:
 <p float="left">
-    <img src="https://github.com/lcastri/ROS-Causal_HRISim/blob/main/images/singleagent.gif" width="59%" height="59%" />
-    <img src="https://github.com/lcastri/ROS-Causal_HRISim/blob/main/images/causal_model_example.png" width="39%" height="39%" />
+    <img src="https://github.com/lcastri/ROS-Causal_HRISim/blob/main/images/singleagent.gif" width="54%" height="54%" />
+    <img src="https://github.com/lcastri/ROS-Causal_HRISim/blob/main/images/causal_model_example.png" width="34%" height="34%" />
 </p>
 
 The raw data collected through the simulator and the corresponding post-processed data used in the causal analysis can be found [here](https://github.com/lcastri/ROS-Causal_HRISim/blob/main/data/experiment_20240131_234259.zip).
