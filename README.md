@@ -45,7 +45,7 @@ If you want to add your own SCENARIO, you can include your .xml file in hrisim_p
 * MAX_HUMAN_SPEED - teleop humam max speed
 * ROBOT_RADIUS - robot size
 * HUMAN_x - teleop human init x-coordinate
-* HUMAN_y - teleop human init x-coordinate
+* HUMAN_y - teleop human init y-coordinate
 * SPAWN_AGENT - bit to decide whether to spawn agents driven by social forces (if present in the SCENARIO) 
 * SPAWN_TELEOP_AGENT - bit to decide whether to spawn teleop agent
 * SPAWN_TIMEOUT - spawn timeout
