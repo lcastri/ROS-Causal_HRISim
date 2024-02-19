@@ -30,12 +30,12 @@ class Agent():
         self.name = name
         self.x = x + np.random.normal(0, .05, x.size) if addnoise else x
         self.y = y + np.random.normal(0, .05, y.size) if addnoise else y
-        # self.theta = theta
-        # self.v = v
-        # self.omega = omega
-        self.theta = theta + np.random.normal(0, .025, theta.size) if addnoise else theta
-        self.v = v + np.random.normal(0, .02, v.size) if addnoise else v
-        self.omega = omega + np.random.normal(0, .038, omega.size) if addnoise else omega
+        self.theta = theta
+        self.v = v
+        self.omega = omega
+        # self.theta = theta + np.random.normal(0, .015, theta.size) if addnoise else theta
+        # self.v = v + np.random.normal(0, .01, v.size) if addnoise else v
+        # self.omega = omega + np.random.normal(0, .028, omega.size) if addnoise else omega
         self.time = time
         
     def p(self, t):
@@ -179,7 +179,7 @@ if __name__ == '__main__':
                         "h_{d_g}" : H.dist(i, HG), 
                         "h_{risk}" : H.risk(i-1, R), 
                         r"h_{\omega}" : H.omega[i],
-                        r"h_{d_{obs}}" : H.dist(i, R),
+                        r"h_{d_{obs}}" : H.dist(i, R) + np.random.normal(0, 0.015),
                         }
 
         # Save the processed data to another CSV file

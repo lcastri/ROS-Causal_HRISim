@@ -342,7 +342,9 @@ void Simulator::publishAgents() {
     // agent_forces.random_force = a->getSocialForce();
 
     state.forces = agent_forces;
-
+    state.goal.x = a->getCurrentWaypoint()->getx();
+    state.goal.y = a->getCurrentWaypoint()->gety();
+    
     all_status.agent_states.push_back(state);
   }
 

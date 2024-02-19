@@ -5,7 +5,7 @@ from shapely.geometry import *
 import math
 import message_filters
 from hrisim_risk.msg import Risk
-from roscausal_msgs.msg import RobotState, HumanState
+from roscausal_msgs.msg import RobotState, HumanState, Humans
 from std_msgs.msg import Header
 
 
@@ -64,7 +64,7 @@ class RiskClass():
         sub_robot = message_filters.Subscriber("/roscausal/robot", RobotState)
         
         # Person subscriber
-        sub_people = message_filters.Subscriber('/roscausal/human', HumanState)
+        sub_people = message_filters.Subscriber('/roscausal/human', Humans)
                 
                 
         # Init synchronizer and assigning a callback 
@@ -73,36 +73,58 @@ class RiskClass():
                                                                 queue_size = 10, slop = 0.1,
                                                                 allow_headerless = True)
 
+
         self.ats.registerCallback(self.cb_risk)
         
     
-    def extract_data(self, robot, person):
+    def extract_data(self, robot, people):
+        obstacles = list()
+        
+        # Teleop human 2D pose (x, y, theta) and velocity
+        for person in people.humans:
+            if person.id == 1000:
+                h_x = person.pose2D.x
+                h_y = person.pose2D.y
+                h_v = person.twist.linear
+                
+        self.A = Point(h_x, h_y)
+        self.Av = Point(h_v.x, h_v.y)
+            
         # Robot 2D pose (x, y, theta) and velocity
         r_x = robot.pose2D.x
         r_y = robot.pose2D.y
         r_v = robot.twist.linear
+        obstacles.append((r_x,r_y,r_v))
+        for person in people.humans:
+            if person.id != 1000:
+                x = person.pose2D.x
+                y = person.pose2D.y
+                v = person.twist.linear
+                obstacles.append((x,y,v))
+                
+        # Select the closest obstacle to the selected human
+        closest_obs = None
+        min_distance = float('inf')
+        for obs_x, obs_y, obs_v in obstacles:
+            distance = ((obs_x - h_x) ** 2 + (obs_y - h_y) ** 2) ** 0.5
+            if distance < min_distance:
+                min_distance = distance
+                closest_obs = (obs_x, obs_y, obs_v)
             
-        # Human 2D pose (x, y, theta) and velocity
-        h_x = person.pose2D.x
-        h_y = person.pose2D.y
-        h_v = person.twist.linear
-        
-        self.A = Point(h_x, h_y)
-        self.Av = Point(h_v.x, h_v.y)
-        self.obs = Point(r_x, r_y)
-        self.obsv = Point(r_v.x, r_v.y)
+        self.obs = Point(closest_obs[0], closest_obs[1])
+        self.obsv = Point(closest_obs[2].x, closest_obs[2].y)
                        
 
-    def cb_risk(self, robot: RobotState, person: HumanState):
+    def cb_risk(self, robot: RobotState, people: Humans):
         """
         Synchronized callback
 
         Args:
             robot (RobotState): robot state
-            people (HumanState): person state
+            people (Humans): people state
         """
         if self.firstcb:
-            self.extract_data(robot, person)
+            self.extract_data(robot, people)
             self.firstcb = False
         
         else:
@@ -125,7 +147,7 @@ class RiskClass():
             msg.right.z = 0
             self.pub_risk.publish(msg)
             
-            self.extract_data(robot, person)
+            self.extract_data(robot, people)
 
                 
         

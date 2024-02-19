@@ -92,8 +92,9 @@ RUN cd ~/ros_ws/src/ && \
     git submodule update --init --recursive
 
 # Clone and install roscausal
+RUN echo ciao
 RUN cd ~/ros_ws/src/ && \
-    git clone https://github.com/lcastri/roscausal.git
+    git clone -b dev https://github.com/lcastri/roscausal.git
 
 # Copy the entrypoint.sh script into the image and give execute permissions to the script
 COPY hrisim_docker/entrypoint.sh /usr/local/bin/
@@ -110,6 +111,7 @@ COPY HRISim/hrisim_pedsim/modified_scripts/simulate_diff_drive_ped.cpp /root/ros
 COPY HRISim/hrisim_pedsim/modified_scripts/CMakeLists.txt /root/ros_ws/src/pedsim_ros/pedsim_simulator/
 COPY HRISim/hrisim_pedsim/modified_scripts/spawn_pedsim_agents.py /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/scripts
 COPY HRISim/hrisim_pedsim/modified_scripts/actor_model.sdf /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/models
+COPY HRISim/hrisim_pedsim/modified_scripts/AgentState.msg /root/ros_ws/src/pedsim_ros/pedsim_msgs/msg
 
 # Copy files into the image
 RUN mkdir -p ~/ros_ws/src/HRISim/
