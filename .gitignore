@@ -363,3 +363,5 @@ dist/
 
 /results/*
 /shared/*
+
+*.vscode
