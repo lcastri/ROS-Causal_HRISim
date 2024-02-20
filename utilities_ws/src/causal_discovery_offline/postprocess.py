@@ -28,8 +28,8 @@ def wrap(angle, lower_bound, upper_bound):
 class Agent():
     def __init__(self, name, x, y, theta, v, omega, time, addnoise = False):
         self.name = name
-        self.x = x + np.random.normal(0, .05, x.size) if addnoise else x
-        self.y = y + np.random.normal(0, .05, y.size) if addnoise else y
+        self.x = x + np.random.normal(0, .035, x.size) if addnoise else x
+        self.y = y + np.random.normal(0, .035, y.size) if addnoise else y
         self.theta = theta
         self.v = v
         self.omega = omega

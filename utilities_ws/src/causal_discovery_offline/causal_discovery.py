@@ -17,7 +17,7 @@ from tigramite import data_processing as pp
 SELECTED_AGENT = 'h'
 
 DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/ppdata'
-CSV_NAME = ["data_20240131_234259", "data_20240131_234529", "data_20240219_145325", "data_20240219_145555"]
+CSV_NAME = ["data_20240131_234259", "data_20240131_234529"]
 # CSV_NAME = ["data_20240131_234259", "data_20240131_234529", "data_20240219_122333"]
 # CSV_NAME = ["data_20240219_145325", "data_20240219_145555"]
 
@@ -28,6 +28,7 @@ df = pd.concat(ldf, axis=0, ignore_index=True)
 
 df = Data(df)
 # variables = ["_v", "_{d_g}", r"_{risk}"]
+# variables = ["_v", "_{d_g}", r"_{risk}", r"_{\theta_{g}}", r"_{\omega}"]
 variables = ["_v", "_{d_g}", r"_{risk}", r"_{\theta_{g}}", r"_{\omega}", r"_{d_{obs}}"]
 variables = [SELECTED_AGENT + v for v in variables]
 df.shrink(variables)
@@ -36,7 +37,7 @@ df.shrink(variables)
 
 cdm = FPCMCI(df, 
              f_alpha = 0.5,
-             pcmci_alpha = 0.05,
+             pcmci_alpha = 0.045,
              min_lag = 1, 
              max_lag = 1, 
              sel_method = TE(TEestimator.Gaussian), 
