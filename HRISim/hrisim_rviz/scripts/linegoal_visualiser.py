@@ -8,7 +8,7 @@ from roscausal_msgs.msg import Humans
 def person_callback(people):
     try:
         for person in people.humans:
-            if person.id == 1000:
+            if person.id == SELAGENT_ID:
                 # LINE       
                 line_marker = Marker()
                 line_marker.header.frame_id = "map"
@@ -36,6 +36,7 @@ if __name__ == '__main__':
     line_pub = rospy.Publisher('linegoal_marker', Marker, queue_size=10)
     person_sub = rospy.Subscriber('/roscausal/human', Humans, person_callback)
     rate = rospy.Rate(1)  # Rate in Hz
+    SELAGENT_ID = int(rospy.get_param("/hri/selected_agent_id"))
 
     while not rospy.is_shutdown():
         try:

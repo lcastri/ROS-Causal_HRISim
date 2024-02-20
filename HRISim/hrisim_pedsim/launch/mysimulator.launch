@@ -17,6 +17,9 @@
   <arg name="ped_y" default="0.0"/>
   <arg name="ped_theta" default="0.0"/>
 
+  <param name="/hri/selected_agent_id" value="1000"/>
+
+
   <!-- robot_mode == 0: CONTROLLED implies that the robot's velocity is set by some planning algorithm like DWA. Its very similar to the teleoperation mode, using tf in the mix is just a layer on top of this -->
   <!-- robot_mode == 1: TELEOPERATION , we map the output of a teleop node (like joystick) to drive the robot -->
   <!-- robot_mode == 2: SOCIAL mode means the robot's velocity is set by the social force just like the other agents -->

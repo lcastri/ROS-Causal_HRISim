@@ -82,7 +82,7 @@ class RiskClass():
         
         # Teleop human 2D pose (x, y, theta) and velocity
         for person in people.humans:
-            if person.id == 1000:
+            if person.id == SELAGENT_ID:
                 h_x = person.pose2D.x
                 h_y = person.pose2D.y
                 h_v = person.twist.linear
@@ -96,7 +96,7 @@ class RiskClass():
         r_v = robot.twist.linear
         obstacles.append((r_x,r_y,r_v))
         for person in people.humans:
-            if person.id != 1000:
+            if person.id != SELAGENT_ID:
                 x = person.pose2D.x
                 y = person.pose2D.y
                 v = person.twist.linear
@@ -160,6 +160,7 @@ if __name__ == '__main__':
 
     SAFE_DIST = float(rospy.get_param("/hri/safe_distance", default = 5.0))
     OBS_SIZE = float(rospy.get_param("/hri/obs_size", default = 2.5))
+    SELAGENT_ID = int(rospy.get_param("/hri/selected_agent_id"))
         
     r = RiskClass()
 

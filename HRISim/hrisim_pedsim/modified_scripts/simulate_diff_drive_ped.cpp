@@ -12,6 +12,7 @@
 #include <boost/thread/mutex.hpp>
 
 double g_updateRate, g_simulationFactor;
+int selectedAgentId;
 std::string g_worldFrame, g_robotFrame;
 geometry_msgs::Twist g_currentTwist;
 tf::Transform g_currentPose;
@@ -27,10 +28,10 @@ void publishTeleopPersons(double dt, double x, double y, double theta, double v,
   pedsim_msgs::TrackedPerson trackedPersonMsg;
 
   // Fill TrackedPerson message with calculated pose and other information
-  trackedPersonMsg.track_id = 1000;
+  trackedPersonMsg.track_id = selectedAgentId;
   trackedPersonMsg.is_occluded = false;
   trackedPersonMsg.is_matched = true;
-  trackedPersonMsg.detection_id = 1000;
+  trackedPersonMsg.detection_id = selectedAgentId;
   trackedPersonMsg.age = ros::Duration(dt);
 
   trackedPersonMsg.pose.pose.position.x = x;
@@ -57,7 +58,7 @@ void publishGZPersons(double x, double y, double theta, double v, double omega) 
   pedsim_msgs::AgentState agentStateMsg;
 
   // Fill agentStateMsg message with calculated pose and other information
-  agentStateMsg.id = 1000;
+  agentStateMsg.id = selectedAgentId;
   agentStateMsg.type = 0;
   agentStateMsg.social_state = "individual_moving";
 
@@ -153,6 +154,12 @@ int main(int argc, char** argv) {
   g_currentPose.getOrigin().setY(initialY);
   g_currentPose.setRotation(tf::createQuaternionFromRPY(0, 0, initialTheta));
 
+  // Read selected_agent_id parameter
+  if (!privateHandle.getParam("/hri/selected_agent_id", selectedAgentId)) {
+    ROS_ERROR("Failed to read parameter '/hri/selected_agent_id'");
+    return 1;
+  }
+  
   // Create ROS subscriber and TF broadcaster
   g_transformBroadcaster.reset(new tf::TransformBroadcaster());
   ros::Subscriber twistSubscriber =
