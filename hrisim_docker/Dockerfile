@@ -92,7 +92,7 @@ RUN cd ~/ros_ws/src/ && \
     git submodule update --init --recursive
 
 # Clone and install roscausal
-RUN echo c
+RUN echo ci
 RUN cd ~/ros_ws/src/ && \
     git clone -b dev https://github.com/lcastri/roscausal.git
 

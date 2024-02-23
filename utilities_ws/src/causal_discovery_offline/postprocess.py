@@ -26,17 +26,30 @@ def wrap(angle, lower_bound, upper_bound):
 
 
 class Agent():
-    def __init__(self, name, x, y, theta, v, omega, time, addnoise = False):
+    def __init__(self, name, x, y, time, theta = None, v = None, omega = None, addnoise = False):
+        if theta is None: theta = np.zeros_like(time)
+        if v is None: v = np.zeros_like(time)
+        if omega is None: omega = np.zeros_like(time)
+        
         self.name = name
-        self.x = x + np.random.normal(0, .035, x.size) if addnoise else x
-        self.y = y + np.random.normal(0, .035, y.size) if addnoise else y
+        # self.x = x
+        # self.y = y
         self.theta = theta
         self.v = v
         self.omega = omega
-        # self.theta = theta + np.random.normal(0, .015, theta.size) if addnoise else theta
+        
+        self.x = x + np.random.normal(0, .035, x.size) if addnoise else x
+        self.y = y + np.random.normal(0, .035, y.size) if addnoise else y
+        # self.theta = theta + np.random.uniform(-.1, .1, theta.size) if addnoise else theta
         # self.v = v + np.random.normal(0, .01, v.size) if addnoise else v
         # self.omega = omega + np.random.normal(0, .028, omega.size) if addnoise else omega
         self.time = time
+        
+    def goal_reached(self, t, goal):
+        # return wrap(math.atan2(goal.p(t).y - self.p(t).y, goal.p(t).x - self.p(t).x), 0, 2*np.pi)
+        if goal.p(t) != goal.p(t-1): 
+            return 1
+        return 0
         
     def p(self, t):
         """
@@ -88,7 +101,6 @@ class Agent():
         """
         return self.p(t).distance(obs.p(t))
     
-    
     def heading(self, t, obj):
         """
         heading angle
@@ -104,7 +116,6 @@ class Agent():
         angle = wrap(2*np.pi - wrap(math.atan2(obj.p(t).y - self.p(t).y, obj.p(t).x - self.p(t).x) - wrap(self.theta[t], 0, 2*np.pi), 0, 2*np.pi), -np.pi, np.pi)
         return angle
     
-    
     def risk(self, t, obs):
         """
         Risk
@@ -114,6 +125,7 @@ class Agent():
             people (TrackedPersons): tracked people
         """
         
+        # risk = 0
         risk = self.v[t]/20
         # risk = np.random.normal(0, 0.02)
         collision = False
@@ -138,20 +150,21 @@ class Agent():
         cone = Polygon([cone_origin, left, right])
         
         P = Point(cone_origin.x + self.dv(t).x, cone_origin.y + self.dv(t).y)
+        # collision = P.within(cone) and dobs < SAFE_DIST
         collision = P.within(cone) and self.p(t).distance(obs.p(t)) < SAFE_DIST
         if collision:
             time_collision_measure = self.p(t).distance(obs.p(t)) / math.sqrt(Vrel.x**2 + Vrel.y**2)
             steering_effort_measure = min(P.distance(LineString([cone_origin, left])), P.distance(LineString([cone_origin, right])))           
+            # risk = risk + 1/time_collision_measure + steering_effort_measure
             risk = risk + self.v[t] + 1/time_collision_measure + steering_effort_measure
                     
-        return math.exp(risk)
+        return P.within(cone), math.exp(risk)
        
 
 if __name__ == '__main__': 
     DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/data'
     PP_DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/ppdata'
-    # CSV_NAME = ["data_20240131_234259", "data_20240131_234529","data_20240219_122333", "data_20240219_122603"]
-    CSV_NAME = ["data_20240131_234259", "data_20240131_234529", "data_20240219_145325", "data_20240219_145555"]
+    CSV_NAME = ["data_20240131_234259", "data_20240131_234529"]
     for CSV in CSV_NAME:
         INPUT_CSV = DATA_DIR + '/' + CSV + '.csv'
         OUTPUT_CSV = PP_DATA_DIR + '/' + CSV + '.csv'
@@ -162,33 +175,31 @@ if __name__ == '__main__':
         # Read the CSV into a pandas DataFrame
         data = pd.read_csv(INPUT_CSV)
         noise_sz = data["r_x"].size
-        # R = Agent("R", data["r_x"] + np.random.normal(0,.05,noise_sz), data["r_y"] + np.random.normal(0,.05,noise_sz), data["r_{\theta}"], data["r_v"], data["r_{\omega}"], data["time"])
-        # H = Agent("H", data["h_x"] + np.random.normal(0,.05,noise_sz), data["h_y"] + np.random.normal(0,.05, noise_sz), data["h_{\theta}"], data["h_v"], data["h_{\omega}"], data["time"])
-        R = Agent("R", data["r_x"], data["r_y"], data["r_{\theta}"], data["r_v"], data["r_{\omega}"], data["time"], addnoise = True)
-        H = Agent("H", data["h_x"], data["h_y"], data["h_{\theta}"], data["h_v"], data["h_{\omega}"], data["time"], addnoise = True)
-        RG = Agent("RG", data["r_{gx}"], data["r_{gy}"], np.zeros_like(data["r_{gy}"]), np.zeros_like(data["r_{gy}"]), np.zeros_like(data["r_{gy}"]), data["time"])
-        HG = Agent("HG", data["h_{gx}"], data["h_{gy}"], np.zeros_like(data["r_{gy}"]), np.zeros_like(data["r_{gy}"]), np.zeros_like(data["r_{gy}"]), data["time"])
+        R = Agent("R", data["r_x"], data["r_y"], data["time"], data["r_{\theta}"], data["r_v"], data["r_{\omega}"], addnoise = True)
+        H = Agent("H", data["h_x"], data["h_y"], data["time"], data["h_{\theta}"], data["h_v"], data["h_{\omega}"], addnoise = True)
+        RG = Agent("RG", data["r_{gx}"], data["r_{gy}"], data["time"])
+        HG = Agent("HG", data["h_{gx}"], data["h_{gy}"], data["time"])
                 
-        df = pd.DataFrame(columns=["h_v", r"h_{\theta}", r"h_{\theta_{g}}", "h_{d_g}", "h_{risk}", r"h_{\omega}", r"h_{d_{obs}}"])  
+        df = pd.DataFrame(columns=["g_r", "v", r"\theta_{g}", "d_g", "col", "r", r"\omega", r"d_{obs}"])  
         
         I0 = 2
-        for i in range(I0, len(data)):                
-            df.loc[i] = {"h_v" : H.v[i],
-                        r"h_{\theta}" : H.theta[i], 
-                        r"h_{\theta_{g}}" : H.heading(i, HG), #+ np.random.uniform(np.deg2rad(-7.5), np.deg2rad(7.5)),
-                        "h_{d_g}" : H.dist(i, HG), 
-                        "h_{risk}" : H.risk(i-1, R), 
-                        r"h_{\omega}" : H.omega[i],
-                        r"h_{d_{obs}}" : H.dist(i, R) + np.random.normal(0, 0.015),
+        for i in range(I0, len(data)-1):
+            df.loc[i] = {
+                        "g_r": H.goal_reached(i+1, HG),
+                        "v" : H.v[i],
+                        "d_g" : H.dist(i, HG),
+                        r"\theta_{g}" : H.heading(i, HG),
+                        "col" : float(H.risk(i-1, R)[0]), 
+                        "r" : H.risk(i-1, R)[1], 
+                        r"\omega" : H.omega[i],
+                        r"d_{obs}" : H.dist(i, R),
                         }
 
         # Save the processed data to another CSV file
-        df = df[I0:]
-        # df["h_myv"].plot()
-        # df["h_v"].plot()
-        # df["h_my{d_g}"].plot()
-        # df["h_{d_g}"].plot()
-        df.plot()
-        # plt.legend(["$myh_v$", "$h_v$", "$h_my{d_g}$", "$h_{d_g}$"])
+        df = df[I0:-1]
+        columns=["g_r", "v", r"\theta_{g}", "d_g", "r", r"\omega", r"d_{obs}"]
+        df[columns].plot()
+        legend = ['$' + k + '$' for k in columns]
+        plt.legend(legend)
         plt.show()
         df.to_csv(OUTPUT_CSV, index=False)
