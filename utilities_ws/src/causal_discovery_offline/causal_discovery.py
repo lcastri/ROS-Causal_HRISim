@@ -27,12 +27,12 @@ df = Data(df)
 # variables = ["_v", "_{d_g}", r"_{risk}", r"_{\theta_{g}}", r"_{\omega}"]
 # variables = ["g_r", "v", "d_g", "r", r"d_{obs}", r"\theta_{g}", r"\omega"]
 # variables = ["g_r", "v", "d_g", "r", r"\theta_{g}", r"\omega"]
-variables=["g_a", "v", "d_g", "r", r"d_{obs}", r"\theta_{g}", r"\omega"]
+variables=["t", "g_r", "v", "d_g", "r", r"\theta_{g}", r"\omega"]
 
 # variables = [SELECTED_AGENT + v for v in variables]
 df.shrink(variables)
 
-df.plot_timeseries()
+# df.plot_timeseries()
 
 cdm = FPCMCI(df, 
              f_alpha = 0.75,

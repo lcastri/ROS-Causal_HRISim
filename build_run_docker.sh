@@ -17,7 +17,11 @@ docker build -f hrisim_docker/Dockerfile -t ${image_name} .
 
 echo " "
 echo "Removing old images..."
-docker rmi $(docker images -qa -f 'dangling=true')
+# docker rmi $(docker images -qa -f 'dangling=true')
+dangling_images=$(docker images -qa -f 'dangling=true')
+if [ -n "$dangling_images" ]; then
+    docker rmi $dangling_images
+fi
 
 echo " "
 echo "Running docker container..."

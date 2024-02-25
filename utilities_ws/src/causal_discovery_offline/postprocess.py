@@ -44,11 +44,62 @@ class Agent():
         # self.v = v + np.random.normal(0, .01, v.size) if addnoise else v
         # self.omega = omega + np.random.normal(0, .028, omega.size) if addnoise else omega
         self.time = time
+        self.gr = False
+        self.start_rotating = False
         
     def goal_reached(self, t, goal):
         # return wrap(math.atan2(goal.p(t).y - self.p(t).y, goal.p(t).x - self.p(t).x), 0, 2*np.pi)
         if goal.p(t) != goal.p(t-1): 
             return 1
+        return 0
+    
+    # def alignment(self, t, goal):
+    #     # return wrap(math.atan2(goal.p(t).y - self.p(t).y, goal.p(t).x - self.p(t).x), 0, 2*np.pi)
+    #     if goal.p(t) != goal.p(t-1):
+    #         self.gr = True 
+    #         return 0
+    #     elif self.gr and not self.start_rotating and self.omega[t] == 0:
+    #         return 1
+    #     elif self.gr and not self.start_rotating and self.omega[t] != 0:
+    #         self.start_rotating = True
+    #         return 1
+    #     elif self.gr and self.start_rotating and self.omega[t] != 0:
+    #         return 1
+    #     elif self.gr and self.start_rotating and self.omega[t] == 0:
+    #         self.gr = False 
+    #         self.start_rotating = False
+    #         return 0
+    #     return 0
+    def alignment(self, t, goal):
+        # return wrap(math.atan2(goal.p(t).y - self.p(t).y, goal.p(t).x - self.p(t).x), 0, 2*np.pi)
+        if goal.p(t) != goal.p(t-1):
+            self.gr = True 
+            return 1
+        elif self.gr and not self.start_rotating and self.omega[t] == 0:
+            return 1
+        elif self.gr and not self.start_rotating and self.omega[t] != 0:
+            self.start_rotating = True
+            return 2
+        elif self.gr and self.start_rotating and self.v[t] != 0 and self.omega[t] != 0:
+            return 2
+        elif self.gr and self.start_rotating and self.v[t] == 0:
+            return 2
+        elif self.gr and self.start_rotating and self.v[t] != 0:
+            self.gr = False 
+            self.start_rotating = False
+            return 0
+        return 0
+    
+    def task(self, t, goal):
+        # return wrap(math.atan2(goal.p(t).y - self.p(t).y, goal.p(t).x - self.p(t).x), 0, 2*np.pi)
+        if goal.p(t) != goal.p(t-1):
+            self.gr = True 
+            # return 1
+        elif self.gr and not self.start_rotating and self.omega[t] == 0:
+            return 1
+        elif self.gr and not self.start_rotating and self.omega[t] != 0:
+            self.gr = False
+            return 0
         return 0
         
     def p(self, t):
@@ -126,7 +177,8 @@ class Agent():
         """
         
         # risk = 0
-        risk = self.v[t]/20
+        risk = self.v[t] / self.dist(t, obs)
+        # risk = self.v[t]/20
         # risk = np.random.normal(0, 0.02)
         collision = False
         
@@ -151,20 +203,22 @@ class Agent():
         
         P = Point(cone_origin.x + self.dv(t).x, cone_origin.y + self.dv(t).y)
         # collision = P.within(cone) and dobs < SAFE_DIST
-        collision = P.within(cone) and self.p(t).distance(obs.p(t)) < SAFE_DIST
+        collision = P.within(cone) and self.dist(t, obs) < SAFE_DIST
         if collision:
-            time_collision_measure = self.p(t).distance(obs.p(t)) / math.sqrt(Vrel.x**2 + Vrel.y**2)
+            time_collision_measure = self.dist(t, obs) / math.sqrt(Vrel.x**2 + Vrel.y**2)
             steering_effort_measure = min(P.distance(LineString([cone_origin, left])), P.distance(LineString([cone_origin, right])))           
             # risk = risk + 1/time_collision_measure + steering_effort_measure
             risk = risk + self.v[t] + 1/time_collision_measure + steering_effort_measure
                     
-        return P.within(cone), math.exp(risk)
+        return math.exp(risk)
        
 
 if __name__ == '__main__': 
     DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/data'
     PP_DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/ppdata'
     CSV_NAME = ["data_20240131_234259", "data_20240131_234529"]
+    
+    dfs = list()
     for CSV in CSV_NAME:
         INPUT_CSV = DATA_DIR + '/' + CSV + '.csv'
         OUTPUT_CSV = PP_DATA_DIR + '/' + CSV + '.csv'
@@ -175,31 +229,35 @@ if __name__ == '__main__':
         # Read the CSV into a pandas DataFrame
         data = pd.read_csv(INPUT_CSV)
         noise_sz = data["r_x"].size
-        R = Agent("R", data["r_x"], data["r_y"], data["time"], data["r_{\theta}"], data["r_v"], data["r_{\omega}"], addnoise = True)
-        H = Agent("H", data["h_x"], data["h_y"], data["time"], data["h_{\theta}"], data["h_v"], data["h_{\omega}"], addnoise = True)
+        R = Agent("R", data["r_x"], data["r_y"], data["time"], data["r_{\theta}"], data["r_v"], data["r_{\omega}"], addnoise = False)
+        H = Agent("H", data["h_x"], data["h_y"], data["time"], data["h_{\theta}"], data["h_v"], data["h_{\omega}"], addnoise = False)
         RG = Agent("RG", data["r_{gx}"], data["r_{gy}"], data["time"])
         HG = Agent("HG", data["h_{gx}"], data["h_{gy}"], data["time"])
                 
-        df = pd.DataFrame(columns=["g_r", "v", r"\theta_{g}", "d_g", "col", "r", r"\omega", r"d_{obs}"])  
+        df = pd.DataFrame(columns=["t", "c", "g_r", "v", r"\theta_{g}", "d_g", "col", "r", r"\omega", r"d_{obs}"])  
         
         I0 = 2
         for i in range(I0, len(data)-1):
             df.loc[i] = {
+                        "t": H.task(i+1, HG),
+                        "c": H.alignment(i+1, HG),
                         "g_r": H.goal_reached(i+1, HG),
                         "v" : H.v[i],
                         "d_g" : H.dist(i, HG),
                         r"\theta_{g}" : H.heading(i, HG),
-                        "col" : float(H.risk(i-1, R)[0]), 
-                        "r" : H.risk(i-1, R)[1], 
+                        "r" : H.risk(i-1, R), 
                         r"\omega" : H.omega[i],
-                        r"d_{obs}" : H.dist(i, R),
+                        r"d_{obs}" : H.dist(i, R) + np.random.uniform(-0.1, 0.1),
                         }
 
         # Save the processed data to another CSV file
         df = df[I0:-1]
-        columns=["g_r", "v", r"\theta_{g}", "d_g", "r", r"\omega", r"d_{obs}"]
-        df[columns].plot()
-        legend = ['$' + k + '$' for k in columns]
-        plt.legend(legend)
-        plt.show()
-        df.to_csv(OUTPUT_CSV, index=False)
+        dfs.append(df)
+        
+    fdf = pd.concat(dfs, ignore_index=True, sort=False)
+    columns=["t", "g_r", "v", r"\theta_{g}", "d_g", "r", r"\omega", r"d_{obs}"]
+    fdf[columns].plot()
+    legend = ['$' + k + '$' for k in columns]
+    plt.legend(legend)
+    plt.show()
+    fdf.to_csv(OUTPUT_CSV, index = False)

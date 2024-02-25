@@ -91,6 +91,19 @@ The causal analysis is perform through the [ROS-Causal](https://github.com/lcast
 
 The raw data collected through the simulator and the corresponding post-processed data used in the causal analysis can be found [here](https://github.com/lcastri/ROS-Causal_HRISim/blob/main/data/experiment_20240131_234259.zip).
 
+## Citation
+
+If you found this useful for your work, please cite this papers:
+```
+@inproceedings{roscausal2024,
+  author    = {Castri, Luca and Beraldo, Gloria and Mghames, Sariah and Hanheide, Marc and Bellotto, Nicola},
+  title     = {{ROS-Causal}: A {ROS}-based Causal Analysis Framework for Human-Robot Interaction Applications},
+  booktitle = {Causal-HRI: Causal Learning for Human-Robot Interaction Workshop at the 2024 ACM/IEEE International Conference on Human-Robot Interaction (HRI)},
+  year      = {2024},
+}
+```
+
+
 ## Recent changes
 | Version | Changes |
 | :---: | ----------- |
