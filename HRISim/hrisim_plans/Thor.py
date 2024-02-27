@@ -1,5 +1,6 @@
 import os
 import random
+import subprocess
 import sys
 
 import rospy
@@ -13,55 +14,78 @@ import pnp_cmd_ros
 from pnp_cmd_ros import *
 import time
 
+def findRecordingNode(prefix = "/record_"):
+    command = ['rosnode', 'list']  # Command to list all active ROS nodes
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    stdout, stderr = process.communicate()
+    matching_nodes = list()
+
+    if process.returncode == 0:
+
+        # Split the output by newline to get a list of node names
+        active_nodes = stdout.splitlines()
+
+        # Filter the node names that start with the specified prefix
+        matching_nodes = [node for node in active_nodes if node.startswith(prefix)]
+    return matching_nodes
+
+
+def HasRecordingStopped():
+    recordingNode = findRecordingNode()
+    if len(recordingNode) > 0:
+        return False
+    else:
+        return True
+    
+    
+def HasRecordingStarted():
+    recordingNode = findRecordingNode()
+    if len(recordingNode) > 0:
+        return True
+    else:
+        return False
 
 
 def Thor(p):
-    H1 = ["5", "-5", "5", "-9", "9", "-5", "7.5", "-8"]
-    H2 = ["7.5", "4.5", "6", "4.5", "6", "3", "7.5", "3"]
-    H3 = ["-7.5", "7", "-5.5", "7", "-5.5", "9", "-7.5", "9"]
-    H4 = ["-8", "-5.5", "-10", "-5.5", "-10", "-2.5", "-8", "-2.5"]
-    R1 = ["2", "-5", "0"]
-    R2 = ["2", "5", "1.57"]
-    R3 = ["-2", "5", "3.14"]
-    R4 = ["-2", "-5", "-1.57"]
-    
-    old_area = None
-    Hareas = [H1, H2, H3, H4]
-    noHgoal = True
-    
-       
-    Rgoals = [R1, R2, R3, R4]
-    # noRgoal = True
+    BAGNAME = str(sys.argv[1])
+    BAGSEC = float(sys.argv[2]) # [s]
     rospy.set_param('/hri/robot_goalreached', True)
-    g = -1
     
+    R1 = [4.527, -0.213, -1.497]
+    R2 = [4.660, -3.145, -1.571]
+    R3 = [2.385, -3.418, 3.025]
+    R4 = [2.568, -0.288, 1.571]
+    Rgoals = [R1, R2, R3, R4]
     
-    while True:
-        
-        if noHgoal or p.get_condition("HasHumanArrived"):
-            # Human goal
-            a = random.choice(Hareas)
-            while old_area is not None and a == old_area:
-                a = random.choice(Hareas)
-            old_area = a
-                
-            p.exec_action('randomPointFromPolygon', "_".join(a))
-            noHgoal = False
-            
-            
-        
-        # if noRgoal or p.get_condition("HasRobotArrived"):
-        if rospy.get_param('/hri/robot_goalreached'):
-            rospy.set_param('/hri/robot_goalreached', False)
-            # if not noRgoal: p.action_cmd('goto', "_".join(Rgoals[g]), 'stop')
-            # Robot goal
-            if g + 1 > len(Rgoals) - 1:
-                g = 0
-            else:
-                g += 1
-            p.action_cmd('goto', "_".join(Rgoals[g]), 'start')
-            # noRgoal = False
+    # R5 = [0.630, 4.515, -1.566]
+    # R6 = [0.630, 0.248, 1.566]
+    # Rgoals = [R5, R6]
     
+    p.exec_action('moveHead', '0.0_-0.83')
+    p.exec_action("moveTorso", '0.1')
+    p.exec_action("moveArm", "home")
+    p.exec_action("moveTorso", '0.02')
+    
+    # Start recording
+    p.action_cmd('record', BAGNAME, 'start')
+    # this is to make sure that the recording has started
+    while not HasRecordingStarted():
+        time.sleep(.1)
+    start_recording = rospy.Time.now()
+    time.sleep(1)
+    
+    while (rospy.Time.now() - start_recording).to_sec() <= BAGSEC:           
+        for rg in Rgoals:
+            if rospy.get_param('/hri/robot_goalreached'):
+                rospy.set_param('/hri/robot_goalreached', False)
+                p.exec_action('goto', '_'.join([str(coord) for coord in rg]))
+
+    # Stop recording
+    p.action_cmd('record', BAGNAME, 'stop')
+    # this is to make sure that the recording i-th is stopped
+    while not HasRecordingStopped():
+        time.sleep(.1)
+
 
 if __name__ == "__main__":
 

@@ -11,9 +11,9 @@ from fpcmci.basics.constants import LabelType, ImageExt
 
 
 # SELECTED_AGENT = 'h'
-
 DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/ppdata'
-CSV_NAME = ["data_20240131_234259", "data_20240131_234529"]
+CSV_NAME = ["data_20240131_234259", "data_20240131_234529", "data_20240225_230735"]
+# CSV_NAME = ["data_20240131_234259", "data_20240131_234529", "data_20240225_221217"]
 # CSV_NAME = ["data_20240131_234259", "data_20240131_234529", "data_20240219_122333"]
 # CSV_NAME = ["data_20240219_145325", "data_20240219_145555"]
 
@@ -27,7 +27,7 @@ df = Data(df)
 # variables = ["_v", "_{d_g}", r"_{risk}", r"_{\theta_{g}}", r"_{\omega}"]
 # variables = ["g_r", "v", "d_g", "r", r"d_{obs}", r"\theta_{g}", r"\omega"]
 # variables = ["g_r", "v", "d_g", "r", r"\theta_{g}", r"\omega"]
-variables=["t", "g_r", "v", "d_g", "r", r"\theta_{g}", r"\omega"]
+variables=["t", "v", "d_g", "r", r"\theta_{g}", r"\omega"]
 
 # variables = [SELECTED_AGENT + v for v in variables]
 df.shrink(variables)
@@ -51,7 +51,7 @@ elapsed_fpcmci = time() - start
 fpcmci_time = str(timedelta(seconds = elapsed_fpcmci))
 print(fpcmci_time)
 
-if len(feature) > 0:   
+if len(feature) > 0:
     cdm.dag(skip_autodep=True, node_size=5, font_size=14, label_type = LabelType.NoLabels, img_ext = ImageExt.PDF)
     cdm.timeseries_dag(node_size=5, font_size=14, img_ext = ImageExt.PDF, node_proximity=3)
     cdm.dag(skip_autodep=True, node_size=5, font_size=14, label_type = LabelType.NoLabels, img_ext = ImageExt.PNG)

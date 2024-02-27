@@ -29,16 +29,19 @@ echo " "
   else
     echo "It will connect to tiago ${ROBOT_NUM}"
   fi 
-  echo "function tm-start(){  tmule -c ~/ros_ws/src/myTIAGo/hrisim_tmule/tmule/tiago.yaml -W 3 launch ; }" >> ~/.bashrc
-  echo "function tm-stop(){  tmule -c ~/ros_ws/src/myTIAGo/hrisim_tmule/tmule/tiago.yaml terminate ; }" >> ~/.bashrc
-  echo "function tm-restart(){  tmule -c ~/ros_ws/src/myTIAGo/hrisim_tmule/tmule/tiago.yaml -W 3 relaunch ; }" >> ~/.bashrc
+  echo "function tm-start(){  tmule -c ~/ros_ws/src/HRISim/hrisim_tmule/tmule/tiago.yaml -W 3 launch ; }" >> ~/.bashrc
+  echo "function tm-stop(){  tmule -c ~/ros_ws/src/HRISim/hrisim_tmule/tmule/tiago.yaml terminate ; }" >> ~/.bashrc
+  echo "function tm-restart(){  tmule -c ~/ros_ws/src/HRISim/hrisim_tmule/tmule/tiago.yaml -W 3 relaunch ; }" >> ~/.bashrc
   echo "function tm-show(){  tmux a -t tiago ; }" >> ~/.bashrc
   
-  echo "source ~/ros_ws/src/myTIAGo/scripts/connect_tiago.sh ${ROBOT_NUM} ${ETH}" >> ~/.bashrc
+  echo "source ~/ros_ws/src/HRISim/scripts/connect_tiago.sh ${ROBOT_NUM} ${ETH}" >> ~/.bashrc
+    
+  source /opt/ros/noetic/setup.bash
   cd ~/ros_ws
   catkin build
   source ~/ros_ws/devel/setup.bash
-  exec "/bin/bash"  
+  echo "source ~/ros_ws/devel/setup.bash" >> ~/.bashrc
+  exec "/bin/bash"
 
 } || {
 

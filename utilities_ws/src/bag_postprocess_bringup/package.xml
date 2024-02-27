@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<package>
+  <name>bag_postprocess_bringup</name>
+  <version>0.0.0</version>
+  <description>bag postprocess bringup node.</description>
+  <maintainer email="lcastri@lincoln.ac.uk">Luca Castri</maintainer>
+  <license>BSD</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <export>
+  </export>
+</package>

@@ -40,6 +40,8 @@ class goto(AbstractAction):
 
             self.client.send_goal(self.goal_msg, done_cb=self._on_goTo_done)
             rospy.loginfo("Waiting for goTo result...")
+            # self.client.wait_for_result()
+
 
     def _on_goTo_done(self, goalState, result):
         print("goTo DONE", goalState, result)

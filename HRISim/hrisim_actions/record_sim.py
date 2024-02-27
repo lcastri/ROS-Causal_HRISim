@@ -11,9 +11,8 @@ import rospy
 from AbstractAction import AbstractAction
 import subprocess
 
-TOPICS = "/map /tf /tf_static /robot_pose /mobile_base_controller/odom /move_base/goal /people_tracker/people /people_tracker/marker_array /velodyne_points /object3d_detector/markers"
 
-class record(AbstractAction):
+class record_sim(AbstractAction):
     
     def find_rosnode_with_prefix(self, prefix):
         command = ['rosnode', 'list']  # Command to list all active ROS nodes
@@ -40,7 +39,7 @@ class record(AbstractAction):
         rospy.loginfo('STARTED record action')
         if self.params:
            
-            command = "rosbag record -O /root/shared/" + str(self.params[0]) + ".bag " + TOPICS
+            command = "rosbag record -O /root/shared/" + str(self.params[0]) + ".bag /map /mobile_base_controller/odom /move_base/goal /ped/control/teleop_persons /pedsim_simulator/simulated_agents /robot_pose /tf /tf_static /goal_marker"
             
             # Start recording.
             self.process = subprocess.Popen(command, stdin=subprocess.PIPE, shell=True, executable='/bin/bash')
