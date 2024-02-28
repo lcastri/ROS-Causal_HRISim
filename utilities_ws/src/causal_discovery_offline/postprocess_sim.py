@@ -26,21 +26,81 @@ def wrap(angle, lower_bound, upper_bound):
 
 
 class Agent():
-    def __init__(self, name, x, y, time, theta = None, v = None, omega = None):
+    def __init__(self, name, x, y, time, theta = None, v = None, omega = None, addnoise = False):
+        if theta is None: theta = np.zeros_like(time)
+        if v is None: v = np.zeros_like(time)
+        if omega is None: omega = np.zeros_like(time)
+        
         self.name = name
-        self.x = x
-        self.y = y
+        # self.x = x
+        # self.y = y
         self.theta = theta
         self.v = v
         self.omega = omega
-        self.time = time
         
+        self.x = x + np.random.normal(0, .035, x.size) if addnoise else x
+        self.y = y + np.random.normal(0, .035, y.size) if addnoise else y
+        # self.theta = theta + np.random.normal(0, .1, theta.size) if addnoise else theta
+        # self.v = v + np.random.normal(0, .005, v.size) if addnoise else v
+        # self.omega = omega + np.random.normal(0, .028, omega.size) if addnoise else omega
+        self.time = time
         self.gr = False
         self.rotating = False
         
     def goal_reached(self, t, goal):
+        # return wrap(math.atan2(goal.p(t).y - self.p(t).y, goal.p(t).x - self.p(t).x), 0, 2*np.pi)
         if goal.p(t) != goal.p(t-1): 
             return 1
+        return 0
+    
+    # def alignment(self, t, goal):
+    #     # return wrap(math.atan2(goal.p(t).y - self.p(t).y, goal.p(t).x - self.p(t).x), 0, 2*np.pi)
+    #     if goal.p(t) != goal.p(t-1):
+    #         self.gr = True 
+    #         return 0
+    #     elif self.gr and not self.start_rotating and self.omega[t] == 0:
+    #         return 1
+    #     elif self.gr and not self.start_rotating and self.omega[t] != 0:
+    #         self.start_rotating = True
+    #         return 1
+    #     elif self.gr and self.start_rotating and self.omega[t] != 0:
+    #         return 1
+    #     elif self.gr and self.start_rotating and self.omega[t] == 0:
+    #         self.gr = False 
+    #         self.start_rotating = False
+    #         return 0
+    #     return 0
+    
+    def alignment(self, t, goal):
+        # return wrap(math.atan2(goal.p(t).y - self.p(t).y, goal.p(t).x - self.p(t).x), 0, 2*np.pi)
+        if goal.p(t) != goal.p(t-1):
+            self.gr = True 
+            # return 1
+        elif self.gr and not self.rotating and self.omega[t] == 0:
+            return 1
+        elif self.gr and not self.rotating and self.omega[t] != 0:
+            self.rotating = True
+            return 1
+        elif self.gr and self.rotating and self.v[t] != 0 and self.omega[t] != 0:
+            return 1
+        elif self.gr and self.rotating and self.v[t] == 0:
+            return 1
+        elif self.gr and self.rotating and self.v[t] != 0:
+            self.gr = False 
+            self.rotating = False
+            # return 0
+        return 0
+    
+    def task(self, t, goal):
+        # return wrap(math.atan2(goal.p(t).y - self.p(t).y, goal.p(t).x - self.p(t).x), 0, 2*np.pi)
+        if goal.p(t) != goal.p(t-1):
+            self.gr = True 
+            # return 1
+        elif self.gr and not self.rotating and self.omega[t] == 0:
+            return 1
+        elif self.gr and not self.rotating and self.omega[t] != 0:
+            self.gr = False
+            return 0
         return 0
         
     def p(self, t):
@@ -57,6 +117,16 @@ class Agent():
     
     def dt(self, t):
         return self.time[t]-self.time[t-1]
+    
+    # def myv(self, t):
+    #     return math.sqrt(((self.x[t]-self.x[t-1])/self.dt(t))**2 + ((self.y[t]-self.y[t-1])/self.dt(t))**2)
+    
+    # def mydv(self, t):
+    #     return Point((self.x[t]-self.x[t-1])/self.dt(t), (self.y[t]-self.y[t-1])/self.dt(t))
+    
+    # def mydist(self, t, obs):
+    #     return math.sqrt(((self.x[t-1] + self.dt(t-1)*self.mydv(t-1).x) - obs.x[t-1])**2 +
+    #                      ((self.y[t-1] + self.dt(t-1)*self.mydv(t-1).y) - obs.y[t-1])**2)
     
     def dv(self, t):
         """
@@ -147,6 +217,8 @@ class Agent():
 if __name__ == '__main__': 
     DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/data'
     PP_DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/ppdata'
+    # CSV_NAME = ["data_20240225_221217", "data_20240225_221447"]
+    # CSV_NAME = ["data_20240131_234259", "data_20240131_234529", "data_20240225_230735", "data_20240225_231005"]
     CSV_NAME = ["data_20240228_160625"]
     
     dfs = list()
@@ -161,17 +233,20 @@ if __name__ == '__main__':
         # Read the CSV into a pandas DataFrame
         data = pd.read_csv(INPUT_CSV)
         noise_sz = data["r_x"].size
-        R = Agent("R", data["r_x"], data["r_y"], data["time"], data["r_{\theta}"], data["r_v"], data["r_{\omega}"])
-        H = Agent("H", data["h_" + SEL_ID + "x"], data["h_" + SEL_ID + "y"], data["time"], data["h_" + SEL_ID + "{\theta}"], data["h_" + SEL_ID + "v"], data["h_" + SEL_ID + "{\omega}"])
+        R = Agent("R", data["r_x"], data["r_y"], data["time"], data["r_{\theta}"], data["r_v"], data["r_{\omega}"], addnoise = True)
+        H = Agent("H", data["h_" + SEL_ID + "x"], data["h_" + SEL_ID + "y"], data["time"], data["h_" + SEL_ID + "{\theta}"], data["h_" + SEL_ID + "v"], data["h_" + SEL_ID + "{\omega}"], addnoise = True)
         RG = Agent("RG", data["r_{gx}"], data["r_{gy}"], data["time"])
         HG = Agent("HG", data["h_" + SEL_ID + "{gx}"], data["h_" + SEL_ID + "{gy}"], data["time"])
                 
-        df = pd.DataFrame(columns=["g_r", "v", r"\theta_{g}", "d_g", "r", r"\omega", r"d_{obs}"])  
+        df = pd.DataFrame(columns=["t", "g_r", "v", r"\theta_{g}", "d_g", "col", "r", r"\omega", r"d_{obs}"])  
         
         I0 = 2
         for i in range(I0, len(data)-1):
             df.loc[i] = {
+                        "t": H.task(i+1, HG) + np.random.normal(0, 0.005),
+                        # "t": H.alignment(i+1, HG),
                         "g_r": H.goal_reached(i+1, HG),
+                        # "g_r": H.goal_reached(i+1, HG)+np.random.uniform(-0.0075, 0.0075), # FIXME: ALMOST
                         "v" : H.v[i],
                         "d_g" : H.dist(i, HG),
                         r"\theta_{g}" : H.heading(i, HG),

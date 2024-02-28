@@ -27,6 +27,7 @@ class DataHandler():
         """
         self.old_pos = None
         self.prev_time = None
+        self.selHID = None
         
         # Person subscriber
         self.sub_people = rospy.Subscriber('/people_tracker/people', People, self.cb_handle_data)
@@ -54,49 +55,58 @@ class DataHandler():
         Args:
             people (People): tracked people
         """
-        p = people.people[0]
-            
-        if self.old_pos is None or self.prev_time is None:
-            self.prev_time = people.header.stamp
-            self.old_pos = self.extract_pose(p)
-            return
-        
-        current_time = people.header.stamp
-        pose = self.extract_pose(p)
+        SEL_H_ID = [103, 235, 267, 315]
+        for p in people.people:
+            if int(p.name) in SEL_H_ID:
+                # rospy.logerr("SEL H ID:" + str(p.name))
+                if int(p.name) != self.selHID:
+                    self.old_pos = None
+                    self.prev_time = None
+                self.selHID = int(p.name)
+                
+                if self.old_pos is None or self.prev_time is None:
+                    self.prev_time = people.header.stamp
+                    self.old_pos = self.extract_pose(p)
+                    return
+                
+                current_time = people.header.stamp
+                pose = self.extract_pose(p)
 
-        # Calculate time difference
-        delta_t = (current_time - self.prev_time).to_sec()
+                # Calculate time difference
+                delta_t = (current_time - self.prev_time).to_sec()
 
-        # Calculate omega
-        _, _, prev_yaw = euler_from_quaternion([self.old_pos.pose.orientation.x, self.old_pos.pose.orientation.y, self.old_pos.pose.orientation.z, self.old_pos.pose.orientation.w])
-        _, _, current_yaw = euler_from_quaternion([pose.pose.orientation.x, pose.pose.orientation.y, pose.pose.orientation.z, pose.pose.orientation.w])
-        delta_yaw = current_yaw - prev_yaw
-        omega = delta_yaw / delta_t
+                # Calculate omega
+                _, _, prev_yaw = euler_from_quaternion([self.old_pos.pose.orientation.x, self.old_pos.pose.orientation.y, self.old_pos.pose.orientation.z, self.old_pos.pose.orientation.w])
+                _, _, current_yaw = euler_from_quaternion([pose.pose.orientation.x, pose.pose.orientation.y, pose.pose.orientation.z, pose.pose.orientation.w])
+                delta_yaw = current_yaw - prev_yaw
+                omega = delta_yaw / delta_t
 
-        # Update previous pose and time
-        self.old_pos = pose
-        self.prev_time = current_time
-        
-        twist = TwistWithCovariance()
-        twist.twist.linear.x = p.velocity.x
-        twist.twist.linear.y = p.velocity.y
-        twist.twist.linear.z = p.velocity.z
-        twist.twist.angular.x = 0
-        twist.twist.angular.y = 0
-        twist.twist.angular.z = omega
-        twist.covariance = [0.0] * 36
-        
-        sh = TrackedPerson()
-        sh.track_id = 1000
-        sh.pose = pose
-        sh.twist = twist
-        
-        msg = TrackedPersons()
-        msg.header = Header()
-        msg.header.stamp = rospy.Time.now()
-        msg.header.frame_id = 'map'
-        msg.tracks.append(sh)
-        self.pub_selh.publish(msg)
+                # Update previous pose and time
+                self.old_pos = pose
+                self.prev_time = current_time
+                
+                twist = TwistWithCovariance()
+                twist.twist.linear.x = p.velocity.x
+                twist.twist.linear.y = p.velocity.y
+                twist.twist.linear.z = p.velocity.z
+                twist.twist.angular.x = 0
+                twist.twist.angular.y = 0
+                twist.twist.angular.z = omega
+                twist.covariance = [0.0] * 36
+                
+                sh = TrackedPerson()
+                # sh.track_id = int(p.name)
+                sh.track_id = 1000
+                sh.pose = pose
+                sh.twist = twist
+                
+                msg = TrackedPersons()
+                msg.header = Header()
+                msg.header.stamp = rospy.Time.now()
+                msg.header.frame_id = 'map'
+                msg.tracks.append(sh)
+                self.pub_selh.publish(msg)
+                return
                   
 
 if __name__ == '__main__':        
