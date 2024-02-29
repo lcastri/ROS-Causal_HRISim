@@ -20,6 +20,7 @@ NODE_RATE = 10 #Hz
 MAP_BOUNDARIES = [(5.04, -5.28), (-1.156, -0.189), (1.92, 3.03), (7.88, -1.76)]
 MAP = Polygon(MAP_BOUNDARIES)       
 GOAL_PARAM = "/hri/goal"
+GOAL_LIST = [(3.5, -2.5), (-0.295, 0.386), (1.878, 2.371), (7.069, -1.907)]
 
 class DataHandler():
     """
@@ -34,13 +35,11 @@ class DataHandler():
         self.prev_time = None
         self.selHID = None
         
-        original_path = "~/git/ROS-Causal_HRISim/utilities_ws/src/bag_postprocess_bringup/data"
-        csv_path = os.path.expanduser(original_path) + '/' + BAGNAME + ".csv"
-        self.goal_csv = pd.read_csv(csv_path)
-        
+        columns = ['time', 'h_{gx}', 'h_{gy}']
+        self.raw = pd.DataFrame(columns=columns)
+
         # Person subscriber
-        self.sub_people = rospy.Subscriber('/people_tracker/people', People, self.cb_handle_data)
-        self.pub_selh = rospy.Publisher('/hri/sel_human', TrackedPersons, queue_size=10)
+        self.sub_people = rospy.Subscriber('/people_tracker/people', People, self.cb_goal)
         
         
     def extract_pose(self, p):
@@ -57,7 +56,7 @@ class DataHandler():
         return pose
                                                     
                 
-    def cb_handle_data(self, people: People):
+    def cb_goal(self, people: People):
         """
         People callback
 
@@ -78,7 +77,6 @@ class DataHandler():
                 
                 # check if traj point is contained in the map 
                 if not MAP.contains(Point(pose.pose.position.x, pose.pose.position.y)):
-                    # rospy.logerr(str(p.name) + " OUT")
                     continue
                  
                 if int(p.name) != self.selHID:
@@ -91,55 +89,22 @@ class DataHandler():
                     self.old_pos = self.extract_pose(p)
                     return
                 
-                current_time = people.header.stamp
-
-                # Calculate time difference
-                delta_t = (current_time - self.prev_time).to_sec()
-
-                # Calculate omega
-                _, _, prev_yaw = euler_from_quaternion([self.old_pos.pose.orientation.x, self.old_pos.pose.orientation.y, self.old_pos.pose.orientation.z, self.old_pos.pose.orientation.w])
-                _, _, current_yaw = euler_from_quaternion([pose.pose.orientation.x, pose.pose.orientation.y, pose.pose.orientation.z, pose.pose.orientation.w])
-                delta_yaw = current_yaw - prev_yaw
-                omega = delta_yaw / delta_t
-
-                # Update previous pose and time
-                self.old_pos = pose
-                self.prev_time = current_time
-                
-                twist = TwistWithCovariance()
-                twist.twist.linear.x = p.velocity.x
-                twist.twist.linear.y = p.velocity.y
-                twist.twist.linear.z = p.velocity.z
-                twist.twist.angular.x = 0
-                twist.twist.angular.y = 0
-                twist.twist.angular.z = omega
-                twist.covariance = [0.0] * 36
-                
-                sh = TrackedPerson()
-                # sh.track_id = int(p.name)
-                sh.track_id = 1000
-                sh.pose = pose
-                sh.twist = twist
-                
-                msg = TrackedPersons()
-                msg.header = Header()
-                msg.header.stamp = rospy.Time.now()
-                msg.header.frame_id = 'map'
-                msg.tracks.append(sh)
-                self.pub_selh.publish(msg)
-                
-                row_index = self.goal_csv.index[self.goal_csv['time'] == people.header.stamp.to_sec()].tolist()
-                if row_index:
-                    row = self.goal_csv.loc[row_index[0]]
-                    rospy.set_param(GOAL_PARAM, [float(row['h_{gx}']), float(row['h_{gy}'])])
-
+                goal = None
+                for g in GOAL_LIST:
+                    if Point(pose.pose.position.x, pose.pose.position.y).distance(Point(g[0],g[1])) <= 1.25:
+                        goal = Point(g[0], g[1])
+                        rospy.logwarn("GOAL: " + str(goal))
+                        
+                self.raw.loc[len(self.raw)] = {'time': people.header.stamp.to_sec(), 
+                                               'h_{gx}': goal.x if goal is not None else None, 
+                                               'h_{gy}': goal.y if goal is not None else None,}
                 return
                   
 
-if __name__ == '__main__':       
+if __name__ == '__main__': 
     
-    BAGNAME = sys.argv[1]
-
+    csv_name = sys.argv[1]
+    
     # Init node
     rospy.init_node(NODE_NAME)
     
@@ -148,4 +113,15 @@ if __name__ == '__main__':
    
     data_handler = DataHandler()
         
-    rospy.spin()
+    def cleanup():
+        original_path = "~/git/ROS-Causal_HRISim/utilities_ws/src/bag_postprocess_bringup/data"
+        csv_path = os.path.expanduser(original_path)
+        data_handler.raw.bfill(inplace=True)
+        data_handler.raw.to_csv(csv_path + '/' + csv_name + ".csv", sep=',', index=False)
+
+    rospy.on_shutdown(cleanup)
+
+    while not rospy.is_shutdown():
+        rate.sleep()
+
+    cleanup()

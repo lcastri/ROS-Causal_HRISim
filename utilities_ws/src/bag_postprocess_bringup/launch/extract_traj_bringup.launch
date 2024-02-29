@@ -22,14 +22,14 @@
               <!-- topics /map /tf /tf_static /robot_pose /mobile_base_controller/odom /move_base/goal /velodyne_points"  -->
 
   <!-- Extracting selected human -->
-  <node pkg="hrisim_postprocessing" type="extract_sel_human.py" name="extract_sel_human"  output="screen">
+  <node pkg="hrisim_postprocessing" type="extract_sel_human.py" name="extract_sel_human" args="$(arg bagname)" output="screen">
   </node>
 
   <!-- ROS-Causal human -->
   <include file="$(find roscausal_human)/launch/human_state.launch">
     <arg name="auto_people_topic" value="/pedsim_simulator/simulated_agents"/>
     <arg name="teleop_people_topic" value="/hri/sel_human"/>
-    <arg name="goal_param" value="/hri/human_goal"/>
+    <arg name="goal_param" value="/hri/goal"/>
     <arg name="source_frame" value="map"/>
     <arg name="target_frame" value="map"/>
   </include>
@@ -45,7 +45,8 @@
 
   <!-- ROS-Causal data -->
   <include file="$(find roscausal_data)/launch/data_collection.launch">
-    <arg name="ts_length" default="150"/> 
+    <arg name="ts_length" default="15000"/> 
+    <!-- <arg name="ts_length" default="150"/>  -->
     <arg name="dt" default="0.1"/> 
     <arg name="subsampling" default="True"/> 
   </include>

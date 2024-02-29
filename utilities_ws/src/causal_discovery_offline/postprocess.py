@@ -108,7 +108,8 @@ class Agent():
         """
         
         # risk = 0
-        risk = self.v[t] / self.dist(t, obs)
+        # risk = self.v[t] / self.dist(t, obs)
+        risk = self.v[t]
         # risk = self.v[t]/20
         # risk = np.random.normal(0, 0.02)
         collision = False
@@ -147,8 +148,8 @@ class Agent():
 if __name__ == '__main__': 
     DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/data'
     PP_DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/ppdata'
-    CSV_NAME = ["data_20240228_160625"]
-    
+    CSV_NAME = ["data_20240229_174258"]
+    LENGTH = 1500
     dfs = list()
     for CSV in CSV_NAME:
         INPUT_CSV = DATA_DIR + '/' + CSV + '.csv'
@@ -177,16 +178,17 @@ if __name__ == '__main__':
                         r"\theta_{g}" : H.heading(i, HG),
                         "r" : H.risk(i-1, R), 
                         r"\omega" : H.omega[i],
-                        r"d_{obs}" : H.dist(i, R) + np.random.uniform(-0.1, 0.1),
+                        r"d_{obs}" : H.dist(i, R),
                         }
 
         # Save the processed data to another CSV file
         df = df[I0:-1]
+        df = df[:LENGTH]
         df.to_csv(OUTPUT_CSV, index = False)
         dfs.append(df)
         
     fdf = pd.concat(dfs, ignore_index=True, sort=False)
-    columns=["t", "g_r", "v", r"\theta_{g}", "d_g", "r", r"\omega", r"d_{obs}"]
+    columns=["g_r", "v", r"\theta_{g}", "d_g", "r", r"\omega", r"d_{obs}"]
     fdf[columns].plot()
     legend = ['$' + k + '$' for k in columns]
     plt.legend(legend)
