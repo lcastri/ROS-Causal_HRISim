@@ -1,6 +1,8 @@
 <launch>
 
   <arg name="bagname"/>
+  <arg name="only_visual" default="true"/>
+
 
   <!-- Robot model -->
   <include file="$(find tiago_description)/robots/upload.launch">
@@ -21,37 +23,49 @@
         required="true"/>
               <!-- topics /map /tf /tf_static /robot_pose /mobile_base_controller/odom /move_base/goal /velodyne_points"  -->
 
-  <!-- Extracting selected human -->
-  <node pkg="hrisim_postprocessing" type="extract_sel_human.py" name="extract_sel_human" args="$(arg bagname)" output="screen">
+  <!-- Offline tracker -->
+  <!-- <include file="$(find tiago_tracker_bringup)/launch/tiago_tracker.launch">
+  </include> -->
+
+  <!-- Show human goal -->
+  <node pkg="rviz_visualisation" type="goal_visualiser.py" name="goal_visualiser" args="$(find bag_postprocess_bringup)/data/$(arg bagname).csv" output="screen">
   </node>
 
-  <!-- ROS-Causal human -->
-  <include file="$(find roscausal_human)/launch/human_state.launch">
-    <arg name="auto_people_topic" value="/pedsim_simulator/simulated_agents"/>
-    <arg name="teleop_people_topic" value="/hri/sel_human"/>
-    <arg name="goal_param" value="/hri/goal"/>
-    <arg name="source_frame" value="map"/>
-    <arg name="target_frame" value="map"/>
-  </include>
+  <group unless="$(arg only_visual)">
 
-  <!-- ROS-Causal robot -->
-  <include file="$(find roscausal_robot)/launch/robot_state.launch">
-    <arg name="odom_topic"  value="/mobile_base_controller/odom"/>
-    <arg name="pose_topic"  value="/robot_pose"/>
-    <arg name="goal_topic"  value="/move_base/goal"/>
-    <arg name="source_frame"  value="base_footprint"/>
-    <arg name="target_frame"  value="map"/>
-  </include>
+    <!-- Extracting selected human -->
+    <node pkg="hrisim_postprocessing" type="extract_sel_human.py" name="extract_sel_human" args="$(arg bagname)" output="screen">
+    </node>
 
-  <!-- ROS-Causal data -->
-  <include file="$(find roscausal_data)/launch/data_collection.launch">
-    <arg name="ts_length" default="15000"/> 
-    <!-- <arg name="ts_length" default="150"/>  -->
-    <arg name="dt" default="0.1"/> 
-    <arg name="subsampling" default="True"/> 
-  </include>
+    <!-- ROS-Causal human -->
+    <include file="$(find roscausal_human)/launch/human_state.launch">
+      <arg name="auto_people_topic" value="/pedsim_simulator/simulated_agents"/>
+      <arg name="teleop_people_topic" value="/hri/sel_human"/>
+      <arg name="goal_param" value="/hri/goal"/>
+      <arg name="source_frame" value="map"/>
+      <arg name="target_frame" value="map"/>
+    </include>
+
+    <!-- ROS-Causal robot -->
+    <include file="$(find roscausal_robot)/launch/robot_state.launch">
+      <arg name="odom_topic"  value="/mobile_base_controller/odom"/>
+      <arg name="pose_topic"  value="/robot_pose"/>
+      <arg name="goal_topic"  value="/move_base/goal"/>
+      <arg name="source_frame"  value="base_footprint"/>
+      <arg name="target_frame"  value="map"/>
+    </include>
+
+    <!-- ROS-Causal data -->
+    <include file="$(find roscausal_data)/launch/data_collection.launch">
+      <arg name="ts_length" default="15000"/> 
+      <!-- <arg name="ts_length" default="150"/>  -->
+      <arg name="dt" default="0.1"/> 
+      <arg name="subsampling" default="True"/> 
+    </include>
+
+  </group>
 
   <!-- rviz -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find bag_postprocess_bringup)/rviz/tiago_rviz.rviz -f map"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find bag_postprocess_bringup)/rviz/tiago_rviz_wGoal.rviz -f map"/>
 
 </launch> 

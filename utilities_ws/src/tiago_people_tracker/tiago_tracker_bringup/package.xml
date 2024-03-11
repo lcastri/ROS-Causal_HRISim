@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<package>
+  <name>tiago_tracker_bringup</name>
+  <version>0.0.0</version>
+  <description>TIAGo human detection and tracking system.</description>
+  <maintainer email="lcastri@lincoln.ac.uk">Luca Castri</maintainer>
+  <license>BSD</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <export>
+  </export>
+</package>

@@ -17,7 +17,9 @@ from shapely.geometry import Polygon, Point
 
 NODE_NAME = 'extract_sel_human'
 NODE_RATE = 10 #Hz
-MAP_BOUNDARIES = [(5.04, -5.28), (-1.156, -0.189), (1.92, 3.03), (7.88, -1.76)]
+MAP_BOUNDARIES = [(5.45, -4.66), (0.75, -0.56), (0.47, -0.73), (-0.73, 0.28), 
+                  (0.01, 1.05), (-0.37, 1.37), (0.69, 2.62), (1.29, 2.14),
+                  (2.01, 2.82), (2.95, 1.82), (3.52, 1.4), (4.16, 1.17), (7.86, -1.85)]
 MAP = Polygon(MAP_BOUNDARIES)       
 GOAL_PARAM = "/hri/goal"
 GOAL_LIST = [(3.5, -2.5), (-0.295, 0.386), (1.878, 2.371), (7.069, -1.907)]
@@ -34,6 +36,7 @@ class DataHandler():
         self.old_pos = None
         self.prev_time = None
         self.selHID = None
+        self.old_goal = None
         
         columns = ['time', 'h_{gx}', 'h_{gy}']
         self.raw = pd.DataFrame(columns=columns)
@@ -64,12 +67,14 @@ class DataHandler():
             people (People): tracked people
         """
         
-        # SEL_H_ID = [103, 235, 267, 315] # run0.bag
-        SEL_H_ID = [144, 159,165,177,189, 191, 203, 210, 
-                    217, 223, 233, 247, 260, 268, 282, 
-                    288, 291, 300,313, 345, 357, 367, 
-                    374, 376, 397,401,413, 433, 436, 448, 
-                    450, 454, 468, 473] # runLuca.bag
+        # SEL_H_ID = [144, 159,165, 177,189, 191, 203, 210, 
+        #             217, 223, 233, 247, 260, 268, 282, 
+        #             288, 291, 300, 313, 345, 357, 367, 
+        #             374, 376, 397, 401,413, 433, 436, 448, 
+        #             450, 454, 468, 473] # runLuca.bag
+        SEL_H_ID = [16, 19, 30, 32, 41, 53, 55, 59, 70, 
+                    73, 78, 80, 84, 87, 93, 94, 98, 117,
+                    120, 121, 127, 130, 133] # runLuca2.bag
         for p in people.people:
             if int(p.name) in SEL_H_ID:
                 
@@ -91,19 +96,21 @@ class DataHandler():
                 
                 goal = None
                 for g in GOAL_LIST:
-                    if Point(pose.pose.position.x, pose.pose.position.y).distance(Point(g[0],g[1])) <= 1.25:
+                    if Point(pose.pose.position.x, pose.pose.position.y).distance(Point(g[0],g[1])) <= DIST_THRES:
                         goal = Point(g[0], g[1])
                         rospy.logwarn("GOAL: " + str(goal))
-                        
+                if goal == self.old_goal: goal = None
                 self.raw.loc[len(self.raw)] = {'time': people.header.stamp.to_sec(), 
                                                'h_{gx}': goal.x if goal is not None else None, 
                                                'h_{gy}': goal.y if goal is not None else None,}
+                if goal is not None: self.old_goal = goal
                 return
                   
 
 if __name__ == '__main__': 
     
     csv_name = sys.argv[1]
+    DIST_THRES = float(sys.argv[2])
     
     # Init node
     rospy.init_node(NODE_NAME)

@@ -109,8 +109,8 @@ class Agent():
         
         # risk = 0
         # risk = self.v[t] / self.dist(t, obs)
-        risk = self.v[t]
-        # risk = self.v[t]/20
+        # risk = self.v[t]
+        risk = self.v[t]/20
         # risk = np.random.normal(0, 0.02)
         collision = False
         
@@ -134,7 +134,6 @@ class Agent():
         cone = Polygon([cone_origin, left, right])
         
         P = Point(cone_origin.x + self.dv(t).x, cone_origin.y + self.dv(t).y)
-        # collision = P.within(cone) and dobs < SAFE_DIST
         collision = P.within(cone) and self.dist(t, obs) < SAFE_DIST
         if collision:
             time_collision_measure = self.dist(t, obs) / math.sqrt(Vrel.x**2 + Vrel.y**2)
@@ -148,15 +147,15 @@ class Agent():
 if __name__ == '__main__': 
     DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/data'
     PP_DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/ppdata'
-    CSV_NAME = ["data_20240229_174258"]
-    LENGTH = 1500
+    CSV_NAME = ["data_20240310_162953"]
+    # LENGTH = 1500
     dfs = list()
     for CSV in CSV_NAME:
         INPUT_CSV = DATA_DIR + '/' + CSV + '.csv'
         OUTPUT_CSV = PP_DATA_DIR + '/' + CSV + '.csv'
         
         OBS_SIZE = 2.0
-        SAFE_DIST = 5.0
+        SAFE_DIST = 2.5
         SEL_ID = "1000_"
 
         # Read the CSV into a pandas DataFrame
@@ -173,7 +172,7 @@ if __name__ == '__main__':
         for i in range(I0, len(data)-1):
             df.loc[i] = {
                         "g_r": H.goal_reached(i+1, HG),
-                        "v" : H.v[i],
+                        "v" : abs(H.v[i]),
                         "d_g" : H.dist(i, HG),
                         r"\theta_{g}" : H.heading(i, HG),
                         "r" : H.risk(i-1, R), 
@@ -183,12 +182,12 @@ if __name__ == '__main__':
 
         # Save the processed data to another CSV file
         df = df[I0:-1]
-        df = df[:LENGTH]
+        # df = df[:LENGTH]
         df.to_csv(OUTPUT_CSV, index = False)
         dfs.append(df)
         
     fdf = pd.concat(dfs, ignore_index=True, sort=False)
-    columns=["g_r", "v", r"\theta_{g}", "d_g", "r", r"\omega", r"d_{obs}"]
+    columns=["v", "d_g", "r"]
     fdf[columns].plot()
     legend = ['$' + k + '$' for k in columns]
     plt.legend(legend)

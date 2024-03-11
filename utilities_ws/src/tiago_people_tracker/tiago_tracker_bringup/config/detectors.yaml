@@ -1,0 +1,16 @@
+bayes_people_tracker:
+    filter_type: "UKF"                                         # The Kalman filter type: EKF = Extended Kalman Filter, UKF = Uncented Kalman Filter
+    cv_noise_params:                                           # The noise for the constant velocity prediction model
+        x: 1.4
+        y: 1.4
+        std_limit: 1.0                                         # upper limit for the standard deviation of the estimated position 
+    detectors:                                                 # Add detectors under this namespace
+        object3d_detector:
+            topic: "/object3d_detector/poses"
+            observation_model: "CARTESIAN"
+            noise_params:
+                x: 0.4
+                y: 0.4
+            matching_algorithm: "NNJPDA"
+            seq_size: 3                                        # Minimum number of observations for new track creation
+            seq_time: 0.2                                      # Minimum interval between observations for new track creation

@@ -1,0 +1,22 @@
+<launch>
+
+  <!-- TIAGo 3D Object Detector -->
+  <node pkg="object3d_detector" type="object3d_detector" name="object3d_detector" output="screen" respawn="false" >
+    <param name='z_limit_min' value='-1.2'/>
+    <param name='z_limit_max' value='0.8'/>
+    <param name='human_size_limit' value='true'/>
+    <param name="model_file_name" type="string" value="$(find object3d_detector)/libsvm/pedestrian.model"/>
+    <param name="range_file_name" type="string" value="$(find object3d_detector)/libsvm/pedestrian.range"/>
+  </node>
+  
+  <!-- NBellotto's Bayes People Tracker -->
+  <rosparam command="load" file="$(find tiago_tracker_bringup)/config/detectors.yaml"/>
+  <node pkg="bayes_people_tracker" type="bayes_people_tracker" name="bayes_people_tracker" output="screen" respawn="true" >
+    <param name="base_link" type="string" value="base_link"/>
+    <param name="target_frame" type="string" value="map"/>
+  </node>
+  
+  <!-- rviz -->
+  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find tiago_tracker_bringup)/launch/tiago_tracker.rviz -f map"/> -->
+
+</launch>
