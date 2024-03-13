@@ -33,7 +33,7 @@ echo " "
   echo "function tm-stop(){  tmule -c ~/ros_ws/src/HRISim/hrisim_tmule/tmule/tiago.yaml terminate ; }" >> ~/.bashrc
   echo "function tm-restart(){  tmule -c ~/ros_ws/src/HRISim/hrisim_tmule/tmule/tiago.yaml -W 3 relaunch ; }" >> ~/.bashrc
   echo "function tm-show(){  tmux a -t tiago ; }" >> ~/.bashrc
-  echo "function connect(){  source ~/ros_ws/src/HRISim/scripts/connect_tiago.sh ${ROBOT_NUM} ${ETH}" >> ~/.bashrc
+  echo "function connect(){  source ~/ros_ws/src/HRISim/scripts/connect_tiago.sh ${ROBOT_NUM} ${ETH} ; }" >> ~/.bashrc
   
   echo "source ~/ros_ws/src/HRISim/scripts/connect_tiago.sh ${ROBOT_NUM} ${ETH}" >> ~/.bashrc
     

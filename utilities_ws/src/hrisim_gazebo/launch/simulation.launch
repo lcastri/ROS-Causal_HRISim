@@ -25,7 +25,7 @@
   <arg name="base_type"                 default="pmb2"/>
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name"              value="$(find mytiago_gazebo)/worlds/$(arg world).world"/>
+    <arg name="world_name"              value="$(find hrisim_gazebo)/worlds/$(arg world).world"/>
   </include>
 
   <!-- spawn robot in simulation -->
