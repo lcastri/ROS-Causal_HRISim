@@ -147,7 +147,7 @@ class Agent():
 if __name__ == '__main__': 
     DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/data'
     PP_DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/ppdata'
-    CSV_NAME = ["data_20240310_162953"]
+    CSV_NAME = ["data_20240311_121511"]
     # LENGTH = 1500
     dfs = list()
     for CSV in CSV_NAME:
@@ -160,6 +160,8 @@ if __name__ == '__main__':
 
         # Read the CSV into a pandas DataFrame
         data = pd.read_csv(INPUT_CSV)
+        data.dropna(inplace=True)
+        data.reset_index(drop=True, inplace=True)
         noise_sz = data["r_x"].size
         R = Agent("R", data["r_x"], data["r_y"], data["time"], data["r_{\theta}"], data["r_v"], data["r_{\omega}"])
         H = Agent("H", data["h_" + SEL_ID + "x"], data["h_" + SEL_ID + "y"], data["time"], data["h_" + SEL_ID + "{\theta}"], data["h_" + SEL_ID + "v"], data["h_" + SEL_ID + "{\omega}"])

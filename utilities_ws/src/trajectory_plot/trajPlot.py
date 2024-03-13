@@ -1,4 +1,3 @@
-import cv2
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -10,7 +9,7 @@ from shapely.geometry import Polygon, Point
 
 MAP_DIR = os.path.expanduser('~/git/ROS-Causal_HRISim/utilities_ws/src/trajectory_plot/maps/')
 MAP_NAME = 'inb3235_small'
-TRAJ_CSV = os.path.expanduser('~/git/ROS-Causal_HRISim/utilities_ws/src/roscausal/roscausal_data/data_pool/data_20240310_162953.csv')
+TRAJ_CSV = os.path.expanduser('~/git/ROS-Causal_HRISim/utilities_ws/src/roscausal/roscausal_data/data_pool/data_20240311_103944.csv')
 SEL_ID = '1000_' # NOTE: set '' if not needed
 
 
@@ -18,7 +17,7 @@ with open(MAP_DIR + MAP_NAME + '/map.yaml', 'r') as yaml_file:
     map_info = yaml.safe_load(yaml_file)
 
 # Step 1: Load the PNG Image
-map_image = mpimg.imread(MAP_DIR + MAP_NAME + '/map_new.pgm')
+map_image = mpimg.imread(MAP_DIR + MAP_NAME + '/map.pgm')
 
 # Step 2: Plot the Map
 # plt.imshow(map_image, extent=[-map_image.shape[0]/2, map_image.shape[0]/2, -map_image.shape[1]/2, map_image.shape[1]/2])

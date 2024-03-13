@@ -37,7 +37,7 @@ class DataHandler():
         self.selHID = None
         
         original_path = "~/git/ROS-Causal_HRISim/utilities_ws/src/bag_postprocess_bringup/data"
-        csv_path = os.path.expanduser(original_path) + '/' + BAGNAME + ".csv"
+        csv_path = os.path.expanduser(original_path) + '/' + BAGNAME + "_goal.csv"
         self.goal_csv = pd.read_csv(csv_path)
         
         # Person subscriber

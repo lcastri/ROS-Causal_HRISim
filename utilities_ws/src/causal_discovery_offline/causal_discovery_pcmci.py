@@ -50,7 +50,7 @@ cdm = FPCMCI(df,
              resfolder = "results/" + '__'.join(CSV_NAME))
 
 start = time()
-feature, causalmodel = cdm.run()
+feature, causalmodel = cdm.run_pcmci()
 elapsed_fpcmci = time() - start
 fpcmci_time = str(timedelta(seconds = elapsed_fpcmci))
 print(fpcmci_time)

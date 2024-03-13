@@ -2,6 +2,7 @@
 
   <arg name="bagname"/>
   <arg name="only_visual" default="true"/>
+  <arg name="visual_goal" default="false"/>
 
 
   <!-- Robot model -->
@@ -27,9 +28,13 @@
   <!-- <include file="$(find tiago_tracker_bringup)/launch/tiago_tracker.launch">
   </include> -->
 
-  <!-- Show human goal -->
-  <node pkg="rviz_visualisation" type="goal_visualiser.py" name="goal_visualiser" args="$(find bag_postprocess_bringup)/data/$(arg bagname).csv" output="screen">
-  </node>
+  <group unless="$(arg visual_goal)">
+
+    <!-- Show human goal -->
+    <node pkg="rviz_visualisation" type="goal_visualiser.py" name="goal_visualiser" args="$(find bag_postprocess_bringup)/data/$(arg bagname)_goal.csv" output="screen">
+    </node>
+
+  </group>
 
   <group unless="$(arg only_visual)">
 
@@ -57,10 +62,11 @@
 
     <!-- ROS-Causal data -->
     <include file="$(find roscausal_data)/launch/data_collection.launch">
-      <arg name="ts_length" default="15000"/> 
+      <arg name="ts_length" value="15000"/> 
       <!-- <arg name="ts_length" default="150"/>  -->
-      <arg name="dt" default="0.1"/> 
-      <arg name="subsampling" default="True"/> 
+      <arg name="dt" value="0.1"/> 
+      <arg name="subsampling" value="True"/> 
+      <arg name="data_dir" value="$(find bag_postprocess_bringup)/data/"/>
     </include>
 
   </group>

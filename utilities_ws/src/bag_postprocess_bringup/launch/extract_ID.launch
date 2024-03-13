@@ -1,0 +1,32 @@
+<launch>
+
+  <arg name="bagname"/>
+
+  <!-- Robot model -->
+  <include file="$(find tiago_description)/robots/upload.launch">
+    <arg name="arm"                     value="False"/>
+    <arg name="end_effector"            value="False"/>
+    <arg name="ft_sensor"               value="False"/>
+    <arg name="laser_model"             value="sick-571"/>
+    <arg name="camera_model"            value="orbbec-astra"/>
+    <arg name="wrist_model"             value="False"/>
+    <arg name="no_safety_eps"           value="False"/>
+    <arg name="base_type"               value="pmb2"/>
+  </include>
+
+  <!-- rosbags play -->
+  <param name="use_sim_time" value="true" />
+  <node name="rosbag_play_data" pkg="rosbag" type="play" 
+        args="--clock $(find bag_postprocess_bringup)/bags/$(arg bagname).bag"
+        required="true"/>
+              <!-- topics /map /tf /tf_static /robot_pose /mobile_base_controller/odom /move_base/goal /velodyne_points" -->
+
+
+  <!-- Extracting selected human goal -->
+  <node pkg="hrisim_postprocessing" type="extract_ID.py" name="extract_ID"  args="$(arg bagname)" output="screen">
+  </node>
+
+  <!-- rviz -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find bag_postprocess_bringup)/rviz/tiago_rviz.rviz -f map"/>
+
+</launch> 

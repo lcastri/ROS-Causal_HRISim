@@ -124,7 +124,7 @@ if __name__ == '__main__':
         original_path = "~/git/ROS-Causal_HRISim/utilities_ws/src/bag_postprocess_bringup/data"
         csv_path = os.path.expanduser(original_path)
         data_handler.raw.bfill(inplace=True)
-        data_handler.raw.to_csv(csv_path + '/' + csv_name + ".csv", sep=',', index=False)
+        data_handler.raw.to_csv(csv_path + '/' + csv_name + "_goal.csv", sep=',', index=False)
 
     rospy.on_shutdown(cleanup)
 
