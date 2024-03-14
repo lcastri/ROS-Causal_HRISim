@@ -9,7 +9,7 @@ import rospy
 import pandas as pd
 from people_msgs.msg import People
 from pedsim_msgs.msg import TrackedPersons, TrackedPerson
-import tf
+import json
 from std_msgs.msg import Header
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from shapely.geometry import Polygon, Point
@@ -36,8 +36,12 @@ class DataHandler():
         self.prev_time = None
         self.selHID = None
         
+        with open(PEOPLE_ID) as json_file:
+            peopleID = json.load(json_file)
+            self.A_ID = peopleID[AGENT]
+        
         original_path = "~/git/ROS-Causal_HRISim/utilities_ws/src/bag_postprocess_bringup/data"
-        csv_path = os.path.expanduser(original_path) + '/' + BAGNAME + "_goal.csv"
+        csv_path = os.path.expanduser(original_path) + '/' + AGENT + "_goal.csv"
         self.goal_csv = pd.read_csv(csv_path)
         
         # Person subscriber
@@ -67,16 +71,8 @@ class DataHandler():
             people (People): tracked people
         """
         
-        # SEL_H_ID = [144, 159,165, 177,189, 191, 203, 210, 
-        #             217, 223, 233, 247, 260, 268, 282, 
-        #             288, 291, 300, 313, 345, 357, 367, 
-        #             374, 376, 397, 401,413, 433, 436, 448, 
-        #             450, 454, 468, 473] # runLuca.bag
-        SEL_H_ID = [16, 19, 30, 32, 41, 53, 55, 59, 70, 
-                    73, 78, 80, 84, 87, 93, 94, 98, 117,
-                    120, 121, 127, 130, 133] # runLuca2.bag
         for p in people.people:
-            if int(p.name) in SEL_H_ID:
+            if int(p.name) in self.A_ID:
                 
                 pose = self.extract_pose(p)
                 
@@ -141,8 +137,8 @@ class DataHandler():
                   
 
 if __name__ == '__main__':       
-    
-    BAGNAME = sys.argv[1]
+    AGENT = sys.argv[1]
+    PEOPLE_ID = sys.argv[2]
 
     # Init node
     rospy.init_node(NODE_NAME)

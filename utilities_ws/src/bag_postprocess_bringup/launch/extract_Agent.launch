@@ -2,7 +2,8 @@
 
   <arg name="bagname"/>
   <arg name="only_visual" default="true"/>
-  <arg name="visual_goal" default="false"/>
+  <arg name="peopleID" default="$(find hrisim_postprocessing)/info/peopleID.json"/>
+  <arg name="goals" default="$(find hrisim_postprocessing)/info/goals.json"/>
 
 
   <!-- Robot model -->
@@ -28,18 +29,17 @@
   <!-- <include file="$(find tiago_tracker_bringup)/launch/tiago_tracker.launch">
   </include> -->
 
-  <group unless="$(arg visual_goal)">
 
-    <!-- Show human goal -->
-    <node pkg="rviz_visualisation" type="goal_visualiser.py" name="goal_visualiser" args="$(find bag_postprocess_bringup)/data/$(arg bagname)_goal.csv" output="screen">
-    </node>
-
-  </group>
+  <!-- Show human goal -->
+  <node pkg="rviz_visualisation" type="goal_dot_visualiser.py" name="goal_dot_visualiser" args="$(find bag_postprocess_bringup)/data/$(arg bagname)_goal.csv" output="screen">
+  </node>
+  <node pkg="rviz_visualisation" type="goal_id_visualiser.py" name="goal_id_visualiser" args="$(arg bagname) $(arg goals) $(arg peopleID)" output="screen">
+  </node>
 
   <group unless="$(arg only_visual)">
 
     <!-- Extracting selected human -->
-    <node pkg="hrisim_postprocessing" type="extract_Agent.py" name="extract_agent" args="$(arg bagname)" output="screen">
+    <node pkg="hrisim_postprocessing" type="extract_Agent.py" name="extract_agent" args="$(arg bagname) $(arg peopleID)" output="screen">
     </node>
 
     <!-- ROS-Causal human -->
@@ -72,6 +72,6 @@
   </group>
 
   <!-- rviz -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find bag_postprocess_bringup)/rviz/tiago_rviz_wGoal.rviz -f map"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find bag_postprocess_bringup)/rviz/tiago_rviz_wGoalID.rviz -f map"/>
 
 </launch> 

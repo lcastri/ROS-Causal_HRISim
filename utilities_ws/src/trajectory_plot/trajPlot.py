@@ -9,7 +9,7 @@ from shapely.geometry import Polygon, Point
 
 MAP_DIR = os.path.expanduser('~/git/ROS-Causal_HRISim/utilities_ws/src/trajectory_plot/maps/')
 MAP_NAME = 'inb3235_small'
-TRAJ_CSV = os.path.expanduser('~/git/ROS-Causal_HRISim/utilities_ws/src/roscausal/roscausal_data/data_pool/data_20240311_103944.csv')
+TRAJ_CSV = os.path.expanduser('utilities_ws/src/bag_postprocess_bringup/data/A1_traj_interp.csv')
 SEL_ID = '1000_' # NOTE: set '' if not needed
 
 

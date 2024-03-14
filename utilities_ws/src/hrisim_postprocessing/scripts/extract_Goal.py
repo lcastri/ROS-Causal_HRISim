@@ -18,8 +18,6 @@ MAP_BOUNDARIES = [(5.45, -4.66), (0.75, -0.56), (0.47, -0.73), (-0.73, 0.28),
                   (0.01, 1.05), (-0.37, 1.37), (0.69, 2.62), (1.29, 2.14),
                   (2.01, 2.82), (2.95, 1.82), (3.52, 1.4), (4.16, 1.17), (7.86, -1.85)]
 MAP = Polygon(MAP_BOUNDARIES)       
-GOAL_LIST = [(3.5, -2.5), (-0.295, 0.386), (1.878, 2.371), (7.069, -1.907)]
-
 
 class DataHandler():
     """
@@ -71,8 +69,8 @@ class DataHandler():
                 pose = self.extract_pose(p)
                 
                 # check if traj point is contained in the map 
-                if not MAP.contains(Point(pose.pose.position.x, pose.pose.position.y)):
-                    continue
+                # if not MAP.contains(Point(pose.pose.position.x, pose.pose.position.y)):
+                #     continue
                  
                 if int(p.name) != self.selHID:
                     self.old_pos = None
@@ -85,10 +83,10 @@ class DataHandler():
                     return
                 
                 goal = None
-                for g in GOAL_LIST:
-                    if Point(pose.pose.position.x, pose.pose.position.y).distance(Point(g[0],g[1])) <= DIST_THRES:
-                        goal = Point(g[0], g[1])
-                        rospy.logwarn("GOAL: " + str(goal))
+                for gid, g in GOALS.items():
+                    if Point(pose.pose.position.x, pose.pose.position.y).distance(Point(g["x"], g["y"])) <= g["radius"]:
+                        goal = Point(g["x"], g["y"])
+                        rospy.logwarn("GOAL: " + gid)
                 if goal == self.old_goal: goal = None
                 self.raw.loc[len(self.raw)] = {'time': people.header.stamp.to_sec(), 
                                                'h_{gx}': goal.x if goal is not None else None, 
@@ -100,8 +98,9 @@ class DataHandler():
 if __name__ == '__main__': 
     
     AGENT = sys.argv[1]
-    DIST_THRES = float(sys.argv[2])
-    PEOPLE_ID = sys.argv[3]
+    PEOPLE_ID = sys.argv[2]
+    with open(sys.argv[3]) as json_file:
+        GOALS = json.load(json_file)
     
     # Init node
     rospy.init_node(NODE_NAME)

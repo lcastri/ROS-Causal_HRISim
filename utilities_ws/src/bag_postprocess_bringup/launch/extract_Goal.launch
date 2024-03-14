@@ -1,8 +1,8 @@
 <launch>
 
   <arg name="bagname"/>
-  <arg name="dist_thres" default="0.75"/>
-  <arg name="peopleID" default="$(find hrisim_postprocessing)/scripts/peopleID.json"/>
+  <arg name="peopleID" default="$(find hrisim_postprocessing)/info/peopleID.json"/>
+  <arg name="goals" default="$(find hrisim_postprocessing)/info/goals.json"/>
 
   <!-- Robot model -->
   <include file="$(find tiago_description)/robots/upload.launch">
@@ -27,11 +27,15 @@
   <!-- <include file="$(find tiago_tracker_bringup)/launch/tiago_tracker.launch">
   </include> -->
 
+  <!-- Show goals -->
+  <node pkg="rviz_visualisation" type="goal_id_visualiser.py" name="goal_id_visualiser" args="$(arg bagname) $(arg goals) $(arg peopleID)" output="screen">
+  </node>
+
   <!-- Extracting selected human goal -->
-  <node pkg="hrisim_postprocessing" type="extract_Goal.py" name="extract_goal"  args="$(arg bagname) $(arg dist_thres) $(arg peopleID)" output="screen">
+  <node pkg="hrisim_postprocessing" type="extract_Goal.py" name="extract_goal"  args="$(arg bagname) $(arg peopleID) $(arg goals)" output="screen">
   </node>
 
   <!-- rviz -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find bag_postprocess_bringup)/rviz/tiago_rviz.rviz -f map"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find bag_postprocess_bringup)/rviz/tiago_rviz_wGoalID.rviz -f map"/>
 
 </launch> 
