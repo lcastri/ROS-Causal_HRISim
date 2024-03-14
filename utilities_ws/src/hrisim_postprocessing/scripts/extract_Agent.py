@@ -15,7 +15,7 @@ from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from shapely.geometry import Polygon, Point
 
 
-NODE_NAME = 'extract_sel_human'
+NODE_NAME = 'extract_agent'
 NODE_RATE = 10 #Hz
 MAP_BOUNDARIES = [(5.45, -4.66), (0.75, -0.56), (0.47, -0.73), (-0.73, 0.28), 
                   (0.01, 1.05), (-0.37, 1.37), (0.69, 2.62), (1.29, 2.14),

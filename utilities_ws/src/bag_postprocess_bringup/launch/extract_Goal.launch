@@ -2,6 +2,7 @@
 
   <arg name="bagname"/>
   <arg name="dist_thres" default="0.75"/>
+  <arg name="peopleID" default="$(find hrisim_postprocessing)/scripts/peopleID.json"/>
 
   <!-- Robot model -->
   <include file="$(find tiago_description)/robots/upload.launch">
@@ -27,7 +28,7 @@
   </include> -->
 
   <!-- Extracting selected human goal -->
-  <node pkg="hrisim_postprocessing" type="extract_goal.py" name="extract_goal"  args="$(arg bagname) $(arg dist_thres)" output="screen">
+  <node pkg="hrisim_postprocessing" type="extract_Goal.py" name="extract_goal"  args="$(arg bagname) $(arg dist_thres) $(arg peopleID)" output="screen">
   </node>
 
   <!-- rviz -->

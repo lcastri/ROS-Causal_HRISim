@@ -39,7 +39,7 @@
   <group unless="$(arg only_visual)">
 
     <!-- Extracting selected human -->
-    <node pkg="hrisim_postprocessing" type="extract_sel_human.py" name="extract_sel_human" args="$(arg bagname)" output="screen">
+    <node pkg="hrisim_postprocessing" type="extract_Agent.py" name="extract_agent" args="$(arg bagname)" output="screen">
     </node>
 
     <!-- ROS-Causal human -->

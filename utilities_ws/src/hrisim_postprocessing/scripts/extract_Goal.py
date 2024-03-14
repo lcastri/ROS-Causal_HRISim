@@ -3,26 +3,23 @@
 import math
 import os
 import sys
-
-from geometry_msgs.msg import PoseWithCovariance, TwistWithCovariance
-import rospy
+import json
 import pandas as pd
-from people_msgs.msg import People
-from pedsim_msgs.msg import TrackedPersons, TrackedPerson
-import tf
-from std_msgs.msg import Header
-from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from shapely.geometry import Polygon, Point
+import rospy
+from geometry_msgs.msg import PoseWithCovariance
+from people_msgs.msg import People
+from tf.transformations import quaternion_from_euler
 
 
-NODE_NAME = 'extract_sel_human'
+NODE_NAME = 'extract_goal'
 NODE_RATE = 10 #Hz
 MAP_BOUNDARIES = [(5.45, -4.66), (0.75, -0.56), (0.47, -0.73), (-0.73, 0.28), 
                   (0.01, 1.05), (-0.37, 1.37), (0.69, 2.62), (1.29, 2.14),
                   (2.01, 2.82), (2.95, 1.82), (3.52, 1.4), (4.16, 1.17), (7.86, -1.85)]
 MAP = Polygon(MAP_BOUNDARIES)       
-GOAL_PARAM = "/hri/goal"
 GOAL_LIST = [(3.5, -2.5), (-0.295, 0.386), (1.878, 2.371), (7.069, -1.907)]
+
 
 class DataHandler():
     """
@@ -37,7 +34,9 @@ class DataHandler():
         self.prev_time = None
         self.selHID = None
         self.old_goal = None
-        
+        with open(PEOPLE_ID) as json_file:
+            peopleID = json.load(json_file)
+            self.A_ID = peopleID[AGENT]
         columns = ['time', 'h_{gx}', 'h_{gy}']
         self.raw = pd.DataFrame(columns=columns)
 
@@ -66,11 +65,8 @@ class DataHandler():
         Args:
             people (People): tracked people
         """
-        SEL_H_ID = [16, 19, 30, 32, 41, 53, 55, 59, 70, 
-                    73, 78, 80, 84, 87, 93, 94, 98, 117,
-                    120, 121, 127, 130, 133] # runLuca.bag
         for p in people.people:
-            if int(p.name) in SEL_H_ID:
+            if int(p.name) in self.A_ID:
                 
                 pose = self.extract_pose(p)
                 
@@ -103,8 +99,9 @@ class DataHandler():
 
 if __name__ == '__main__': 
     
-    csv_name = sys.argv[1]
+    AGENT = sys.argv[1]
     DIST_THRES = float(sys.argv[2])
+    PEOPLE_ID = sys.argv[3]
     
     # Init node
     rospy.init_node(NODE_NAME)
@@ -118,7 +115,7 @@ if __name__ == '__main__':
         original_path = "~/git/ROS-Causal_HRISim/utilities_ws/src/bag_postprocess_bringup/data"
         csv_path = os.path.expanduser(original_path)
         data_handler.raw.bfill(inplace=True)
-        data_handler.raw.to_csv(csv_path + '/' + csv_name + "_goal.csv", sep=',', index=False)
+        data_handler.raw.to_csv(csv_path + '/' + AGENT + "_goal.csv", sep=',', index=False)
 
     rospy.on_shutdown(cleanup)
 
