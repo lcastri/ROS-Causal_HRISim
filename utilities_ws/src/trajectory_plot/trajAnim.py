@@ -1,4 +1,6 @@
 import json
+from matplotlib.collections import LineCollection
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -7,13 +9,15 @@ import yaml
 import os
 
 # Load map information
+ANIM_DIR = os.path.expanduser('~/git/ROS-Causal_HRISim/utilities_ws/src/trajectory_plot/')
 GOALS_JSON = os.path.expanduser('~/git/ROS-Causal_HRISim/utilities_ws/src/hrisim_postprocessing/info/goals.json')
 MAP_DIR = os.path.expanduser('~/git/ROS-Causal_HRISim/utilities_ws/src/trajectory_plot/maps/')
 MAP_NAME = 'inb3235_small'
 TRAJ_PATH= os.path.expanduser('utilities_ws/src/bag_postprocess_bringup/data/')
-AGENT= 'A1'
+AGENT= 'A2'
 SEL_ID = '1000_' # NOTE: set '' if not needed
-
+ROBOT_COLOR = 'tab:orange'
+HUMAN_COLOR = 'tab:blue'
 
 with open(MAP_DIR + MAP_NAME + '/map.yaml', 'r') as yaml_file:
     map_info = yaml.safe_load(yaml_file)
@@ -42,8 +46,10 @@ with open(GOALS_JSON) as json_file:
 GOALS_LIST = [(g['x'], g['y']) for _, g in GOALS.items()]
 
 # Initialize the line objects for robot and human trajectories
-robot_line, = ax.plot([], [], marker='>', color='orange', label='TIAGo')
-human_line, = ax.plot([], [], marker='>', color='blue', label=AGENT)
+robot_line, = ax.plot([], [], linestyle='-', color=ROBOT_COLOR, label='TIAGo')
+robothead_point = ax.scatter([], [], s=50, color=ROBOT_COLOR, zorder=3)
+human_line, = ax.plot([], [], linestyle='-', color=HUMAN_COLOR, label=AGENT)
+humanhead_point = ax.scatter([], [], s=50, color=HUMAN_COLOR, zorder=3)
 
 # Initialize the scatter plot for goals
 goals_scatter = ax.scatter([], [], s=500, color='green', alpha=0.5, zorder=1)
@@ -82,16 +88,32 @@ def update_plot(frame):
 
     start_index = max(0, frame - threshold)  # Starting index for the trajectory
     
+    # Robot line
     robot_x = trajectory_data['r_x'].iloc[start_index:frame].values
     robot_y = trajectory_data['r_y'].iloc[start_index:frame].values
+    robot_line.set_data(robot_x, robot_y)
     
+    # Human line
     human_x = trajectory_data['h_' + SEL_ID + 'x'].iloc[start_index:frame].values
     human_y = trajectory_data['h_' + SEL_ID + 'y'].iloc[start_index:frame].values
-    
-    robot_line.set_data(robot_x, robot_y)
     human_line.set_data(human_x, human_y)
+    
+    if frame != 0:
+        # Robot head
+        robot_line_segments = np.array([robot_x, robot_y]).T.reshape(-1, 1, 2)
+        robot_line_collection = LineCollection(robot_line_segments, color=ROBOT_COLOR, linewidth=2)
+        ax.add_collection(robot_line_collection)
+        dot_x, dot_y = robot_x[-1], robot_y[-1]
+        robothead_point.set_offsets([[dot_x, dot_y]])
+        
+        # Human head
+        human_line_segments = np.array([human_x, human_y]).T.reshape(-1, 1, 2)
+        human_line_collection = LineCollection(human_line_segments, color=HUMAN_COLOR, linewidth=2)
+        ax.add_collection(human_line_collection)
+        dot_x, dot_y = human_x[-1], human_y[-1]
+        humanhead_point.set_offsets([[dot_x, dot_y]])
 
-    return robot_line, human_line, goals_scatter, time_text
+    return robot_line, human_line, robothead_point, humanhead_point, goals_scatter, time_text
 
 # Set labels and legend
 plt.xlabel('X')
@@ -108,3 +130,11 @@ ani = animation.FuncAnimation(fig, update_plot, frames=len(trajectory_data), int
 
 # Show the animation
 plt.show()
+
+# # Save the animation as GIF
+# print("Saving GIF..")
+# ani.save(ANIM_DIR + 'gif/' + AGENT + '.gif', writer='pillow', fps=1)
+
+# # Save the animation as MP4 video
+# print("Saving video..")
+# ani.save(AGENT + 'video/' + '.mp4', writer='ffmpeg', fps=1)
