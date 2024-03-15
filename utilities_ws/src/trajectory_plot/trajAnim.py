@@ -14,7 +14,7 @@ GOALS_JSON = os.path.expanduser('~/git/ROS-Causal_HRISim/utilities_ws/src/hrisim
 MAP_DIR = os.path.expanduser('~/git/ROS-Causal_HRISim/utilities_ws/src/trajectory_plot/maps/')
 MAP_NAME = 'inb3235_small'
 TRAJ_PATH= os.path.expanduser('utilities_ws/src/bag_postprocess_bringup/data/')
-AGENT= 'A2'
+AGENT= 'A15'
 SEL_ID = '1000_' # NOTE: set '' if not needed
 ROBOT_COLOR = 'tab:orange'
 HUMAN_COLOR = 'tab:blue'
@@ -126,7 +126,7 @@ plt.xlim(-1, 8.5)
 plt.ylim(-6, 4)
 
 # Create the animation
-ani = animation.FuncAnimation(fig, update_plot, frames=len(trajectory_data), interval=100, blit=True)
+ani = animation.FuncAnimation(fig, update_plot, frames=len(trajectory_data), interval=50, blit=True)
 
 # Show the animation
 plt.show()

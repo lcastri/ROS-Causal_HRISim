@@ -2,8 +2,8 @@ import pandas as pd
 
 # Load the CSV file
 csv_path = "/home/lucacastri/git/ROS-Causal_HRISim/utilities_ws/src/bag_postprocess_bringup/data/"
-input_csv_path = "A1_traj.csv"  # Replace with your input CSV file path
-output_csv_path = "A1_traj_interp.csv"  # Replace with your desired output CSV file path
+input_csv_path = "A13_traj_interp.csv"  # Replace with your input CSV file path
+output_csv_path = "A13_traj_interp.csv"  # Replace with your desired output CSV file path
 
 # Load CSV file into a DataFrame
 df = pd.read_csv(csv_path+ input_csv_path)
