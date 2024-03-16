@@ -7,6 +7,7 @@ import matplotlib.animation as animation
 import matplotlib.image as mpimg
 import yaml
 import os
+from PIL import Image
 
 # Load map information
 ANIM_DIR = os.path.expanduser('~/git/ROS-Causal_HRISim/utilities_ws/src/trajectory_plot/')
@@ -60,20 +61,19 @@ end_time = pd.to_datetime(trajectory_data['time'].iloc[-1], unit='s')
 endt = (end_time - start_time).total_seconds()
 
 # Set the threshold for disappearing points (in number of frames)
-SECS_TODISPLAY = 3 # [s]
-DT = 0.3 # [s]
+SECS_TODISPLAY = 1 # [s]
+DT = 0.1 # [s]
 threshold = int(SECS_TODISPLAY / DT)
 
 # Function to update the plot for animation
 def update_plot(frame):
-    
     # Calculate the time difference from the start time
     current_time = pd.to_datetime(trajectory_data['time'].iloc[frame], unit='s')
     dt = (current_time - start_time).total_seconds()
 
     # Update the time label text
     time_text.set_text(f'Time: {dt:.2f} | {endt:.2f} s')
-    # time_text.set_text(f'Time: {frame * DT:.1f} s')
+    print(f'Time: {dt:.2f} | {endt:.2f} s')
 
     # Create a new scatter plot with just the specific goal position
     colors = list()
@@ -126,15 +126,23 @@ plt.xlim(-1, 8.5)
 plt.ylim(-6, 4)
 
 # Create the animation
-ani = animation.FuncAnimation(fig, update_plot, frames=len(trajectory_data), interval=50, blit=True)
+ani = animation.FuncAnimation(fig, update_plot, frames=len(trajectory_data), interval=10, blit=True, repeat=False)
 
-# Show the animation
-plt.show()
+# Create a directory to save frames
+if not os.path.exists('frames'):
+    os.makedirs('frames')
 
-# # Save the animation as GIF
-# print("Saving GIF..")
-# ani.save(ANIM_DIR + 'gif/' + AGENT + '.gif', writer='pillow', fps=1)
+# Save frames as images
+for i in range(0, len(trajectory_data), 5):
+    update_plot(i)
+    plt.savefig(f'frames/frame_{i:04d}.png')
 
-# # Save the animation as MP4 video
-# print("Saving video..")
-# ani.save(AGENT + 'video/' + '.mp4', writer='ffmpeg', fps=1)
+# Convert frames to GIF using Pillow
+images = []
+for i in range(0, len(trajectory_data), 5):
+    images.append(Image.open(f'frames/frame_{i:04d}.png'))
+images[0].save(ANIM_DIR + 'gif/' + AGENT + '.gif', save_all=True, append_images=images[1:], duration=100, loop=0)
+
+
+# # Show the animation
+# plt.show()
