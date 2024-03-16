@@ -365,3 +365,4 @@ dist/
 /shared/*
 
 *.vscode
+*.gif
