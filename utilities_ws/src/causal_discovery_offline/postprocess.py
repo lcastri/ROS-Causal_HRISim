@@ -110,7 +110,7 @@ class Agent():
         # risk = 0
         # risk = self.v[t] / self.dist(t, obs)
         # risk = self.v[t]
-        risk = self.v[t]/20
+        risk = self.v[t]/10 + np.random.normal(0, 0.02)
         # risk = np.random.normal(0, 0.02)
         collision = False
         
@@ -139,50 +139,60 @@ class Agent():
             time_collision_measure = self.dist(t, obs) / math.sqrt(Vrel.x**2 + Vrel.y**2)
             steering_effort_measure = min(P.distance(LineString([cone_origin, left])), P.distance(LineString([cone_origin, right])))           
             # risk = risk + 1/time_collision_measure + steering_effort_measure
-            risk = risk + self.v[t] + 1/time_collision_measure + steering_effort_measure
+            risk = risk + 1/time_collision_measure + steering_effort_measure
                     
+        # return math.exp(risk)
         return math.exp(risk)
        
 
 if __name__ == '__main__': 
-    DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/data'
-    PP_DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/ppdata'
-    CSV_NAME = ["data_20240311_121511"]
+    DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/Traj'
+    PP_DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/Traj_pp'
+    AGENT = ["A" + str(i) for i in range(1, 16)]
     # LENGTH = 1500
     dfs = list()
-    for CSV in CSV_NAME:
-        INPUT_CSV = DATA_DIR + '/' + CSV + '.csv'
-        OUTPUT_CSV = PP_DATA_DIR + '/' + CSV + '.csv'
+    for A in AGENT:
+        INPUT_CSV = DATA_DIR + '/' + A + '_traj.csv'
+        OUTPUT_CSV = PP_DATA_DIR + '/' + A + '.csv'
         
         OBS_SIZE = 2.0
-        SAFE_DIST = 2.5
+        SAFE_DIST = 5
         SEL_ID = "1000_"
 
         # Read the CSV into a pandas DataFrame
         data = pd.read_csv(INPUT_CSV)
-        data.dropna(inplace=True)
-        data.reset_index(drop=True, inplace=True)
-        noise_sz = data["r_x"].size
-        R = Agent("R", data["r_x"], data["r_y"], data["time"], data["r_{\theta}"], data["r_v"], data["r_{\omega}"])
-        H = Agent("H", data["h_" + SEL_ID + "x"], data["h_" + SEL_ID + "y"], data["time"], data["h_" + SEL_ID + "{\theta}"], data["h_" + SEL_ID + "v"], data["h_" + SEL_ID + "{\omega}"])
+        # data.dropna(inplace=True)
+        # data.reset_index(drop=True, inplace=True)
+        # noise_sz = data["r_x"].size
+        R = Agent("R", data["r_x"], data["r_y"], data["time"], data[r"r_{\theta}"], data["r_v"], data["r_{\omega}"])
+        H = Agent("H", data["h_" + SEL_ID + "x"], data["h_" + SEL_ID + "y"], data["time"], data["h_" + SEL_ID + r"{\theta}"], data["h_" + SEL_ID + "v"], data["h_" + SEL_ID + "{\omega}"])
         RG = Agent("RG", data["r_{gx}"], data["r_{gy}"], data["time"])
         HG = Agent("HG", data["h_" + SEL_ID + "{gx}"], data["h_" + SEL_ID + "{gy}"], data["time"])
                 
-        df = pd.DataFrame(columns=["g_r", "v", r"\theta_{g}", "d_g", "r", r"\omega", r"d_{obs}"])  
+        df = pd.DataFrame(columns=["v", "d_g", "r"])  
+        # df = pd.DataFrame(columns=["g_r", "v", r"\theta_{g}", "d_g", "r", r"\omega", r"d_{obs}"])  
         
-        I0 = 2
+        I0 = 1
         for i in range(I0, len(data)-1):
             df.loc[i] = {
-                        "g_r": H.goal_reached(i+1, HG),
-                        "v" : abs(H.v[i]),
+                        "v" : H.v[i],
                         "d_g" : H.dist(i, HG),
-                        r"\theta_{g}" : H.heading(i, HG),
-                        "r" : H.risk(i-1, R), 
-                        r"\omega" : H.omega[i],
-                        r"d_{obs}" : H.dist(i, R),
+                        "r" : H.risk(i, R), 
                         }
+            # df.loc[i] = {
+            #             "g_r": H.goal_reached(i+1, HG),
+            #             "v" : abs(H.v[i]),
+            #             "d_g" : H.dist(i, HG),
+            #             r"\theta_{g}" : H.heading(i, HG),
+            #             "r" : H.risk(i-1, R), 
+            #             r"\omega" : H.omega[i],
+            #             r"d_{obs}" : H.dist(i, R),
+            #             }
 
         # Save the processed data to another CSV file
+        df['r'] = df['r'].shift(-1)
+        df.loc[len(df)-1, 'r'] = 0
+        
         df = df[I0:-1]
         # df = df[:LENGTH]
         df.to_csv(OUTPUT_CSV, index = False)
