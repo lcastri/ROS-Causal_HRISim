@@ -30,7 +30,7 @@ df.shrink(variables)
 # df.plot_timeseries()
 
 cdm = FPCMCI(df, 
-             f_alpha = 0.05,
+             f_alpha = 0.5,
              pcmci_alpha = 0.05,
              min_lag = 1, 
              max_lag = 1, 
@@ -38,7 +38,7 @@ cdm = FPCMCI(df,
              val_condtest = GPDC(),
              verbosity = CPLevel.DEBUG,
              neglect_only_autodep = False,
-             resfolder = "results/" + '__'.join(CSV_NAME))
+             resfolder = "results/" + 'new__'.join(CSV_NAME))
 
 start = time()
 feature, causalmodel = cdm.run()
@@ -48,7 +48,7 @@ fpcmci_time = str(timedelta(seconds = elapsed_fpcmci))
 print(fpcmci_time)
 
 if len(feature) > 0:
-    cdm.dag(skip_autodep=True, node_size=5, font_size=14, label_type = LabelType.NoLabels, img_ext = ImageExt.PDF)
-    cdm.timeseries_dag(node_size=5, font_size=14, img_ext = ImageExt.PDF, node_proximity=3)
-    cdm.dag(skip_autodep=True, node_size=5, font_size=14, label_type = LabelType.NoLabels, img_ext = ImageExt.PNG)
-    cdm.timeseries_dag(node_size=5, font_size=14, img_ext = ImageExt.PNG, node_proximity=3)
+    cdm.dag(skip_autodep=True, node_size=5, font_size=16, label_type = LabelType.NoLabels, img_ext = ImageExt.PDF)
+    cdm.timeseries_dag(node_size=5, font_size=16, img_ext = ImageExt.PDF, node_proximity=4)
+    cdm.dag(skip_autodep=True, node_size=5, font_size=16, label_type = LabelType.NoLabels, img_ext = ImageExt.PNG)
+    cdm.timeseries_dag(node_size=5, font_size=16, img_ext = ImageExt.PNG, node_proximity=4)

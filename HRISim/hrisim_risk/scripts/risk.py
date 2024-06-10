@@ -64,7 +64,7 @@ class RiskClass():
         sub_robot = message_filters.Subscriber("/roscausal/robot", RobotState)
         
         # Person subscriber
-        sub_people = message_filters.Subscriber('/roscausal/human', Humans)
+        sub_people = message_filters.Subscriber('/roscausal/humans', Humans)
                 
                 
         # Init synchronizer and assigning a callback 

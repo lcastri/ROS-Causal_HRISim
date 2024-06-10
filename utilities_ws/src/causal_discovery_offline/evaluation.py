@@ -11,22 +11,27 @@ from fpcmci.selection_methods.TE import TE, TEestimator
 from fpcmci.basics.constants import LabelType, ImageExt
 from time import time
 from datetime import timedelta
+from fpcmci.preprocessing.subsampling_methods.Static import Static
 
-
-def save_result(fpcmci_g_time, fpcmci_g_cm, fpcmci_k_time, fpcmci_k_cm, pcmci_time, pcmci_cm):
+def save_result(fpcmci_g_time = None, fpcmci_g_cm = None, 
+                fpcmci_k_time = None, fpcmci_k_cm = None, 
+                pcmci_time = None, pcmci_cm = None):
     res_tmp['gt'] = str(GT)
     
-    res_tmp['fpcmci_g']['time'] = fpcmci_g_time
-    res_tmp['fpcmci_g']['shd'] = shd(GT, get_correct_SCM(GT, fpcmci_g_cm.get_SCM()))
-    res_tmp['fpcmci_g']['scm'] = str(get_correct_SCM(GT, fpcmci_g_cm.get_SCM()))
+    if fpcmci_g_cm is not None:
+        res_tmp['fpcmci_g']['time'] = fpcmci_g_time
+        res_tmp['fpcmci_g']['shd'] = shd(GT, get_correct_SCM(GT, fpcmci_g_cm.get_SCM()))
+        res_tmp['fpcmci_g']['scm'] = str(get_correct_SCM(GT, fpcmci_g_cm.get_SCM()))
     
-    res_tmp['fpcmci_k']['time'] = fpcmci_k_time
-    res_tmp['fpcmci_k']['shd'] = shd(GT,get_correct_SCM(GT, fpcmci_k_cm.get_SCM()))
-    res_tmp['fpcmci_k']['scm'] = str(get_correct_SCM(GT, fpcmci_k_cm.get_SCM()))
+    if fpcmci_k_cm is not None:
+        res_tmp['fpcmci_k']['time'] = fpcmci_k_time
+        res_tmp['fpcmci_k']['shd'] = shd(GT,get_correct_SCM(GT, fpcmci_k_cm.get_SCM()))
+        res_tmp['fpcmci_k']['scm'] = str(get_correct_SCM(GT, fpcmci_k_cm.get_SCM()))
     
-    res_tmp['pcmci']['time'] = pcmci_time
-    res_tmp['pcmci']['shd'] = shd(GT, get_correct_SCM(GT, pcmci_cm.get_SCM()))
-    res_tmp['pcmci']['scm'] = str(get_correct_SCM(GT, pcmci_cm.get_SCM()))
+    if pcmci_cm is not None:
+        res_tmp['pcmci']['time'] = pcmci_time
+        res_tmp['pcmci']['shd'] = shd(GT, get_correct_SCM(GT, pcmci_cm.get_SCM()))
+        res_tmp['pcmci']['scm'] = str(get_correct_SCM(GT, pcmci_cm.get_SCM()))
     
     
 def get_correct_SCM(gt, scm):
@@ -114,13 +119,13 @@ DATA_DIR = '~/git/ROS-Causal_HRISim/utilities_ws/src/causal_discovery_offline/Tr
 
 
 if __name__ == '__main__':   
-    resdir = "ROMAN2024/Evaluation"
+    resdir = "ROMAN2024/Evaluation_Hz"
     f_alpha = 0.5
     alpha = 0.05
     min_lag = 1
     max_lag = 1
     agents = ["A" + str(i) for i in range(1, 16)]
-    perc_samples = [x / 10 for x in range(1, 11)]
+    perc_samples = [20, 10, 5, 3]
     
     for p in perc_samples:
         for a in agents:
@@ -129,27 +134,27 @@ if __name__ == '__main__':
             res_tmp = deepcopy(EMPTY_RES)
             
             csv = pd.read_csv(DATA_DIR + '/' + a + '.csv')
-            d_obs = Data(csv[: int(len(csv) * p)], vars = ["v", "d_g", "r"])
+            d_obs = Data(csv, vars = ["v", "d_g", "r"], subsampling = Static(p))
                     
             #########################################################################################################################
-            # FPCMCI Gaussian
-            fpcmci_g = FPCMCI(deepcopy(d_obs),
-                            f_alpha = f_alpha, 
-                            pcmci_alpha = alpha, 
-                            min_lag = min_lag, 
-                            max_lag = max_lag, 
-                            sel_method = TE(TEestimator.Gaussian), 
-                            val_condtest = GPDC(significance = 'analytic'),
-                            verbosity = CPLevel.INFO,
-                            neglect_only_autodep = False,
-                            resfolder = resfolder + "/fpcmci_g")
+            # # FPCMCI Gaussian
+            # fpcmci_g = FPCMCI(deepcopy(d_obs),
+            #                 f_alpha = f_alpha, 
+            #                 pcmci_alpha = alpha, 
+            #                 min_lag = min_lag, 
+            #                 max_lag = max_lag, 
+            #                 sel_method = TE(TEestimator.Gaussian), 
+            #                 val_condtest = GPDC(significance = 'analytic'),
+            #                 verbosity = CPLevel.INFO,
+            #                 neglect_only_autodep = False,
+            #                 resfolder = resfolder + "/fpcmci_g")
 
-            new_start = time()
-            _, fpcmci_g_cm = fpcmci_g.run()
-            elapsed_fpcmci_g = time() - new_start
-            fpcmci_g_time = str(timedelta(seconds = elapsed_fpcmci_g))
-            fpcmci_g.timeseries_dag(node_size=5, font_size=14, img_ext = ImageExt.PNG, node_proximity=3)
-            fpcmci_g.timeseries_dag(node_size=5, font_size=14, img_ext = ImageExt.PDF, node_proximity=3)
+            # new_start = time()
+            # _, fpcmci_g_cm = fpcmci_g.run()
+            # elapsed_fpcmci_g = time() - new_start
+            # fpcmci_g_time = str(timedelta(seconds = elapsed_fpcmci_g))
+            # fpcmci_g.timeseries_dag(node_size=5, font_size=14, img_ext = ImageExt.PNG, node_proximity=3)
+            # fpcmci_g.timeseries_dag(node_size=5, font_size=14, img_ext = ImageExt.PDF, node_proximity=3)
             
             #########################################################################################################################
             # FPCMCI Kraskov
@@ -194,7 +199,9 @@ if __name__ == '__main__':
             
             #########################################################################################################################
             # SAVE
-            save_result(fpcmci_g_time, fpcmci_g_cm, fpcmci_k_time, fpcmci_k_cm, pcmci_time, pcmci_cm)
+            save_result(fpcmci_k_time = fpcmci_k_time, 
+                        fpcmci_k_cm = fpcmci_k_cm, 
+                        pcmci_time = pcmci_time, pcmci_cm = pcmci_cm)
             
             Path(os.getcwd() + "/results/" + resdir).mkdir(parents=True, exist_ok=True)
             filename = os.getcwd() + "/results/" + resdir + "/" + str(p) + ".json"

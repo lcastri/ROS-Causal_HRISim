@@ -1,3 +1,4 @@
+from copy import deepcopy
 import datetime
 from enum import Enum
 import json
@@ -10,7 +11,8 @@ class jWord(Enum):
     GT = "gt"
     
 class Algo(Enum):
-    FPCMCI = 'fpcmci'
+    FPCMCI_g = 'fpcmci_g'
+    FPCMCI_k = 'fpcmci_k'
     PCMCI = 'pcmci'
     
 class Metric(Enum):
@@ -20,7 +22,8 @@ class Metric(Enum):
 plotLabel = {
     Metric.TIME : 'Time [s]',
     Metric.SHD : 'SHD',
-    Algo.FPCMCI : 'F-PCMCI',
+    Algo.FPCMCI_g : 'F-PCMCI gaussian',
+    Algo.FPCMCI_k : 'F-PCMCI',
     Algo.PCMCI : 'PCMCI',
     }
 
@@ -57,8 +60,8 @@ def compare(resfolder, algorithms, metric, nvars, plotStyle, show = False):
    
     toPlot = {algo.value: {"samples" : list(), "means" : list(), "confidences" : list()} for algo in algorithms}
     
-    for n in range(nvars[0],nvars[1]+1):
-        res_path = os.getcwd() + "/results/" + resfolder + "/" + str(n) + ".json"
+    for n in nvars:
+        res_path = os.getcwd() + resfolder + "/" + str(n) + ".json"
         
         ext_data = extract_data(res_path, algorithms, metric)
         for algo in algorithms:
@@ -69,34 +72,82 @@ def compare(resfolder, algorithms, metric, nvars, plotStyle, show = False):
     fig, ax = plt.subplots(figsize=(6,4))
 
     for algo in algorithms:
-        plt.errorbar(range(nvars[0], nvars[1]+1), toPlot[algo.value]["means"], toPlot[algo.value]["confidences"], 
+        plt.errorbar(nvars, toPlot[algo.value]["means"], toPlot[algo.value]["confidences"], 
                      marker=plotStyle[algo]['marker'], capsize = 5, color = plotStyle[algo]['color'], linestyle = plotStyle[algo]['linestyle'])
             
-    plt.xticks(range(nvars[0], nvars[1]+1))
-    plt.xlabel("Percentage of samples")
+    plt.xticks(nvars)
+    plt.xlabel("Sampling frequency [Hz]")
     plt.ylabel(plotLabel[metric])
     bbox_to_anchor = (0, 1.05, 1, .105)
-    plt.legend([plotLabel[algo] for algo in algorithms], loc=9, bbox_to_anchor=bbox_to_anchor, ncol=7, mode='expand',)
+    plt.legend([plotLabel[algo] for algo in algorithms])
+    # plt.legend([plotLabel[algo] for algo in algorithms], loc=9, bbox_to_anchor=bbox_to_anchor, ncol=2, mode='expand',)
     plt.grid()
     # plt.title(titleLabel[metric] + ' comparison')
         
     if show:
         plt.show()
     else:
-        plt.savefig(os.getcwd() + "/results/" + resfolder + "/" + metric.value + '.pdf')
-        plt.savefig(os.getcwd() + "/results/" + resfolder + "/" + metric.value + '.png')
+        plt.savefig(os.getcwd() + resfolder + "/" + metric.value + '.pdf')
+        plt.savefig(os.getcwd() + resfolder + "/" + metric.value + '.png')
+        
+        
+def plot_allagents(resfolder, algorithms, metric, nvars, show = False):
+    agents = ["A" + str(i) for i in range(1, 16)]
+    dict_res = {algo.value: list() for algo in algorithms}
+    toPlot = {a: deepcopy(dict_res) for a in agents}
+    since = datetime.datetime(1900, 1, 1, 0, 0, 0, 0)
 
+    for n in nvars:
+        res_path = os.getcwd() + resfolder + "/" + str(n) + ".json"
+        with open(res_path) as json_file:
+            r = json.load(json_file)
+        
+        for a in agents:
+            if metric == Metric.TIME:
+                for algo in algorithms:
+                    t = datetime.datetime.strptime(r[a][algo.value][metric.value], '%H:%M:%S.%f')
+                    toPlot[a][algo.value].append((t - since).total_seconds())
+            else:
+                for algo in algorithms:
+                    toPlot[a][algo.value].append((r[a][algo.value][metric.value]))
+                        
+    for a in agents:
+        plt.figure()            
+        for algo in algorithms:
+            plt.plot(nvars, toPlot[a][algo.value], label=algo.value)
+            
+        plt.xticks(nvars)
+        plt.xlabel("Time horizon")
+        plt.ylabel(plotLabel[metric])
+        bbox_to_anchor = (0, 1.05, 1, .105)
+        plt.ylim(0,max(toPlot[a][Algo.PCMCI.value] + toPlot[a][Algo.FPCMCI_k.value])+1)
+        # plt.ylim(0,max(toPlot[a][Algo.PCMCI.value] + toPlot[a][Algo.FPCMCI_g.value] + toPlot[a][Algo.FPCMCI_k.value])+1)
+        plt.legend()
+        plt.grid()
+        plt.title(a)
+            
+        if show:
+            plt.show()
+        else:
+            # plt.savefig(os.getcwd() + resfolder + "/" + a + '.pdf')
+            plt.savefig(os.getcwd() + resfolder + "/" + a + '.png')
     
 if __name__ == '__main__':   
 
-    resfolder = ['rebuttal/nconfounded_nonlin_1250_250']
-    vars = [0, 7]
+    resfolder = ['/results/ROMAN2024/Evaluation_Hz']
+    # vars = [x / 10 for x in range(1, 11)]
+    vars = ['0.5', '1', '2', '3.33', '10']
+
     
     bootstrap = True
-    algorithms = [Algo.PCMCI, Algo.FPCMCI]
-    plot_style = {Algo.PCMCI: {"marker" : 'x', "color" : 'g', "linestyle" : ':'},
-                  Algo.FPCMCI: {"marker" : '^', "color" : 'r', "linestyle" : '--'}, 
-                  }
+    algorithms = [Algo.PCMCI, Algo.FPCMCI_k]
+    plot_style = {
+                  Algo.PCMCI: {"marker" : 'x', "color" : 'g', "linestyle" : ':'},
+                  Algo.FPCMCI_g: {"marker" : '^', "color" : 'r', "linestyle" : '--'}, 
+                  Algo.FPCMCI_k: {"marker" : 'o', "color" : 'b', "linestyle" : '-'}, 
+                 }
+    
+    # plot_allagents(resfolder[0], algorithms, Metric.SHD, vars, show=False)
 
     for r in resfolder:
         for metric in [Metric.TIME, Metric.SHD]:

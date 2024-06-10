@@ -48,12 +48,14 @@ plt.plot(trajectory_data['h_' + SEL_ID + 'x'].values, trajectory_data['h_' + SEL
 GOAL_LIST = [(3.5, -2.5), (-0.295, 0.386), (1.878, 2.371), (7.069, -1.907)]
 x_values = [point[0] for point in GOAL_LIST]
 y_values = [point[1] for point in GOAL_LIST]
-plt.scatter(x_values, y_values, s=100, color='green', zorder=2)
+plt.scatter(x_values, y_values, s=500, color='green', alpha=0.5, zorder=2)
+for i, g in enumerate(GOAL_LIST):
+    plt.text(g[0], g[1], 'G' + str(i+1), fontsize=12, ha='center', va='center')
 
 # Add labels and legend
 plt.xlabel('X')
 plt.ylabel('Y')
-plt.title('Trajectories over Map')
+plt.title(r'$A_1$ participant and robot trajectories')
 plt.legend()
 # Set axis limits
 plt.xlim(-1, 8.5)  # Set x-axis limits from 0 to 6
