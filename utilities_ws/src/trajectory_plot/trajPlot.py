@@ -41,8 +41,8 @@ trajectory_data = pd.read_csv(TRAJ_CSV)
 # plt.plot(x, y)
 
 # Step 4: Plot Trajectories
-plt.plot(trajectory_data['r_x'].values, trajectory_data['r_y'].values, label=f'Robot')
-plt.plot(trajectory_data['h_' + SEL_ID + 'x'].values, trajectory_data['h_' + SEL_ID + 'y'].values, label=f'Human')
+# plt.plot(trajectory_data['r_x'].values, trajectory_data['r_y'].values, label=f'Robot')
+# plt.plot(trajectory_data['h_' + SEL_ID + 'x'].values, trajectory_data['h_' + SEL_ID + 'y'].values, label=f'Human')
 
 # Step 5: Plot goals
 GOAL_LIST = [(3.5, -2.5), (-0.295, 0.386), (1.878, 2.371), (7.069, -1.907)]

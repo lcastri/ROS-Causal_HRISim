@@ -13,16 +13,16 @@ from time import time
 from datetime import timedelta
 
 
-def save_result(fpcmci_g_time, fpcmci_g_cm, fpcmci_k_time, fpcmci_k_cm, pcmci_time, pcmci_cm):
+def save_result(fpcmci_g_time, fpcmci_g_cm, pcmci_time, pcmci_cm):
     res_tmp['gt'] = str(GT)
     
     res_tmp['fpcmci_g']['time'] = fpcmci_g_time
     res_tmp['fpcmci_g']['shd'] = shd(GT, get_correct_SCM(GT, fpcmci_g_cm.get_SCM()))
     res_tmp['fpcmci_g']['scm'] = str(get_correct_SCM(GT, fpcmci_g_cm.get_SCM()))
     
-    res_tmp['fpcmci_k']['time'] = fpcmci_k_time
-    res_tmp['fpcmci_k']['shd'] = shd(GT,get_correct_SCM(GT, fpcmci_k_cm.get_SCM()))
-    res_tmp['fpcmci_k']['scm'] = str(get_correct_SCM(GT, fpcmci_k_cm.get_SCM()))
+    # res_tmp['fpcmci_k']['time'] = fpcmci_k_time
+    # res_tmp['fpcmci_k']['shd'] = shd(GT,get_correct_SCM(GT, fpcmci_k_cm.get_SCM()))
+    # res_tmp['fpcmci_k']['scm'] = str(get_correct_SCM(GT, fpcmci_k_cm.get_SCM()))
     
     res_tmp['pcmci']['time'] = pcmci_time
     res_tmp['pcmci']['shd'] = shd(GT, get_correct_SCM(GT, pcmci_cm.get_SCM()))
@@ -120,7 +120,7 @@ if __name__ == '__main__':
     min_lag = 1
     max_lag = 1
     agents = ["A" + str(i) for i in range(1, 16)]
-    perc_samples = [x / 10 for x in range(1, 11)]
+    perc_samples = [x / 10 for x in range(7, 11)]
     
     for p in perc_samples:
         for a in agents:
@@ -138,7 +138,7 @@ if __name__ == '__main__':
                             pcmci_alpha = alpha, 
                             min_lag = min_lag, 
                             max_lag = max_lag, 
-                            sel_method = TE(TEestimator.Gaussian), 
+                            sel_method = TE(TEestimator.GaussianCMI), 
                             val_condtest = GPDC(significance = 'analytic'),
                             verbosity = CPLevel.INFO,
                             neglect_only_autodep = False,
@@ -151,25 +151,25 @@ if __name__ == '__main__':
             fpcmci_g.timeseries_dag(node_size=5, font_size=14, img_ext = ImageExt.PNG, node_proximity=3)
             fpcmci_g.timeseries_dag(node_size=5, font_size=14, img_ext = ImageExt.PDF, node_proximity=3)
             
-            #########################################################################################################################
-            # FPCMCI Kraskov
-            fpcmci_k = FPCMCI(deepcopy(d_obs),
-                            f_alpha = f_alpha, 
-                            pcmci_alpha = alpha, 
-                            min_lag = min_lag, 
-                            max_lag = max_lag, 
-                            sel_method = TE(TEestimator.Kraskov), 
-                            val_condtest = GPDC(significance = 'analytic'),
-                            verbosity = CPLevel.INFO,
-                            neglect_only_autodep = False,
-                            resfolder = resfolder + "/fpcmci_k")
+            # #########################################################################################################################
+            # # FPCMCI Kraskov
+            # fpcmci_k = FPCMCI(deepcopy(d_obs),
+            #                 f_alpha = f_alpha, 
+            #                 pcmci_alpha = alpha, 
+            #                 min_lag = min_lag, 
+            #                 max_lag = max_lag, 
+            #                 sel_method = TE(TEestimator.OpenCLKraskovCMI), 
+            #                 val_condtest = GPDC(significance = 'analytic'),
+            #                 verbosity = CPLevel.INFO,
+            #                 neglect_only_autodep = False,
+            #                 resfolder = resfolder + "/fpcmci_k")
 
-            new_start = time()
-            _, fpcmci_k_cm = fpcmci_k.run()
-            elapsed_fpcmci_k = time() - new_start
-            fpcmci_k_time = str(timedelta(seconds = elapsed_fpcmci_k))
-            fpcmci_k.timeseries_dag(node_size=5, font_size=14, img_ext = ImageExt.PNG, node_proximity=3)
-            fpcmci_k.timeseries_dag(node_size=5, font_size=14, img_ext = ImageExt.PDF, node_proximity=3)
+            # new_start = time()
+            # _, fpcmci_k_cm = fpcmci_k.run()
+            # elapsed_fpcmci_k = time() - new_start
+            # fpcmci_k_time = str(timedelta(seconds = elapsed_fpcmci_k))
+            # fpcmci_k.timeseries_dag(node_size=5, font_size=14, img_ext = ImageExt.PNG, node_proximity=3)
+            # fpcmci_k.timeseries_dag(node_size=5, font_size=14, img_ext = ImageExt.PDF, node_proximity=3)
                     
             #########################################################################################################################
             # PCMCI
@@ -177,7 +177,7 @@ if __name__ == '__main__':
                            pcmci_alpha = alpha, 
                            min_lag = min_lag, 
                            max_lag = max_lag, 
-                           sel_method = TE(TEestimator.Gaussian), 
+                           sel_method = TE(TEestimator.GaussianTE), 
                            val_condtest = GPDC(significance = 'analytic'),
                            verbosity = CPLevel.INFO,
                            neglect_only_autodep = False,
@@ -194,7 +194,7 @@ if __name__ == '__main__':
             
             #########################################################################################################################
             # SAVE
-            save_result(fpcmci_g_time, fpcmci_g_cm, fpcmci_k_time, fpcmci_k_cm, pcmci_time, pcmci_cm)
+            save_result(fpcmci_g_time, fpcmci_g_cm, pcmci_time, pcmci_cm)
             
             Path(os.getcwd() + "/results/" + resdir).mkdir(parents=True, exist_ok=True)
             filename = os.getcwd() + "/results/" + resdir + "/" + str(p) + ".json"
@@ -209,7 +209,9 @@ if __name__ == '__main__':
                 data = {}
 
             # Modify the dictionary
-            data[a] = res_tmp
+            # data[a] = res_tmp
+            data[a]['fpcmci_g'] = res_tmp['fpcmci_g']
+            data[a]['pcmci'] = res_tmp['pcmci']
 
             # Save the dictionary back to a JSON file
             with open(filename, 'w') as file:

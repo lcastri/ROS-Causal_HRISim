@@ -39,7 +39,7 @@ init_cmd: |
   export_default GZ_GUI "false"
 
   # choose a map between: single_agent_avoidance, multi_agent_avoidance
-  export_default SCENARIO "multi_agent_avoidance"
+  export_default SCENARIO "single_agent_avoidance"
 
   # navigation specific arguments
   export_default GLOBAL_PLANNER "global_planner"
