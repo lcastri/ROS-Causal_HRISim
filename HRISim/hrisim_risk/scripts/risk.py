@@ -87,34 +87,75 @@ class RiskClass():
                 h_y = person.pose2D.y
                 h_v = person.twist.linear
                 
-        self.A = Point(h_x, h_y)
-        self.Av = Point(h_v.x, h_v.y)
+                self.A = Point(h_x, h_y)
+                self.Av = Point(h_v.x, h_v.y)
+                    
+                # Robot 2D pose (x, y, theta) and velocity
+                r_x = robot.pose2D.x
+                r_y = robot.pose2D.y
+                r_v = robot.twist.linear
+                obstacles.append((r_x,r_y,r_v))
+                for person in people.humans:
+                    if person.id != SELAGENT_ID:
+                        x = person.pose2D.x
+                        y = person.pose2D.y
+                        v = person.twist.linear
+                        obstacles.append((x,y,v))
+                        
+                # Select the closest obstacle to the selected human
+                closest_obs = None
+                min_distance = float('inf')
+                for obs_x, obs_y, obs_v in obstacles:
+                    distance = ((obs_x - h_x) ** 2 + (obs_y - h_y) ** 2) ** 0.5
+                    if distance < min_distance:
+                        min_distance = distance
+                        closest_obs = (obs_x, obs_y, obs_v)
+                    
+                self.obs = Point(closest_obs[0], closest_obs[1])
+                self.obsv = Point(closest_obs[2].x, closest_obs[2].y)
+                return
             
-        # Robot 2D pose (x, y, theta) and velocity
-        r_x = robot.pose2D.x
-        r_y = robot.pose2D.y
-        r_v = robot.twist.linear
-        obstacles.append((r_x,r_y,r_v))
-        for person in people.humans:
-            if person.id != SELAGENT_ID:
-                x = person.pose2D.x
-                y = person.pose2D.y
-                v = person.twist.linear
-                obstacles.append((x,y,v))
-                
-        # Select the closest obstacle to the selected human
-        closest_obs = None
-        min_distance = float('inf')
-        for obs_x, obs_y, obs_v in obstacles:
-            distance = ((obs_x - h_x) ** 2 + (obs_y - h_y) ** 2) ** 0.5
-            if distance < min_distance:
-                min_distance = distance
-                closest_obs = (obs_x, obs_y, obs_v)
-            
-        self.obs = Point(closest_obs[0], closest_obs[1])
-        self.obsv = Point(closest_obs[2].x, closest_obs[2].y)
+        self.obs = None
+        self.obsv = None
                        
+    # NOTE: uncomment this callback if you want the risk at time t compute with data at time t-1 
+    # def cb_risk(self, robot: RobotState, people: Humans):
+    #     """
+    #     Synchronized callback
 
+    #     Args:
+    #         robot (RobotState): robot state
+    #         people (Humans): people state
+    #     """
+    #     if self.firstcb:
+    #         self.extract_data(robot, people)
+    #         self.firstcb = False
+        
+    #     else:
+    #         if self.obs is not None and self.obsv is not None:
+    #             risk, collision, origin, left, right = compute_risk(self.A, self.obs, self.Av, self.obsv)
+                
+    #             msg = Risk()
+    #             msg.header = Header()
+    #             msg.header.stamp = rospy.Time.now()
+                        
+    #             msg.risk.data = risk
+    #             msg.collision.data = collision
+    #             msg.origin.x = origin.x
+    #             msg.origin.y = origin.y
+    #             msg.origin.z = 0
+    #             msg.left.x = left.x
+    #             msg.left.y = left.y
+    #             msg.left.z = 0
+    #             msg.right.x = right.x
+    #             msg.right.y = right.y
+    #             msg.right.z = 0
+    #             self.pub_risk.publish(msg)
+                
+    #         self.extract_data(robot, people)
+            
+            
+    # NOTE: uncomment this callback if you want the risk at time t compute with data at time t
     def cb_risk(self, robot: RobotState, people: Humans):
         """
         Synchronized callback
@@ -123,13 +164,11 @@ class RiskClass():
             robot (RobotState): robot state
             people (Humans): people state
         """
-        if self.firstcb:
-            self.extract_data(robot, people)
-            self.firstcb = False
-        
-        else:
+        self.extract_data(robot, people)
+
+        if self.obs is not None and self.obsv is not None:
             risk, collision, origin, left, right = compute_risk(self.A, self.obs, self.Av, self.obsv)
-            
+                    
             msg = Risk()
             msg.header = Header()
             msg.header.stamp = rospy.Time.now()
@@ -146,8 +185,7 @@ class RiskClass():
             msg.right.y = right.y
             msg.right.z = 0
             self.pub_risk.publish(msg)
-            
-            self.extract_data(robot, people)
+                
 
                 
         

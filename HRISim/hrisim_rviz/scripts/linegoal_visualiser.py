@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     rospy.init_node('linegoal_publisher', anonymous=True)
     line_pub = rospy.Publisher('linegoal_marker', Marker, queue_size=10)
-    person_sub = rospy.Subscriber('/roscausal/human', Humans, person_callback)
+    person_sub = rospy.Subscriber('/roscausal/humans', Humans, person_callback)
     rate = rospy.Rate(1)  # Rate in Hz
 
     while not rospy.is_shutdown():
