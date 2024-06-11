@@ -95,7 +95,7 @@ windows:
     tags: ['roscausal']
     panes:
       - 'roslaunch roscausal_robot robot_state.launch'
-      - 'roslaunch roscausal_human human_state.launch teleop_people_topic:=/ped/control/teleop_persons goal_param:='/hri/human_goal'
+      - 'roslaunch roscausal_human human_state.launch teleop_people_topic:=/ped/control/teleop_persons goal_param:=/hri/human_goal'
   - name: experiment
     tags: ['exp']
     panes:
