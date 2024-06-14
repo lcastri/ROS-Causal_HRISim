@@ -35,11 +35,11 @@ init_cmd: |
 
   # world arguments
   # choose a map between: maze, maze_corridor, maze_corridor_withTurn, maze_corridor_withDoors
-  export_default WORLD "maze"
+  export_default WORLD "warehouse"
   export_default GZ_GUI "false"
 
   # choose a map between: single_agent_avoidance, multi_agent_avoidance
-  export_default SCENARIO "single_agent_avoidance"
+  export_default SCENARIO "warehouse"
 
   # navigation specific arguments
   export_default GLOBAL_PLANNER "global_planner"
@@ -61,7 +61,7 @@ init_cmd: |
   export_default HUMAN_MODE "1"
   export_default MAX_HUMAN_SPEED "1.5"
   export_default ROBOT_RADIUS "2"
-  export_default WITH_PED "true"
+  export_default INCLUDE_TELEOP_PED "false"
   export_default KBD_TELEOP "true"
   export_default HUMAN_x "-5"
   export_default HUMAN_y "5"
@@ -89,7 +89,7 @@ windows:
     panes:
       - 'roslaunch tiago_2dnav_gazebo navigation.launch public_sim:=true global_planner:=$GLOBAL_PLANNER local_planner:=$LOCAL_PLANNER localization:=$LOCALIZATION config_base_path:=$CONFIG_BASE_PATH map:=$MAP'
       - 'rosrun hrisim_twist_mux mytwist_mux.py'
-      - 'roslaunch hrisim_pedsim mysimulator.launch scenario:=$SCENARIO robot_mode:=$HUMAN_MODE max_robot_speed:=$MAX_HUMAN_SPEED robot_radius:=$ROBOT_RADIUS kbd_teleop:=$KBD_TELEOP with_ped:=$WITH_PED ped_x:=$HUMAN_x ped_y:=$HUMAN_y ped_theta:=0'
+      - 'roslaunch hrisim_pedsim mysimulator.launch scenario:=$SCENARIO robot_mode:=$HUMAN_MODE max_robot_speed:=$MAX_HUMAN_SPEED robot_radius:=$ROBOT_RADIUS kbd_teleop:=$KBD_TELEOP include_teleop_ped:=$INCLUDE_TELEOP_PED ped_x:=$HUMAN_x ped_y:=$HUMAN_y ped_theta:=0'
       - 'roslaunch hrisim_risk risk.launch'
   - name: roscausal
     tags: ['roscausal']

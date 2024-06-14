@@ -12,7 +12,7 @@
 
   <arg name="kbd_teleop" default="false"/>
   <arg name="rqt_teleop" default="false"/>
-  <arg name="with_ped" default="false"/>
+  <arg name="include_teleop_ped" default="false"/>
   <arg name="ped_x" default="0.0"/>
   <arg name="ped_y" default="0.0"/>
   <arg name="ped_theta" default="0.0"/>
@@ -38,7 +38,7 @@
   </node>
 
   <!-- Pedestrian simulated by differential robot -->
-  <group ns="ped/control" if="$(arg with_ped)">
+  <group ns="ped/control" if="$(arg include_teleop_ped)">
     <!-- pedestrian driving controller -->
     <node name="ped_controller" type="simulate_diff_drive_ped" pkg="pedsim_simulator" output="screen">
       <param name="ped_x" value="$(arg ped_x)"/>
