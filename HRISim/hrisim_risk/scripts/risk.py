@@ -184,10 +184,7 @@ class RiskClass():
             msg.right.x = right.x
             msg.right.y = right.y
             msg.right.z = 0
-            self.pub_risk.publish(msg)
-                
-
-                
+            self.pub_risk.publish(msg)               
         
 
 if __name__ == '__main__':
