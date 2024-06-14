@@ -99,6 +99,7 @@ COPY HRISim/hrisim_pedsim/modified_scripts/CMakeLists.txt /root/ros_ws/src/pedsi
 COPY HRISim/hrisim_pedsim/modified_scripts/spawn_pedsim_agents.py /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/scripts
 COPY HRISim/hrisim_pedsim/modified_scripts/actor_model.sdf /root/ros_ws/src/pedsim_ros/pedsim_gazebo_plugin/models
 COPY HRISim/hrisim_pedsim/modified_scripts/AgentState.msg /root/ros_ws/src/pedsim_ros/pedsim_msgs/msg
+COPY HRISim/hrisim_pedsim/modified_scripts/sim_visualizer.cpp /root/ros_ws/src/pedsim_ros/pedsim_visualizer/src
 
 # Copy files into the image
 RUN mkdir -p ~/ros_ws/src/HRISim/

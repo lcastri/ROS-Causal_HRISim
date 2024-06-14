@@ -3,8 +3,8 @@
   <arg name="rqt_teleop" default="false"/>
   <arg name="visualize" default="true"/>
   <arg name="with_robot" default="false"/>
-  <arg name="scene_file" default="scene.xml"/>
-  <arg name="map_file" default="map.yaml"/>
+  <arg name="scene_file" default="(find hrisim_gazebo)/tiago_maps/warehouse/scene.xml"/>
+  <arg name="map_file" default="(find hrisim_gazebo)/tiago_maps/warehouse/map.yaml"/>
   
   <arg name="simulation_factor" default="1.0"/> <!-- Speed up -->
   <arg name="update_rate" default="25.0"/> <!-- Hz -->
