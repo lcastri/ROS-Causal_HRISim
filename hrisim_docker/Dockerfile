@@ -80,11 +80,7 @@ RUN cd ~/ros_ws/src/ && \
     git submodule update --init --recursive
 
 # Clone and install roscausal
-# RUN echo "ahahaha"
-# RUN cd ~/ros_ws/src/ && \
-#     git clone -b dev https://github.com/lcastri/roscausal.git
-RUN rm -rf ~/ros_ws/src/roscausal && \
-    cd ~/ros_ws/src/ && \
+RUN cd ~/ros_ws/src/ && \
     git clone -b dev https://github.com/lcastri/roscausal.git
 
 # Copy the entrypoint.sh script into the image and give execute permissions to the script
